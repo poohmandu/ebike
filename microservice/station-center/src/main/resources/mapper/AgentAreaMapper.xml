@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2020 聂钊 nz@qdigo.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a to of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qdigo.ebike.stationcenter.mapper.AgentAreaMapper">
+    <resultMap id="agentAreaMap" type="com.qdigo.ebike.stationcenter.domain.entity.AgentArea" autoMapping="true">
+        <id property="areaId" column="a_area_id"/>
+        <collection property="points" column="p_area_id" ofType="com.qdigo.ebike.stationcenter.domain.entity.AgentAreaPoint"
+                    autoMapping="true"/>
+    </resultMap>
+
+    <select id="findByAgentIds" resultMap="agentAreaMap">
+        select aa.area_name,aa.agent_id,
+        aa.area_id as a_area_id,
+        ap.area_id as p_area_id,
+        ap.id,ap.latitude,ap.longitude,ap.point_index
+        from agent_area aa left join agent_area_point ap on aa.area_id = ap.area_id
+        <where>
+            <choose>
+                <when test="agentIds!=null and agentIds.size>0">
+                    aa.agent_id in
+                    <foreach collection="agentIds" separator="," open="(" close=")" item="item">
+                        #{item}
+                    </foreach>
+                </when>
+                <otherwise>
+                    aa.agent_id is null
+                </otherwise>
+            </choose>
+        </where>
+    </select>
+</mapper>

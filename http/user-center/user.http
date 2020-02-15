@@ -1,0 +1,75 @@
+# 用户中心模块
+
+### 发送国际短信
+POST  {{host}}/v1.0/user/getInterPinCode
+Content-Type: application/json
+mobileNo: {{mobileNo}}
+mobiledeviceId: {{deviceId}}
+
+{
+    "countryCode":86
+}
+> {% client.global.set("accessToken",response.body.data); %}
+
+
+### 验证码登录
+POST {{host}}/v1.0/user/registerAndLogin
+Content-Type: application/json
+mobileNo: {{mobileNo}}
+mobiledeviceId: {{deviceId}}
+
+{
+    "mobileNo":"13072794797",
+    "pinCode":"209865",
+    "countryCode":"86",
+    "latitude":0.0,
+    "longitude":0.0
+}
+
+<> login.json
+
+### 微信一键注册登录
+POST http://{{host}}}/user/wxRegister
+Content-Type: application/json
+Referer: xxxxxx
+code: xxxxxx
+
+{
+    "mobileNo":"13072794797",
+    "countryCode":"86",
+    "latitude":0.0,
+    "longitude":0.0
+}
+
+### 查询还车点(分页)
+GET http://{{host}}/v1.0/geo/getBikeStationPage?longitude=1&latitude=2
+mobileNo: {{mobileNo}}
+mobiledeviceId: weixin
+accessToken: xxx
+
+### 查看订单轨迹
+POST http://{{host}}/v1.0/ebike/tracking
+Content-Type: application/json
+mobileNo: {{mobileNo}}
+mobiledeviceId: weixin
+accessToken: xxx
+
+{
+    "orderId":"2729463"
+}
+
+###根据位置获取inputPrefix
+POST http://{{host}}/v1.0/agent/config/byLocation
+Content-Type: application/json
+mobileNo: {{mobileNo}}
+mobiledeviceId: weixin
+accessToken: xxx
+
+{
+    "longitude": 121,
+    "latitude": 31
+}
+
+###
+
+

@@ -1,0 +1,7 @@
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+com.qdigo.ebike.commonconfig.configuration.RedisTemplateConfig,\
+com.qdigo.ebike.commonconfig.configuration.OkHttpConfig,\
+com.qdigo.ebike.commonconfig.configuration.database.DatabaseConfiguration,\
+com.qdigo.ebike.commonconfig.configuration.database.PageableConfig,\
+com.qdigo.ebike.commonconfig.configuration.JacksonConfiguration,\
+com.qdigo.ebike.commonconfig.configuration.FeignDateFormatRegister

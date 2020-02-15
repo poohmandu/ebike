@@ -1,0 +1,36 @@
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @spring.active@
+  cloud:
+    nacos:
+      config:
+        prefix: ${spring.application.name}
+        file-extension: yaml
+        ext-config:
+          - data-id: datasource-${spring.profiles.active}.yaml
+            refresh: true
+          - data-id: cloud-${spring.profiles.active}.yaml
+            refresh: true
+          - data-id: common-${spring.profiles.active}.yaml
+            refresh: true
+server:
+  port: @server.port@
+
+---
+spring:
+  profiles: local
+  cloud:
+    nacos:
+      config:
+        server-addr: dev.nacos.qdigo.com:8848
+---
+spring:
+  profiles: prod
+  cloud:
+    nacos:
+     config:
+       server-addr: nacos.qdigo.com:8848
+

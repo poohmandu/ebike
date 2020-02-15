@@ -1,0 +1,24 @@
+
+spring:
+  application:
+    name: @artifactId@
+  profiles:
+    active: @spring.active@
+  cloud:
+    nacos:
+      config:
+        prefix: ${spring.application.name}
+        file-extension: yaml
+        server-addr: ${spring.cloud.nacos.discovery.server-addr}
+
+nacos:
+  address: ${spring.cloud.nacos.config.server-addr}
+  data-id: gateway-routes
+
+---
+spring:
+  profiles: local
+  cloud:
+    nacos:
+      discovery:
+        server-addr: dev.nacos.qdigo.com:8848

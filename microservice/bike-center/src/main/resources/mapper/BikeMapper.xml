@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2019 聂钊 nz@qdigo.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a to of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qdigo.ebike.bike.mapper.BikeMapper">
+
+    <!--
+        mybatis:
+        所有的结果集映射都是基于resultMap、resultType也是一种自动映射的resultType
+        sql语句中使用 as 会启动手工映射，否则会根据设置来自动映射(启用mapUnderscoreToCamelCase则采用驼峰规则)
+        resultType 里的对象属性
+        比如s.longitude as "bikeStatus.longitude" 一定要加 bikeStatus. 否则无法自动映射上去
+        自动映射等级NONE(禁用) PARTIAL(将自动映射结果除了那些有内部定义内嵌结果映射的(joins)) FULL(自动映射所有)
+        通过添加autoMapping属性可以忽略自动映射等级配置
+    -->
+    <!--
+        属性映射一定要注意字段名称重合的映射错误问题
+    -->
+
+    <!--<select id="findOnlineByLocation" resultType="com.qdigo.ebicycle.domain.bike.Bike">-->
+    <!--select b.*,-->
+    <!--s.longitude as "bikeStatus.longitude",-->
+    <!--s.latitude as "bikeStatus.latitude",-->
+    <!--s.actual_status as "bikeStatus.actual_status",-->
+    <!--s.battery as "bikeStatus.battery",-->
+    <!--s.status as "bikeStatus.status"-->
+    <!--from bike b left join bike_status s on s.bike_id = b.bike_id-->
+    <!--where b.online=true and s.latitude between #{0} and #{1}-->
+    <!--and s.longitude between #{2} and #{3}-->
+    <!--<if test="agentIds!=null and agentIds.size>0">-->
+    <!--and b.agent_id in-->
+    <!--<foreach collection="agentIds" open="(" close=")" separator="," item="item">-->
+    <!--#{item}-->
+    <!--</foreach>-->
+    <!--</if>-->
+    <!--</select>-->
+
+    <resultMap id="bikeMap" type="com.qdigo.ebike.bike.domain.entity.Bike" autoMapping="true">
+        <!--<id property="bikeId" column="bike_id"/>-->
+        <!--<result property="deviceId" column="device_id"/>-->
+        <!--<result property="imeiId" column="imei_id"/>-->
+        <!--<result property="price" column="price"/>-->
+        <!--<result property="unitMinutes" column="unit_minutes"/>-->
+        <!--<result property="type" column="type"/>-->
+        <!--<result property="operationType" column="operation_type"/>-->
+        <!--<result property="online" column="online"/>-->
+        <!--<result property="isDeleted" column="is_deleted"/>-->
+        <!--<result property="licence" column="licence"/>-->
+        <association property="bikeStatus" javaType="com.qdigo.ebike.bike.domain.entity.BikeStatus" autoMapping="true"/>
+    </resultMap>
+
+    <!--<resultMap id="bikeStatusMap" type="com.qdigo.ebicycle.domain.bike.BikeStatus">-->
+    <!--<id property="bikeStatusId" column="bike_status_id"/>-->
+    <!--<result property="longitude" column="longitude"/>-->
+    <!--<result property="latitude" column="latitude"/>-->
+    <!--<result property="battery" column="battery"/>-->
+    <!--<result property="kilometer" column="kilometer"/>-->
+    <!--<result property="status" column="status"/>-->
+    <!--<result property="actualStatus" column="actual_status"/>-->
+    <!--<result property="address" column="address"/>-->
+    <!--<result property="stationId" column="station_id"/>-->
+    <!--<result property="areaId" column="area_id"/>-->
+    <!--<result property="parkStationId" column="park_station_id"/>-->
+    <!--<result property="locationType" column="location_type"/>-->
+    <!--</resultMap>-->
+
+    <!-- 需要什么取什么 b.*,s.* 可取所有 -->
+    <select id="findOnlineByLocation" resultMap="bikeMap">
+        select b.device_id,b.imei_id,b.bike_id,b.type,
+        s.latitude,s.longitude,s.status,s.actual_status,s.battery
+        from bike b left join bike_status s on s.bike_id = b.bike_id
+        where b.online=true and s.latitude between #{param1} and #{param2}
+        and s.longitude between #{param3} and #{param4}
+        <if test="agentIds!=null and agentIds.size>0">
+            and b.agent_id in
+            <foreach collection="agentIds" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>
