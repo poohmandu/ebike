@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.iotcenter.dto;
 
-import com.qdigo.ebike.iotcenter.SocketServer;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
 
 import java.io.Serializable;
 
