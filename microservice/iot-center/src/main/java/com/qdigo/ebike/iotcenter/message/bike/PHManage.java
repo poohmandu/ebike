@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.iotcenter.message.bike;
 
-import com.qdigo.ebike.iotcenter.SocketServer;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.gprs.ph.PHPacketDto;
 import com.qdigo.ebike.iotcenter.dto.http.req.gprs.PHReqDto;

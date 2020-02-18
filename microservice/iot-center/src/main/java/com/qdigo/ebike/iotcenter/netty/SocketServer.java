@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.iotcenter;
+package com.qdigo.ebike.iotcenter.netty;
 
 import com.qdigo.ebike.iotcenter.handler.GSMDataDecoder;
 import com.qdigo.ebike.iotcenter.handler.ParseBytesHandler;
@@ -27,6 +27,8 @@ import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.codec.DelimiterBasedFrameDecoder;
 import io.netty.util.ResourceLeakDetector;
+import io.netty.util.concurrent.Future;
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,9 +43,9 @@ import java.util.Enumeration;
  *
  * @author niezhao
  */
+@Slf4j
 public class SocketServer {
 
-    private static Logger logger = LoggerFactory.getLogger(SocketServer.class);
     public static final int PORT = 13078;
     private static final int BIZGROUPSIZE = Runtime.getRuntime().availableProcessors() * 2;
     private static final int BIZTHREADSIZE = 4;
@@ -55,11 +57,11 @@ public class SocketServer {
 
     public static String NET_IP = "";
 
-    private static Channel channel;
+    private ChannelFuture serverChannelFuture;
 
 
     //@PostConstruct 用此注解会阻塞后续bean的实例化
-    public static void run() throws Exception {
+    public void start() throws Exception {
         ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
 
         //EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)  // 通过nio方式来接收连接和处理连接
@@ -73,7 +75,7 @@ public class SocketServer {
                     //责任链模式是Netty的核心部分,每个处理者只负责自己有关的东西。然后将处理结果根据责任链传递下去
                     .childHandler(new ChannelInitializer<SocketChannel>() { // (4)  //有连接到达时会创建一个channel
                         @Override
-                        protected void initChannel(SocketChannel ch) throws Exception {
+                        protected void initChannel(SocketChannel ch) {
 
                             //pipeline管理channel中的Handler，在channel队列中添加一个handler来处理业务
                             ByteBuf delimiter_$ = Unpooled.copiedBuffer("$".getBytes());
@@ -111,18 +113,33 @@ public class SocketServer {
         }
     }
 
+
+    /**
+     * 描述：关闭Netty 服务器，主要是释放连接
+     *     连接包括：服务器连接serverChannel，
+     *     客户端TCP处理连接bossGroup，
+     *     客户端I/O操作连接workerGroup
+     *
+     *     若只使用
+     *         bossGroupFuture = bossGroup.shutdownGracefully();
+     *         workerGroupFuture = workerGroup.shutdownGracefully();
+     *     会造成内存泄漏。
+     */
     @PreDestroy
     public void stop() {
-        logger.info("destroy server resources");
-        if (null == channel) {
-            logger.error("server channel is null");
+        log.info("正在释放netty server的资源");
+        if (null == serverChannelFuture) {
+            log.error("server channel is null");
         }
-        bossGroup.shutdownGracefully();
-        workerGroup.shutdownGracefully();
-        channel.closeFuture().syncUninterruptibly();
-        //bossGroup = null;
-        //workerGroup = null;
-        channel = null;
+        serverChannelFuture.channel().close();
+        Future<?> bossGroupFuture = bossGroup.shutdownGracefully();
+        Future<?> workerGroupFuture = workerGroup.shutdownGracefully();
+        try {
+            bossGroupFuture.await();
+            workerGroupFuture.await();
+        } catch (InterruptedException e) {
+            log.error("销毁资源异常", e);
+        }
     }
 
     /**

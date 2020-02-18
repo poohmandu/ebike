@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.iotcenter.message.charge;
 
-import com.qdigo.ebike.iotcenter.SocketServer;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.constants.ChargeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.baseStation.mc.MCPacketDto;
