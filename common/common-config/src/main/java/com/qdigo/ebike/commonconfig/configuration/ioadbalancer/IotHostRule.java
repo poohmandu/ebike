@@ -18,16 +18,16 @@ package com.qdigo.ebike.commonconfig.configuration.ioadbalancer;
 
 import com.alibaba.cloud.nacos.ribbon.NacosServer;
 import com.alibaba.nacos.api.annotation.NacosInjected;
-import com.alibaba.nacos.api.config.annotation.NacosConfigListener;
-import com.alibaba.nacos.api.config.annotation.NacosValue;
-import com.alibaba.nacos.api.exception.NacosException;
 import com.alibaba.nacos.api.naming.NamingService;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.netflix.client.config.IClientConfig;
 import com.netflix.loadbalancer.AbstractLoadBalancerRule;
-import com.netflix.loadbalancer.BaseLoadBalancer;
 import com.netflix.loadbalancer.Server;
+import com.qdigo.ebike.common.core.constants.ConfigConstants;
+import com.qdigo.ebike.common.core.constants.Keys;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import javax.annotation.Resource;
@@ -46,6 +46,8 @@ public class IotHostRule extends AbstractLoadBalancerRule {
     private RedisTemplate<String, String> redisTemplate;
     @NacosInjected
     private NamingService namingService;
+    @Value("${qdigo.iot-service-name}")
+    private String iotServiceName;
 
     @Override
     public void initWithNiwsConfig(IClientConfig clientConfig) {
@@ -53,26 +55,19 @@ public class IotHostRule extends AbstractLoadBalancerRule {
     }
 
     @Override
+    @SneakyThrows
     public Server choose(Object key) {
-        try {
-
-
-            BaseLoadBalancer loadBalancer = (BaseLoadBalancer) this.getLoadBalancer();
-            // log.info("lb = {}", loadBalancer);
-
-            // 想要请求的微服务的名称
-            String name = loadBalancer.getName();
-
-            // 拿到服务发现的相关API
-            NamingService namingService = nacosDiscoveryProperties.namingServiceInstance();
-
-            // nacos client自动通过基于权重的负载均衡算法，给我们选择一个实例。
-            Instance instance = namingService.selectOneHealthyInstance(name);
-
-            log.info("选择的实例是：port = {}, instance = {}", instance.getPort(), instance);
+        String imei = "";
+        String k = Keys.available_slave.getKey(imei.substring(ConfigConstants.imei.getConstant().length()));
+        Instance instance = namingService.getAllInstances(iotServiceName).stream()
+                .filter(Instance::isHealthy)
+                .filter(ins -> {
+                    String s = redisTemplate.opsForValue().get(k);
+                    return s != null && s.equals(ins.getIp());
+                }).findAny().orElse(null);
+        if (instance != null) {
             return new NacosServer(instance);
-        } catch (NacosException e) {
-            return null;
         }
+        return null;
     }
 }
