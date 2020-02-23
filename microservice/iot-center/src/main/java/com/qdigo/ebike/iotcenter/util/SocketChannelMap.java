@@ -17,8 +17,7 @@
 package com.qdigo.ebike.iotcenter.util;
 
 import io.netty.channel.ChannelHandlerContext;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -28,9 +27,8 @@ import java.util.concurrent.ConcurrentMap;
  *
  * @author yudengqiu
  */
+@Slf4j
 public class SocketChannelMap {
-
-    private static Logger log = LoggerFactory.getLogger(ParseByteUtil.class);
 
     //存储终端上行socket链接关系 (本服务与设备)
     public static ConcurrentMap<String, ChannelHandlerContext> upConcurrentMap = new ConcurrentHashMap<>();

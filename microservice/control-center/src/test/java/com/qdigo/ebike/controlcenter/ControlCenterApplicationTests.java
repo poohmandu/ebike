@@ -27,9 +27,11 @@ import org.springframework.data.mongodb.core.query.Query;
 import javax.annotation.Resource;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @SpringBootTest
@@ -45,6 +47,7 @@ class ControlCenterApplicationTests {
             "860720010001125", "860720010002340", "860720010002025", "860720010001262", "860720010001419",
             "860720010001832", "860720010001593", "860720010008013", "860720010008702", "860720010004008",
             "860720010000079", "860720010000063", "860720010001818", "860720010000843", "860720010000112"};
+    private String[] dateArr = {"PG20200214", "PG20200215", "PG20200216", "PG20200217", "PG20200218", "PG20200219"};
     public final static DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
     @Test
@@ -52,19 +55,22 @@ class ControlCenterApplicationTests {
         log.info("开始mongodb测试");
         Query query = new Query(Criteria.where("pgImei").in(imeiArr)
                 .and("seconds").gte(120));
-        List<PGPackage> pgPackages = mongoTemplate.find(query, PGPackage.class, "PG20200213");
-        log.info("结果:", pgPackages);
-        StringBuilder sb = new StringBuilder("29个设备超过2分钟断线的情况:");
-        pgPackages.parallelStream().collect(Collectors.groupingBy(o -> o.getPgImei()))
-                .forEach((s, pgArr) -> {
-                    sb.append(s).append("断线").append(pgArr.size()).append("次。");
-                    pgArr.forEach(pgPackage -> {
-                        sb.append("时间").append(df.format(new Date(pgPackage.getTimestamp())))
-                                .append("时长").append(pgPackage.getSeconds()).append("秒\n");
+        List<String> strings = new ArrayList<>();
+        Stream.of(dateArr).forEach(ds -> {
+            List<PGPackage> pgPackages = mongoTemplate.find(query, PGPackage.class, ds);
+            StringBuilder sb = new StringBuilder("29个设备超过2分钟断线的情况:");
+            pgPackages.stream().collect(Collectors.groupingBy(o -> o.getPgImei()))
+                    .forEach((s, pgArr) -> {
+                        sb.append(s).append("断线").append(pgArr.size()).append("次。");
+                        pgArr.forEach(pgPackage -> {
+                            sb.append("时间").append(df.format(new Date(pgPackage.getTimestamp())))
+                                    .append("时长").append(pgPackage.getSeconds()).append("秒\n");
+                        });
                     });
-                });
-        log.info("输出结果:", sb);
-
+            sb.append("\n");
+            strings.add(sb.toString());
+        });
+        log.info("输出结果:", strings);
     }
 
 }

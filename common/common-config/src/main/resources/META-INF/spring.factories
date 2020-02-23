@@ -4,4 +4,5 @@ com.qdigo.ebike.commonconfig.configuration.OkHttpConfig,\
 com.qdigo.ebike.commonconfig.configuration.database.DatabaseConfiguration,\
 com.qdigo.ebike.commonconfig.configuration.database.PageableConfig,\
 com.qdigo.ebike.commonconfig.configuration.JacksonConfiguration,\
-com.qdigo.ebike.commonconfig.configuration.FeignDateFormatRegister
+com.qdigo.ebike.commonconfig.configuration.FeignDateFormatRegister,\
+com.qdigo.ebike.commonconfig.configuration.RabbitmqConfiguration

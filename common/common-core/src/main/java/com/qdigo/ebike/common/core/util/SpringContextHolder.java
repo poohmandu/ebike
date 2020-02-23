@@ -22,6 +22,7 @@ import org.springframework.beans.factory.DisposableBean;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationEvent;
+import org.springframework.core.env.Profiles;
 
 /**
  * Description:
@@ -49,7 +50,9 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
      */
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) {
-        SpringContextHolder.applicationContext = applicationContext;
+        if (SpringContextHolder.applicationContext == null) {
+            SpringContextHolder.applicationContext = applicationContext;
+        }
     }
 
     /**
@@ -82,11 +85,21 @@ public class SpringContextHolder implements ApplicationContextAware, DisposableB
      *
      * @param event
      */
-    public static void publishEvent(ApplicationEvent event) {
-        if (applicationContext == null) {
-            return;
-        }
+    public static <T extends ApplicationEvent> void publishEvent(T event) {
         applicationContext.publishEvent(event);
+    }
+
+    /**
+     *  当前环境
+     * @param profiles
+     * @return
+     */
+    public static boolean testEnv(String... profiles) {
+        return applicationContext.getEnvironment().acceptsProfiles(Profiles.of(profiles));
+    }
+
+    public static boolean isProd() {
+        return testEnv("prod");
     }
 
     /**

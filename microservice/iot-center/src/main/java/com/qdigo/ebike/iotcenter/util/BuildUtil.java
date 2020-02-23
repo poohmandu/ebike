@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.iotcenter.util;
 
-import com.qdigo.ebike.iotcenter.dto.mongo.PCPackage;
+import com.qdigo.ebike.api.domain.dto.iot.datagram.PCPackage;
 
 /**
  * Created by niezhao on 2017/6/24.

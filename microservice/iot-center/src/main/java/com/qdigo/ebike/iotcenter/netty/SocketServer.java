@@ -16,27 +16,19 @@
 
 package com.qdigo.ebike.iotcenter.netty;
 
-import com.qdigo.ebike.iotcenter.handler.GSMDataDecoder;
-import com.qdigo.ebike.iotcenter.handler.ParseBytesHandler;
+import com.qdigo.ebike.common.core.util.http.NetUtil;
+import com.qdigo.ebike.iotcenter.config.NettyServerProperties;
 import io.netty.bootstrap.ServerBootstrap;
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.channel.*;
-import io.netty.channel.nio.NioEventLoopGroup;
-import io.netty.channel.socket.SocketChannel;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import io.netty.handler.codec.DelimiterBasedFrameDecoder;
-import io.netty.util.ResourceLeakDetector;
 import io.netty.util.concurrent.Future;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
-import java.net.InetAddress;
-import java.net.NetworkInterface;
-import java.net.SocketException;
-import java.util.Enumeration;
+import javax.annotation.Resource;
 
 /**
  * Socket Server main class.
@@ -44,25 +36,26 @@ import java.util.Enumeration;
  * @author niezhao
  */
 @Slf4j
+@Component
 public class SocketServer {
 
-    public static final int PORT = 13078;
-    private static final int BIZGROUPSIZE = Runtime.getRuntime().availableProcessors() * 2;
-    private static final int BIZTHREADSIZE = 4;
-
-    //连接处理group
-    private static final EventLoopGroup bossGroup = new NioEventLoopGroup(BIZGROUPSIZE);
-    //事件处理group
-    private static final EventLoopGroup workerGroup = new NioEventLoopGroup(BIZTHREADSIZE);
-
-    public static String NET_IP = "";
+    @Resource(name = "bossGroup")
+    private EventLoopGroup bossGroup;
+    @Resource(name = "workerGroup")
+    private EventLoopGroup workerGroup;
+    @Resource
+    private NettyServerProperties nettyServerProperties;
+    @Resource
+    private IotChildChannelInitializer iotChildChannelInitializer;
 
     private ChannelFuture serverChannelFuture;
 
+    public final static String NET_IP = NetUtil.getIp();
 
     //@PostConstruct 用此注解会阻塞后续bean的实例化
     public void start() throws Exception {
-        ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
+        // 查看内存泄漏
+        //ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.ADVANCED);
 
         //EventLoopGroup bossGroup = new NioEventLoopGroup(); // (1)  // 通过nio方式来接收连接和处理连接
         //EventLoopGroup workerGroup = new NioEventLoopGroup();
@@ -73,41 +66,26 @@ public class SocketServer {
                     .channel(NioServerSocketChannel.class) // (3)  //设置nio类型的channel
                     //设置责任链路
                     //责任链模式是Netty的核心部分,每个处理者只负责自己有关的东西。然后将处理结果根据责任链传递下去
-                    .childHandler(new ChannelInitializer<SocketChannel>() { // (4)  //有连接到达时会创建一个channel
-                        @Override
-                        protected void initChannel(SocketChannel ch) {
-
-                            //pipeline管理channel中的Handler，在channel队列中添加一个handler来处理业务
-                            ByteBuf delimiter_$ = Unpooled.copiedBuffer("$".getBytes());
-                            ByteBuf delimiter_$_ = Unpooled.copiedBuffer("$_".getBytes());
-                            DelimiterBasedFrameDecoder decoder = new DelimiterBasedFrameDecoder(1024, delimiter_$);
-                            //DelimiterBasedFrameDecoder默认会去掉分隔符
-                            ch.pipeline()
-                                    //.addLast(new FixedLengthFrameDecoder(30))
-                                    .addLast(new GSMDataDecoder())
-                                    .addLast(new ParseBytesHandler());
-
-                        }
-                    })
+                    // (4)有连接到达时会创建一个channel
+                    .childHandler(iotChildChannelInitializer)
                     .option(ChannelOption.SO_BACKLOG, 1024) // (5)
                     .childOption(ChannelOption.SO_KEEPALIVE, true); // (6)
 
             // Bind and start to accept incoming connections.
-            ChannelFuture f = b.bind(PORT).sync(); // (7)  //配置完成，开始绑定server，通过调用sync同步方法阻塞直到绑定成功
-            channel = f.channel();
-            SocketServer.NET_IP = SocketServer.getIp();
-            logger.info("server netip :" + SocketServer.NET_IP);
-            logger.info("server is running on port :" + SocketServer.PORT);
+            // (7)  //配置完成，开始绑定server，通过调用sync同步方法阻塞直到绑定成功
+            serverChannelFuture = b.bind(nettyServerProperties.getPort()).sync();
+
+            log.info("netty server 已启动");
 
             // Wait until the server socket is closed.
             // In this example, this does not happen, but you can do that to
             // gracefully
             // shut down your server.
-
-            f.channel().closeFuture().sync();
+            //这样导致springboot主线程阻塞，无法继续加载剩下的bean
+            //serverChannelFuture.channel().closeFuture().sync();
 
         } finally {
-            logger.info("server socket is closed");
+            log.info("netty server被关闭");
             workerGroup.shutdownGracefully();
             bossGroup.shutdownGracefully();
         }
@@ -139,48 +117,6 @@ public class SocketServer {
             workerGroupFuture.await();
         } catch (InterruptedException e) {
             log.error("销毁资源异常", e);
-        }
-    }
-
-    /**
-     * get net ip of current server.
-     *
-     * @return ip address
-     * @throws SocketException
-     */
-    private static String getIp() throws SocketException {
-
-        String localip = null; // 本地IP，如果没有配置外网IP则返回它
-        String netip = null; // 外网IP
-
-        Enumeration<NetworkInterface> netInterfaces = NetworkInterface.getNetworkInterfaces();
-        InetAddress ip;
-        boolean finded = false;// 是否找到外网IP
-
-        while (netInterfaces.hasMoreElements() && !finded) {
-
-            NetworkInterface ni = netInterfaces.nextElement();
-            Enumeration<InetAddress> address = ni.getInetAddresses();
-
-            while (address.hasMoreElements()) {
-
-                ip = address.nextElement();
-
-                if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress() && !ip.getHostAddress().contains(":")) { // 外网IP
-                    netip = ip.getHostAddress();
-                    finded = true;
-                    break;
-                } else if (ip.isSiteLocalAddress() && !ip.isLoopbackAddress()
-                        && !ip.getHostAddress().contains(":")) { // 内网IP
-                    localip = ip.getHostAddress();
-                }
-            }
-        }
-
-        if (netip != null && !"".equals(netip)) {
-            return netip;
-        } else {
-            return localip;
         }
     }
 }

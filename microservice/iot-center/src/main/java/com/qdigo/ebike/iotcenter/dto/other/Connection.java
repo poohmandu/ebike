@@ -16,9 +16,14 @@
 
 package com.qdigo.ebike.iotcenter.dto.other;
 
+import lombok.Builder;
+import lombok.Data;
+
 /**
  * Created by niezhao on 2018/1/2.
  */
+@Builder
+@Data
 public class Connection {
 
     private String imei;
@@ -27,30 +32,4 @@ public class Connection {
 
     private long timestamp;
 
-    public String getImei() {
-        return imei;
-    }
-
-    public Connection setImei(String imei) {
-        this.imei = imei;
-        return this;
-    }
-
-    public boolean isConnected() {
-        return connected;
-    }
-
-    public Connection setConnected(boolean connected) {
-        this.connected = connected;
-        return this;
-    }
-
-    public long getTimestamp() {
-        return timestamp;
-    }
-
-    public Connection setTimestamp(long timestamp) {
-        this.timestamp = timestamp;
-        return this;
-    }
 }

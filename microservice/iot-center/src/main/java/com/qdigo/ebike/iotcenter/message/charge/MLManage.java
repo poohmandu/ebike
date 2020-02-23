@@ -16,52 +16,60 @@
 
 package com.qdigo.ebike.iotcenter.message.charge;
 
-import com.qdigo.ebike.iotcenter.netty.SocketServer;
 import com.qdigo.ebike.iotcenter.constants.ChargeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.baseStation.ml.MLPacketDto;
 import com.qdigo.ebike.iotcenter.dto.http.req.charge.MLReqDto;
 import com.qdigo.ebike.iotcenter.exception.IotServiceBizException;
 import com.qdigo.ebike.iotcenter.exception.IotServiceExceptionEnum;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
+import com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg;
 import com.qdigo.ebike.iotcenter.util.DateUtil;
 import com.qdigo.ebike.iotcenter.util.HttpClient;
-import com.qdigo.ebike.iotcenter.util.RedisUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg.MLStratrgy;
 
-public class MLManage {
-    private Logger logger = LoggerFactory.getLogger(MLManage.class);
+@Slf4j
+@Service(MLStratrgy)
+public class MLManage implements PackageManageStrateyg<MLPacketDto> {
 
     private static final String url = "http://api.qdigo.net/v1.0/chargerProtocol/ML";
-//	private static final String url = "http://192.168.0.101/v1.0/chargerProtocol/ML";
+    //	private static final String url = "http://192.168.0.101/v1.0/chargerProtocol/ML";
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
 
     public void sendMsg(MLPacketDto mlPacketDto) {
         try {
             MLReqDto pcReqDto = buildMLReqDto(mlPacketDto);
             HttpClient.sendMsg(url, pcReqDto);
         } catch (Exception e) {
-            logger.error("发送上行ML包http请求异常 header0:" + mlPacketDto.getHeader0() + ",header1:" + mlPacketDto.getHeader1() + ",imei:" + mlPacketDto.getImei(), e);
+            log.error("发送上行ML包http请求异常 header0:" + mlPacketDto.getHeader0() + ",header1:" + mlPacketDto.getHeader1() + ",imei:" + mlPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_ML_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_ML_HTTP_ERROR.getMsg());
         }
-
     }
 
-    public void saveMLInfo(MLPacketDto mlPacketDto) {
+    public void saveInfo(MLPacketDto mlPacketDto) {
         try {
-            RedisUtil redisUtil = new RedisUtil();
+            //RedisUtil redisUtil = new RedisUtil();
             String imei = String.valueOf(mlPacketDto.getImei());
             String model = imei.substring(imei.length() - 1);
             String monitorAllBikeKey = ChargeStatusEnum.MONITOR_ALLCHARGERPILE_STATUS.getChargeStatus() + model;
             String motitorValue = ChargeStatusEnum.MONITOR_CHARGERPILE_STATUS.getChargeStatus() + imei;
-            redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            //redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            redisTemplate.opsForHash().put(monitorAllBikeKey, imei, motitorValue);
             Map<String, String> bikePGMaP = getChargeStatus(mlPacketDto);
-            redisUtil.hmSet(motitorValue, bikePGMaP);
+            //redisUtil.hmSet(motitorValue, bikePGMaP);
+            redisTemplate.opsForHash().putAll(motitorValue, bikePGMaP);
         } catch (Exception e) {
-            logger.error("保存上行ML包到缓存异常 header0:" + mlPacketDto.getHeader0() + ",header1:" + mlPacketDto.getHeader1() + ",imei:" + mlPacketDto.getImei(), e);
+            log.error("保存上行ML包到缓存异常 header0:" + mlPacketDto.getHeader0() + ",header1:" + mlPacketDto.getHeader1() + ",imei:" + mlPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SAVE_UP_ML_REDIS_ERROR.getCode(), IotServiceExceptionEnum.SAVE_UP_ML_REDIS_ERROR.getMsg());
         }
     }

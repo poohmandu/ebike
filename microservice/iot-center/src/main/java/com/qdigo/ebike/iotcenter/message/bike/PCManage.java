@@ -16,49 +16,63 @@
 
 package com.qdigo.ebike.iotcenter.message.bike;
 
-import com.qdigo.ebike.iotcenter.netty.SocketServer;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.gprs.pc.PCPacketDto;
 import com.qdigo.ebike.iotcenter.dto.http.req.gprs.PCReqDto;
 import com.qdigo.ebike.iotcenter.exception.IotServiceBizException;
 import com.qdigo.ebike.iotcenter.exception.IotServiceExceptionEnum;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
+import com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg;
 import com.qdigo.ebike.iotcenter.util.DateUtil;
 import com.qdigo.ebike.iotcenter.util.HttpClient;
-import com.qdigo.ebike.iotcenter.util.RedisUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg.PCStratrgy;
 
-public class PCManage {
-    private Logger logger = LoggerFactory.getLogger(PCManage.class);
+@Slf4j
+@Service(PCStratrgy)
+public class PCManage implements PackageManageStrateyg<PCPacketDto> {
+
     private static final String url = "http://api.qdigo.net/v1.0/bikeProtocol/command";
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
 
     public void sendMsg(PCPacketDto pcPacketDto) {
         try {
             PCReqDto pcReqDto = buildPGReqDto(pcPacketDto);
             HttpClient.sendMsg(url, pcReqDto);
         } catch (Exception e) {
-            logger.error("发送上行PC包http请求异常 header0:" + pcPacketDto.getHeader0() + ",header1:" + pcPacketDto.getHeader1() + ",imei:" + pcPacketDto.getImei(), e);
+            log.error("发送上行PC包http请求异常 header0:" + pcPacketDto.getHeader0() + ",header1:" + pcPacketDto.getHeader1() + ",imei:" + pcPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_PC_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_PC_HTTP_ERROR.getMsg());
         }
     }
 
+    public void saveInfo(PCPacketDto dataPackDto) {
+        
+    }
+
     public void saveUpPCInfo(PCPacketDto pcPacketDto) {
         try {
-            RedisUtil redisUtil = new RedisUtil();
+            //RedisUtil redisUtil = new RedisUtil();
             String imei = String.valueOf(pcPacketDto.getImei());
             String model = imei.substring(imei.length() - 1);
             String monitorAllBikeKey = BikeStatusEnum.MONITOR_ALLBIKE_STATUS.getBikeStatus() + model;
             String motitorValue = BikeStatusEnum.MONITOR_BIKE_STATUS.getBikeStatus() + imei;
-            redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            //redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            redisTemplate.opsForHash().put(monitorAllBikeKey, imei, motitorValue);
             Map<String, String> bikePCMaP = getBikeUpStatus(pcPacketDto);
-            redisUtil.hmSet(motitorValue, bikePCMaP);
+            //redisUtil.hmSet(motitorValue, bikePCMaP);
+            redisTemplate.opsForHash().putAll(motitorValue, bikePCMaP);
         } catch (Exception e) {
-            logger.error("保存上行pc包到缓存异常异常 header0:" + pcPacketDto.getHeader0() + ",header1:" + pcPacketDto.getHeader1() + ",imei:" + pcPacketDto.getImei(), e);
+            log.error("保存上行pc包到缓存异常异常 header0:" + pcPacketDto.getHeader0() + ",header1:" + pcPacketDto.getHeader1() + ",imei:" + pcPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_PC_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_PC_HTTP_ERROR.getMsg());
         }
 
@@ -76,18 +90,19 @@ public class PCManage {
 
     public void saveDownPCInfo(PCPacketDto pcPacketDto) {
         try {
-            RedisUtil redisUtil = new RedisUtil();
+            //RedisUtil redisUtil = new RedisUtil();
             String imei = String.valueOf(pcPacketDto.getImei());
             String model = imei.substring(imei.length() - 1);
             String monitorAllBikeKey = BikeStatusEnum.MONITOR_ALLBIKE_STATUS.getBikeStatus() + model;
             String motitorValue = BikeStatusEnum.MONITOR_BIKE_STATUS.getBikeStatus() + imei;
-            redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            //redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            redisTemplate.opsForHash().put(monitorAllBikeKey, imei, motitorValue);
             Map<String, String> bikePCMaP = getBikeDownStatus(pcPacketDto);
-            redisUtil.hmSet(motitorValue, bikePCMaP);
+            //redisUtil.hmSet(motitorValue, bikePCMaP);
+            redisTemplate.opsForHash().putAll(motitorValue, bikePCMaP);
         } catch (Exception e) {
-            logger.error("保存下行pc包到缓存异常异常 header0:" + pcPacketDto.getHeader0() + ",header1:" + pcPacketDto.getHeader1() + ",imei:" + pcPacketDto.getImei(), e);
+            log.error("保存下行pc包到缓存异常异常 header0:" + pcPacketDto.getHeader0() + ",header1:" + pcPacketDto.getHeader1() + ",imei:" + pcPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SAVE_DOWN_PC_REDIS_ERROR.getCode(), IotServiceExceptionEnum.SAVE_DOWN_PC_REDIS_ERROR.getMsg());
-
         }
 
     }

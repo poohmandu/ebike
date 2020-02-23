@@ -21,8 +21,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.ByteToMessageDecoder;
 import io.netty.util.ByteProcessor;
 import io.netty.util.ReferenceCountUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import java.util.Arrays;
 import java.util.List;
@@ -31,11 +30,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by niezhao on 2017/8/17.
  */
+@Slf4j
 public final class GSMDataDecoder extends ByteToMessageDecoder {
 
-    private final static Logger log = LoggerFactory.getLogger(GSMDataDecoder.class);
     private final static AtomicInteger count = new AtomicInteger(0);
-
     private final static ByteProcessor FIND_END = new ByteProcessor.IndexOfProcessor((byte) '$');
 
     @Override
@@ -74,7 +72,7 @@ public final class GSMDataDecoder extends ByteToMessageDecoder {
                 || ('M' == header0 &&
                 ('D' == header1 || 'L' == header1 || 'C' == header1 || 'X' == header1));
         if (!headerOk) {
-            //可拓展: 再依次寻找'P' 记录位置，将它作为指针0，再解析一次
+            //todo 可拓展: 再依次寻找'P' 记录位置，将它作为指针0，再解析一次
             log.info("检测到包头(header)不合法,为{},{}", header0, header1);
             return null;
         } else {
@@ -115,30 +113,6 @@ public final class GSMDataDecoder extends ByteToMessageDecoder {
             }
         }
 
-    }
-
-
-    private static int indexOf(ByteBuf haystack, ByteBuf needle) {
-        for (int i = haystack.readerIndex(); i < haystack.writerIndex(); i++) {
-            int haystackIndex = i;
-            int needleIndex;
-            for (needleIndex = 0; needleIndex < needle.capacity(); needleIndex++) {
-                if (haystack.getByte(haystackIndex) != needle.getByte(needleIndex)) {
-                    break;
-                } else {
-                    haystackIndex++;
-                    if (haystackIndex == haystack.writerIndex() &&
-                            needleIndex != needle.capacity() - 1) {
-                        return -1;
-                    }
-                }
-            }
-            if (needleIndex == needle.capacity()) {
-                // Found the needle from the haystack!
-                return i - haystack.readerIndex();//分隔后第一个sub frame的长度
-            }
-        }
-        return -1;
     }
 
 

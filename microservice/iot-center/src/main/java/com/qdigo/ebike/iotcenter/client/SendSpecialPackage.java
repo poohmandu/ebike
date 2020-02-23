@@ -16,11 +16,11 @@
 
 package com.qdigo.ebike.iotcenter.client;
 
-import com.qdigo.ebike.iotcenter.dto.mongo.PCPackage;
+import com.qdigo.ebike.api.domain.dto.iot.datagram.PCPackage;
+import com.qdigo.ebike.common.core.util.SpringContextHolder;
 import com.qdigo.ebike.iotcenter.util.BuildUtil;
 import com.qdigo.ebike.iotcenter.util.ByteArrayToNumber;
 import com.qdigo.ebike.iotcenter.util.SocketChannelMap;
-import com.qdigo.ebike.iotcenter.util.SpringUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.slf4j.Logger;
@@ -37,7 +37,7 @@ public class SendSpecialPackage {
     private static Logger logger = LoggerFactory.getLogger(SendDownPackage.class);
 
     private static String result(byte[] bytes) {
-        RabbitTemplate rabbitTemplate = SpringUtil.getBean(RabbitTemplate.class);
+        RabbitTemplate rabbitTemplate = SpringContextHolder.getBean(RabbitTemplate.class);
         final PCPackage pcPackage = BuildUtil.buildPC(bytes);
         return (String) rabbitTemplate.convertSendAndReceive("pc", "up.pc.special", pcPackage);
     }

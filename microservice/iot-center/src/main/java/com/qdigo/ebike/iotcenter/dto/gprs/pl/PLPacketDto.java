@@ -19,73 +19,20 @@ package com.qdigo.ebike.iotcenter.dto.gprs.pl;
 
 import com.qdigo.ebike.iotcenter.dto.DatagramPacketBasicDto;
 import com.qdigo.ebike.iotcenter.dto.gprs.GPRSSubStatus;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 
-/**
- * PL ����Ӧ�Ĳ���
- * @author yudengqiu
- *
- */
+@EqualsAndHashCode(callSuper = true)
+@Data
 public class PLPacketDto extends DatagramPacketBasicDto {
 
 	private static final long serialVersionUID = 2152662457803329906L;
-	//���ݰ��ĳ���
+
 	private int length;
-	//λ��������
 	private int lac;
-	//��վС�����
 	private int cellid;
-	// �ź�ǿ��
 	private short signal;
-	// ��״̬ --��ÿһbit����һ��״̬
 	private byte status;
-	
 	private GPRSSubStatus pgSubStatus;
-	
-	
-	
-	public int getLength() {
-		return length;
-	}
-	public void setLength(int length) {
-		this.length = length;
-	}
-	public int getLac() {
-		return lac;
-	}
-	public void setLac(int lac) {
-		this.lac = lac;
-	}
-	public int getCellid() {
-		return cellid;
-	}
-	public void setCellid(int cellid) {
-		this.cellid = cellid;
-	}
-	public short getSignal() {
-		return signal;
-	}
-	public void setSignal(short signal) {
-		this.signal = signal;
-	}
-	public byte getStatus() {
-		return status;
-	}
-	public void setStatus(byte status) {
-		this.status = status;
-	}
-	public GPRSSubStatus getPgSubStatus() {
-		return pgSubStatus;
-	}
-	public void setPgSubStatus(GPRSSubStatus pgSubStatus) {
-		this.pgSubStatus = pgSubStatus;
-	}
-	@Override
-	public String toString() {
-		return "PLPacketDto [length=" + length + ", getHeader1()=" + getHeader1() + ", getImei()=" + getImei()+ ", lac=" + lac + ", cellid=" + cellid + ", signal=" + signal
-				+ ", status=" + status + ", pgSubStatus=" + pgSubStatus.toString() + ", getHeader0()=" + getHeader0()
-				 + "]";
-	}
-	
-	
-	
+
 }

@@ -17,10 +17,10 @@
 package com.qdigo.ebike.controlcenter.domain.entity.mongo;
 
 import lombok.ToString;
-import org.hibernate.validator.constraints.NotBlank;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 

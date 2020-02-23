@@ -16,28 +16,35 @@
 
 package com.qdigo.ebike.iotcenter.handler;
 
-import com.qdigo.ebike.iotcenter.config.ConfigConst;
+import com.qdigo.ebike.common.core.util.SpringContextHolder;
 import com.qdigo.ebike.iotcenter.dto.other.Connection;
-import com.qdigo.ebike.iotcenter.util.*;
+import com.qdigo.ebike.iotcenter.service.ByteHandlerService;
+import com.qdigo.ebike.iotcenter.util.SocketChannelMap;
+import com.qdigo.ebike.iotcenter.util.StandardThreadExecutor;
+import io.netty.channel.ChannelHandler.Sharable;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.handler.timeout.IdleState;
+import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.util.ReferenceCountUtil;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.stereotype.Component;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.Date;
+import javax.inject.Inject;
 import java.util.concurrent.Executor;
 
+@Slf4j
+@Component
+@Sharable
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class ParseBytesHandler extends ChannelInboundHandlerAdapter {
 
-    private final static Logger log = LoggerFactory.getLogger(ParseBytesHandler.class);
-    private RabbitTemplate rabbit = SpringUtil.getBean(RabbitTemplate.class);
-    private final static DateFormat df = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+    private final RabbitTemplate rabbit;
+    private final ByteHandlerService byteHandlerService;
+
     //自己的业务线程池
     private final static Executor executor = new StandardThreadExecutor();
 
@@ -46,68 +53,24 @@ public class ParseBytesHandler extends ChannelInboundHandlerAdapter {
     //github: https://github.com/dempeZheng/forest
 
     /**
-     * 原始数据到redis
+     * @author niezhao
      *
-     * @param bytes 原始数据
+     * @description iot-center的主线程
+     *
+     * @date 2020/2/19 10:11 PM
+     * @param msg
+     * @param ctx
+     * @return void
+     *
      */
-    private void persist(byte[] bytes) {
-        try {
-            int imei = ByteArrayToNumber.byteArrayToInt(bytes, 2);
-            final String byteStr = Arrays.toString(bytes);
-            final Date date = new Date();
-            final String key = "socket:log:" + DateUtil.format(date) + ":" + imei;
-            RedisUtil redisUtil = new RedisUtil();
-            redisUtil.opsForJedis(jedis -> {
-                if (!jedis.exists(key)) {
-                    jedis.hset(key, df.format(new Date()), byteStr);
-                    jedis.expire(key, 24 * 60 * 60);
-                } else {
-                    jedis.hset(key, df.format(new Date()), byteStr);
-                }
-            });
-        } catch (Exception e) {
-            log.error("原始日志保存在redis失败:{}", e.getMessage());
-        }
-    }
-
-    private void task(byte[] bytes, ChannelHandlerContext ctx) {
-        long start = System.currentTimeMillis();
-
-        this.persist(bytes);//持久化
-        ParseByteUtil.iteratorBytes(bytes, ctx);
-
-        long end = System.currentTimeMillis();
-        if (end - start > 200) {
-            String id = ctx.channel().id().asLongText();
-            String imei = SocketChannelMap.getImei(id);
-            log.info("id:({})<==>imei:({}) socket完成一次数据解析用时:{}毫秒", id, imei, end - start);
-        }
-    }
-
-
     @Override
     public void channelRead(ChannelHandlerContext ctx, Object msg) {
         try {
-            long start = System.currentTimeMillis();
             if (msg instanceof byte[]) {
                 byte[] bytes = (byte[]) msg;
-                executor.execute(() -> {
-                    try {
-                        this.task(bytes, ctx);
-                    } catch (Throwable e) {
-                        String id = ctx.channel().id().asLongText();
-                        String imei = SocketChannelMap.getImei(id);
-                        log.error("id:({})<==>imei:({}) socket数据解析时发生错误{}", id, imei, e);
-                    }
-                });
+                executor.execute(() -> byteHandlerService.parse(bytes, ctx));
             } else {
                 log.error("传入的msg类型错误");
-            }
-            long end = System.currentTimeMillis();
-            if (end - start > 200) {
-                String id = ctx.channel().id().asLongText();
-                String imei = SocketChannelMap.getImei(id);
-                log.info("id:({})<==>imei:({}) socket完成一次数据解析用时:{}毫秒", id, imei, end - start);
             }
         } finally {
             ReferenceCountUtil.release(msg); // (2)
@@ -149,11 +112,28 @@ public class ParseBytesHandler extends ChannelInboundHandlerAdapter {
         if (!StringUtils.startsWith(host, "/100.116")) {
             log.info("id:({})<==>imei:({}) (channelInactive)socket断开连接:{}", id, imei, ctx.channel().remoteAddress());
         }
-        if (imei != null && !ConfigConst.env.equals("test")) {
-            Connection connection = new Connection().setConnected(false)
-                    .setImei(imei).setTimestamp(System.currentTimeMillis());
+        if (imei != null && SpringContextHolder.isProd()) {
+            Connection connection = Connection.builder().connected(false)
+                    .imei(imei).timestamp(System.currentTimeMillis()).build();
             rabbit.convertAndSend("device.connect", connection);
         }
         super.channelInactive(ctx);
+    }
+
+    @Override
+    public void userEventTriggered(ChannelHandlerContext ctx, Object evt) throws Exception {
+        //超时事件
+        if (evt instanceof IdleStateEvent) {
+            IdleStateEvent idleEvent = (IdleStateEvent) evt;
+            if (idleEvent.state() == IdleState.READER_IDLE) { //读
+                ctx.channel().close();
+                String imei = SocketChannelMap.getImei(ctx.channel().id().asLongText());
+                log.debug("{}设备断线", imei);
+            } else if (idleEvent.state() == IdleState.WRITER_IDLE) {//写
+                ctx.channel().close();
+            } else if (idleEvent.state() == IdleState.ALL_IDLE) {//全部
+            }
+        }
+        super.userEventTriggered(ctx, evt);
     }
 }

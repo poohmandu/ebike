@@ -16,57 +16,61 @@
 
 package com.qdigo.ebike.iotcenter.message.bike;
 
-import com.qdigo.ebike.iotcenter.netty.SocketServer;
+import com.qdigo.ebike.api.domain.dto.iot.datagram.PHPackage;
+import com.qdigo.ebike.common.core.constants.MQ;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.gprs.ph.PHPacketDto;
 import com.qdigo.ebike.iotcenter.dto.http.req.gprs.PHReqDto;
-import com.qdigo.ebike.iotcenter.dto.mongo.PHPackage;
 import com.qdigo.ebike.iotcenter.exception.IotServiceBizException;
 import com.qdigo.ebike.iotcenter.exception.IotServiceExceptionEnum;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
+import com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg;
 import com.qdigo.ebike.iotcenter.util.DateUtil;
-import com.qdigo.ebike.iotcenter.util.RedisUtil;
-import com.qdigo.ebike.iotcenter.util.SpringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg.PHStratrgy;
 
-public class PHManage {
-    private Logger logger = LoggerFactory.getLogger(PHManage.class);
-    private static final String url = "http://api.qdigo.net/v1.0/bikeProtocol/heart";
-//  private static final String url = "http://192.168.0.101/v1.0/bikeProtocol/heart";
+@Slf4j
+@Service(PHStratrgy)
+public class PHManage implements PackageManageStrateyg<PHPacketDto> {
 
-    private RabbitTemplate rabbit = SpringUtil.getBean(RabbitTemplate.class);
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
 
     public void sendMsg(PHPacketDto phPacketDto) {
         try {
             PHReqDto phReqDto = buildPHReqDto(phPacketDto);
             PHPackage phPackage = buildPHPackage(phReqDto);
-            //HttpClient.sendMsg(url, phReqDto);
-            rabbit.convertAndSend("ph", "up.ph", phPackage);
+            rabbitTemplate.convertAndSend(MQ.Topic.Exchange.ph, MQ.Topic.Key.up_ph, phPackage);
         } catch (Exception e) {
-            logger.error("发送上行PH包http请求异常 header0:" + phPacketDto.getHeader0() + ",header1:" + phPacketDto.getHeader1() + ",imei:" + phPacketDto.getImei(), e);
+            log.error("发送上行PH包http请求异常 header0:" + phPacketDto.getHeader0() + ",header1:" + phPacketDto.getHeader1() + ",imei:" + phPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_PH_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_PH_HTTP_ERROR.getMsg());
         }
 
     }
 
-    public void savePHInfo(PHPacketDto phPacketDto) {
+    public void saveInfo(PHPacketDto phPacketDto) {
         try {
-            RedisUtil redisUtil = new RedisUtil();
             String imei = String.valueOf(phPacketDto.getImei());
             String model = imei.substring(imei.length() - 1);
             String monitorAllBikeKey = BikeStatusEnum.MONITOR_ALLBIKE_STATUS.getBikeStatus() + model;
             String motitorValue = BikeStatusEnum.MONITOR_BIKE_STATUS.getBikeStatus() + imei;
-            redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            redisTemplate.opsForHash().put(monitorAllBikeKey, imei, motitorValue);
             Map<String, String> bikePHMaP = getBikeStatus(phPacketDto);
-            redisUtil.hmSet(motitorValue, bikePHMaP);
+            redisTemplate.opsForHash().putAll(motitorValue, bikePHMaP);
         } catch (Exception e) {
-            logger.error("保存上行PH包到缓存异常异常 header0:" + phPacketDto.getHeader0() + ",header1:" + phPacketDto.getHeader1() + ",imei:" + phPacketDto.getImei(), e);
+            log.error("保存上行PH包到缓存异常异常 header0:" + phPacketDto.getHeader0() + ",header1:" + phPacketDto.getHeader1() + ",imei:" + phPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SAVE_UP_PH_REDIS_ERROR.getCode(), IotServiceExceptionEnum.SAVE_UP_PH_REDIS_ERROR.getMsg());
         }
 
@@ -135,7 +139,7 @@ public class PHManage {
         phReqDto.setPhError(phPacketDto.getGprsSubStatus().getTroubleStatus());
 
         phReqDto.setPhMachineError(phPacketDto.getPhErrorCode().getPhMachineError());
-        phReqDto.setPhBrakeErroe(phPacketDto.getPhErrorCode().getPhBrakeErroe());
+        phReqDto.setPhBrakeErroe(phPacketDto.getPhErrorCode().getPhBrakeError());
         phReqDto.setPhControlError(phPacketDto.getPhErrorCode().getPhControlError());
         phReqDto.setPhHandleBarError(phPacketDto.getPhErrorCode().getPhHandleBarError());
         return phReqDto;

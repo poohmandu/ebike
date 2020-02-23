@@ -16,57 +16,62 @@
 
 package com.qdigo.ebike.iotcenter.message.bike;
 
-import com.qdigo.ebike.iotcenter.netty.SocketServer;
+import com.qdigo.ebike.api.domain.dto.iot.datagram.PLPackage;
+import com.qdigo.ebike.common.core.constants.MQ;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.gprs.pl.PLPacketDto;
 import com.qdigo.ebike.iotcenter.dto.http.req.gprs.PLReqDto;
-import com.qdigo.ebike.iotcenter.dto.mongo.PLPackage;
 import com.qdigo.ebike.iotcenter.exception.IotServiceBizException;
 import com.qdigo.ebike.iotcenter.exception.IotServiceExceptionEnum;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
+import com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg;
 import com.qdigo.ebike.iotcenter.util.DateUtil;
-import com.qdigo.ebike.iotcenter.util.RedisUtil;
-import com.qdigo.ebike.iotcenter.util.SpringUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg.PLStratrgy;
 
-public class PLManage {
-    private Logger logger = LoggerFactory.getLogger(PLManage.class);
-    private static final String url = "http://api.qdigo.net/v1.0/bikeProtocol/GPSLocation";
-//	private static final String url = "http://192.168.0.101/v1.0/bikeProtocol/GPSLocation";
+@Slf4j
+@Service(PLStratrgy)
+public class PLManage implements PackageManageStrateyg<PLPacketDto> {
+    @Resource
+    private RabbitTemplate rabbitTemplate;
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
 
-    private RabbitTemplate rabbit = SpringUtil.getBean(RabbitTemplate.class);
 
     public void sendMsg(PLPacketDto plPacketDto) {
         try {
             PLReqDto plReqDto = buildPLReqDto(plPacketDto);
             PLPackage plPackage = buildPLPackage(plReqDto);
-            //HttpClient.sendMsg(url, plReqDto);
-            rabbit.convertAndSend("pl", "up.pl", plPackage);
+            rabbitTemplate.convertAndSend(MQ.Topic.Exchange.pl, MQ.Topic.Key.up_pl, plPackage);
         } catch (Exception e) {
-            logger.error("发送上行PL包http请求异常 header0:" + plPacketDto.getHeader0() + ",header1:" + plPacketDto.getHeader1() + ",imei:" + plPacketDto.getImei(), e);
+            log.error("发送上行PL包http请求异常 header0:" + plPacketDto.getHeader0() + ",header1:" + plPacketDto.getHeader1() + ",imei:" + plPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_PL_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_PL_HTTP_ERROR.getMsg());
         }
 
     }
 
-    public void savePLInfo(PLPacketDto plPacketDto) {
+    public void saveInfo(PLPacketDto plPacketDto) {
         try {
-            RedisUtil redisUtil = new RedisUtil();
             String imei = String.valueOf(plPacketDto.getImei());
             String model = imei.substring(imei.length() - 1);
             String monitorAllBikeKey = BikeStatusEnum.MONITOR_ALLBIKE_STATUS.getBikeStatus() + model;
             String motitorValue = BikeStatusEnum.MONITOR_BIKE_STATUS.getBikeStatus() + imei;
-            redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            //redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            redisTemplate.opsForHash().put(monitorAllBikeKey, imei, motitorValue);
             Map<String, String> bikePLMaP = getBikeStatus(plPacketDto);
-            redisUtil.hmSet(motitorValue, bikePLMaP);
+            //redisUtil.hmSet(motitorValue, bikePLMaP);
+            redisTemplate.opsForHash().putAll(motitorValue, bikePLMaP);
         } catch (Exception e) {
-            logger.error("保存上行PL包到缓存异常异常 header0:" + plPacketDto.getHeader0() + ",header1:" + plPacketDto.getHeader1() + ",imei:" + plPacketDto.getImei(), e);
+            log.error("保存上行PL包到缓存异常异常 header0:" + plPacketDto.getHeader0() + ",header1:" + plPacketDto.getHeader1() + ",imei:" + plPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SAVE_UP_PL_REDIS_ERROR.getCode(), IotServiceExceptionEnum.SAVE_UP_PL_REDIS_ERROR.getMsg());
         }
     }

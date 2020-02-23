@@ -16,67 +16,83 @@
 
 package com.qdigo.ebike.iotcenter.message.charge;
 
-import com.qdigo.ebike.iotcenter.netty.SocketServer;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.constants.ChargeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.baseStation.mc.MCPacketDto;
 import com.qdigo.ebike.iotcenter.dto.http.req.charge.MCReqDto;
 import com.qdigo.ebike.iotcenter.exception.IotServiceBizException;
 import com.qdigo.ebike.iotcenter.exception.IotServiceExceptionEnum;
+import com.qdigo.ebike.iotcenter.netty.SocketServer;
+import com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg;
 import com.qdigo.ebike.iotcenter.util.DateUtil;
 import com.qdigo.ebike.iotcenter.util.HttpClient;
-import com.qdigo.ebike.iotcenter.util.RedisUtil;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg.MCStratrgy;
 
-public class MCManage {
-    private Logger logger = LoggerFactory.getLogger(MCManage.class);
+@Slf4j
+@Service(MCStratrgy)
+public class MCManage implements PackageManageStrateyg<MCPacketDto> {
+
     private static final String url = "http://api.qdigo.net/v1.0/chargerProtocol/MC";
-//	private static final String url = "http://192.168.0.101/v1.0/chargerProtocol/MC";
+    @Resource
+    private RedisTemplate<String, String> redisTemplate;
+
 
     public void sendMsg(MCPacketDto mcPacketDto) {
         try {
             MCReqDto mcReqDto = buildPGReqDto(mcPacketDto);
             HttpClient.sendMsg(url, mcReqDto);
         } catch (Exception e) {
-            logger.error("发送上行MC包http请求异常 header0:" + mcPacketDto.getHeader0() + ",header1:" + mcPacketDto.getHeader1() + ",imei:" + mcPacketDto.getImei(), e);
+            log.error("发送上行MC包http请求异常 header0:" + mcPacketDto.getHeader0() + ",header1:" + mcPacketDto.getHeader1() + ",imei:" + mcPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_MD_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_MD_HTTP_ERROR.getMsg());
         }
     }
 
+    @Override
+    public void saveInfo(MCPacketDto dataPackDto) {
+
+    }
+
     public void saveUpMCInfo(MCPacketDto mcPacketDto) {
         try {
-            RedisUtil redisUtil = new RedisUtil();
+            //RedisUtil redisUtil = new RedisUtil();
             String imei = String.valueOf(mcPacketDto.getImei());
             String model = imei.substring(imei.length() - 1);
             String monitorAllBikeKey = ChargeStatusEnum.MONITOR_ALLCHARGERPILE_STATUS.getChargeStatus() + model;
             String motitorValue = ChargeStatusEnum.MONITOR_CHARGERPILE_STATUS.getChargeStatus() + imei;
-            redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            //redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            redisTemplate.opsForHash().put(monitorAllBikeKey, imei, motitorValue);
             Map<String, String> bikePGMaP = getChargeUpStatus(mcPacketDto);
-            redisUtil.hmSet(motitorValue, bikePGMaP);
+            //redisUtil.hmSet(motitorValue, bikePGMaP);
+            redisTemplate.opsForHash().putAll(motitorValue, bikePGMaP);
         } catch (Exception e) {
-            logger.error("保存上行MC包到缓存异常 header0:" + mcPacketDto.getHeader0() + ",header1:" + mcPacketDto.getHeader1() + ",imei:" + mcPacketDto.getImei(), e);
+            log.error("保存上行MC包到缓存异常 header0:" + mcPacketDto.getHeader0() + ",header1:" + mcPacketDto.getHeader1() + ",imei:" + mcPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SAVE_UP_MC_REDIS_ERROR.getCode(), IotServiceExceptionEnum.SAVE_UP_MC_REDIS_ERROR.getMsg());
         }
     }
 
     public void saveDownMCInfo(MCPacketDto mcPacketDto) {
         try {
-            RedisUtil redisUtil = new RedisUtil();
+            //RedisUtil redisUtil = new RedisUtil();
             String imei = String.valueOf(mcPacketDto.getImei());
             String model = imei.substring(imei.length() - 1);
             String monitorAllBikeKey = ChargeStatusEnum.MONITOR_ALLCHARGERPILE_STATUS.getChargeStatus() + model;
             String motitorValue = ChargeStatusEnum.MONITOR_CHARGERPILE_STATUS.getChargeStatus() + imei;
-            redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            //redisUtil.hset(monitorAllBikeKey, imei, motitorValue);
+            redisTemplate.opsForHash().put(monitorAllBikeKey, imei, motitorValue);
             Map<String, String> bikePGMaP = getChargeDownStatus(mcPacketDto);
-            redisUtil.hmSet(motitorValue, bikePGMaP);
+            //redisUtil.hmSet(motitorValue, bikePGMaP);
+            redisTemplate.opsForHash().putAll(motitorValue, bikePGMaP);
         } catch (Exception e) {
-            logger.error("保存下行MC包到缓存异常 header0:" + mcPacketDto.getHeader0() + ",header1:" + mcPacketDto.getHeader1() + ",imei:" + mcPacketDto.getImei(), e);
+            log.error("保存下行MC包到缓存异常 header0:" + mcPacketDto.getHeader0() + ",header1:" + mcPacketDto.getHeader1() + ",imei:" + mcPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SAVE_DOWN_MC_REDIS_ERROR.getCode(), IotServiceExceptionEnum.SAVE_DOWN_MC_REDIS_ERROR.getMsg());
         }
     }
