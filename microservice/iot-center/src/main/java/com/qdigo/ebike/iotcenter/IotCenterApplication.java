@@ -27,7 +27,14 @@ public class IotCenterApplication implements CommandLineRunner {
 
     @SneakyThrows
     @Override
-    public void run(String... args)  {
-        socketServer.start();
+    public void run(String... args) {
+        //socketServer.start();
+        new Thread(() -> {
+            try {
+                socketServer.start();
+            } catch (Exception e) {
+                log.error("netty服务发生异常:", e);
+            }
+        }, "qdigo-netty-server").start();
     }
 }

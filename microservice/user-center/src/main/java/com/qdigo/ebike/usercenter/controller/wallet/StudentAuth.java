@@ -18,7 +18,7 @@ package com.qdigo.ebike.usercenter.controller.wallet;
 
 import com.google.common.collect.ImmutableMap;
 import com.qdigo.ebike.common.core.constants.Status;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.usercenter.domain.entity.User;
 import com.qdigo.ebike.usercenter.domain.entity.UserStudent;

@@ -17,9 +17,13 @@
 package com.qdigo.ebike.api.service.order.longrent;
 
 import com.qdigo.ebike.api.ApiRoute;
-import lombok.Value;
+import com.qdigo.ebike.api.domain.Dto;
+import com.qdigo.ebike.common.core.constants.Const;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.Date;
@@ -43,11 +47,20 @@ public interface OrderLongRentService {
     @PostMapping(ApiRoute.OrderCenter.LongRent.findLastOne)
     LongRentDto findLastOne(@RequestParam("userId") long userId);
 
-    @Value
-    class LongRentDto {
+    @PostMapping(ApiRoute.OrderCenter.LongRent.create)
+    LongRentDto create(@RequestBody LongRentDto longRentDto);
+
+    @Data
+    @Builder
+    class LongRentDto implements Dto {
+        private Long id;
         private long userId;
         private long agentId;
+        private double price;
+        private double consume;
         private Date startTime;
         private Date endTime;
+        private Const.LongRentType longRentType;
+        private String imei;
     }
 }

@@ -19,7 +19,7 @@ package com.qdigo.ebike.commonaop.aspects;
 import com.qdigo.ebike.common.core.constants.Const;
 import com.qdigo.ebike.common.core.constants.Constants;
 import com.qdigo.ebike.common.core.constants.Keys;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

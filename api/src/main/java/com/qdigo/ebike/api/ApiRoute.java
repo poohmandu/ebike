@@ -168,6 +168,30 @@ public interface ApiRoute {
             String bike = bikeCenter + "/bike";
             String findByImei = bike + "/findByImei";
             String findByDeviceId = bike + "/findByDeviceId";
+            String findByImeiOrDeviceId = bike + "/findByImeiOrDeviceId";
+            String findConfigByType = bike + "/findConfigByType";
+        }
+
+        interface BikeStatus {
+            String bikeStatus = bikeCenter + "/bikeStatus";
+            String findStatusByBikeIId = bikeStatus + "/findStatusByBikeIId";
+            String findByImei = bikeStatus + "/findByImei";
+            String update = bikeStatus + "/update";
+        }
+
+        interface BikeGpsStatus {
+            String bikeGpsStatus = bikeCenter + "/bikeGpsStatus";
+
+            String findByImei = bikeGpsStatus + "/findByImei";
+            String updatePg = bikeGpsStatus + "/updatePg";
+            String updatePh = bikeGpsStatus + "/updatePh";
+            String updatePl = bikeGpsStatus + "/updatePl";
+        }
+
+        interface BikeAddress {
+            String bikeAddress = bikeCenter + "/bikeAddress";
+
+            String updateBikeAddress = bikeAddress + "/updateBikeAddress";
         }
     }
 
@@ -229,12 +253,25 @@ public interface ApiRoute {
 
             String getAgentConfig = config + "/getAgentConfig";
             String allowAgents = config + "/allowAgents";
+            String findByImei = config + "/findByImei";
         }
 
         interface Agent {
             String agent = agentCenter + "/agent";
 
             String findByCity = agent + "/findByCity";
+        }
+
+        interface LongRentConfig {
+            String longRentConfig = agentCenter + "/longRentConfig";
+
+            String findByAgentId = longRentConfig + "/findByAgentId";
+        }
+
+        interface TakeawayConfig {
+            String takeawayConfig = agentCenter + "/takeawayConfig";
+
+            String findByAgentId = takeawayConfig + "/findByAgentId";
         }
 
     }
@@ -248,6 +285,7 @@ public interface ApiRoute {
             String findValidByUserId = longRent + "/findValidByUserId";
             String hasLongRent = longRent + "/hasLongRent";
             String findLastOne = longRent + "/findLastOne";
+            String create = longRent + "/create";
         }
 
         interface ThirdRecord {
@@ -267,6 +305,13 @@ public interface ApiRoute {
             String findEndPageByMobileNo = ride + "/findEndPageByMobileNo";
         }
 
+        interface JournalAccount {
+            String journalAccount = orderCenter + "/journalAccount";
+
+            String insert4Charge = journalAccount + "/insert4Charge";
+            String insert4Ride = journalAccount + "/insert4Ride";
+            String insert4LongRent = journalAccount + "/insert4LongRent";
+        }
     }
 
 }

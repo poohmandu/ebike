@@ -17,7 +17,7 @@
 package com.qdigo.ebike.stationcenter.controller;
 
 import com.google.common.collect.Lists;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.geo.GeoUtil;
 import com.qdigo.ebike.common.core.util.geo.LocationConvert;
 import com.qdigo.ebike.stationcenter.service.StationInnerService;

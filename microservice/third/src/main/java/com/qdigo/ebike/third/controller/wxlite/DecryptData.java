@@ -18,7 +18,7 @@ package com.qdigo.ebike.third.controller.wxlite;
 
 import com.alibaba.fastjson.JSON;
 import com.qdigo.ebike.common.core.constants.Keys;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.security.SecurityUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

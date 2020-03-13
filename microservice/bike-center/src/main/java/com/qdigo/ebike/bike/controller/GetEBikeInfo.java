@@ -25,9 +25,9 @@ import com.qdigo.ebike.api.service.order.ride.OrderRideService;
 import com.qdigo.ebike.bike.domain.entity.Bike;
 import com.qdigo.ebike.bike.domain.entity.BikeStatus;
 import com.qdigo.ebike.bike.repository.BikeRepository;
-import com.qdigo.ebike.bike.service.BikeStatusService;
+import com.qdigo.ebike.bike.service.inner.BikeStatusInnerService;
 import com.qdigo.ebike.bike.service.inner.BikeInnerService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import lombok.Builder;
 import lombok.Data;
@@ -55,7 +55,7 @@ public class GetEBikeInfo {
     private final BikeRepository bikeRepository;
     private final RideTrackService rideTrackService;
     private final BikeInnerService bikeInnerService;
-    private final BikeStatusService bikeStatusService;
+    private final BikeStatusInnerService bikeStatusInnerService;
 
     /**
      * 我的电滴
@@ -141,7 +141,7 @@ public class GetEBikeInfo {
         if (bike.getBikeId() == null) {
             return R.ok(401, "数据库不存在该车辆");
         }
-        val actualStatus = bikeStatusService.queryActualStatus(bike);
+        val actualStatus = bikeStatusInnerService.queryActualStatus(bike);
 
         Map<String, Object> res = new ImmutableMap.Builder<String, Object>()
                 .put("imei", bike.getImeiId())

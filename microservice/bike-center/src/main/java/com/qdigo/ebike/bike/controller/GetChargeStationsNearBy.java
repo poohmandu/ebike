@@ -18,7 +18,7 @@ package com.qdigo.ebike.bike.controller;
 
 import com.qdigo.ebike.bike.domain.entity.charger.Charger;
 import com.qdigo.ebike.bike.repository.charger.ChargerRepository;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.geo.GeoUtil;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

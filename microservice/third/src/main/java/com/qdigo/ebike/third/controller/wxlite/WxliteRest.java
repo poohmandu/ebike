@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.third.controller.wxlite;
 
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.third.service.wxlite.WxlitePush;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

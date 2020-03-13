@@ -115,8 +115,13 @@ public class ByteHandlerService {
             //来自服务端
             packetDto = parsePackageStrategy.parseDownBytes(bytes, header0, header1, imei, client);
         }
-        manageStrateyg.saveInfo(packetDto);
-        manageStrateyg.sendMsg(packetDto);
+        try {
+            manageStrateyg.saveInfo(packetDto);
+            manageStrateyg.sendMsg(packetDto);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
     }
 
 

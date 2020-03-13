@@ -16,8 +16,6 @@
 
 package com.qdigo.ebike.agentcenter.domain.entity;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.*;
 
 /**
@@ -32,11 +30,8 @@ public class LongTermRent {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @JsonBackReference
-    @OneToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL, optional = false)
-    @JoinColumn(unique = true, nullable = false, name = "agent_id",
-        foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
-    private Agent agent;
+    @Column(unique = true, nullable = false, name = "agent_id")
+    private Long agentId;
 
     private double dayCard;
 
@@ -62,12 +57,12 @@ public class LongTermRent {
         return this;
     }
 
-    public Agent getAgent() {
-        return agent;
+    public Long getAgentId() {
+        return agentId;
     }
 
-    public LongTermRent setAgent(Agent agent) {
-        this.agent = agent;
+    public LongTermRent setAgentId(Long agentId) {
+        this.agentId = agentId;
         return this;
     }
 

@@ -16,10 +16,11 @@
 
 package com.qdigo.ebike.api.domain.dto.bike;
 
+import com.qdigo.ebike.common.core.constants.BikeCfg;
 import lombok.Data;
 
 /**
- * Description: 
+ * Description:
  * date: 2020/1/3 1:02 AM
  * @author niezhao
  * @version
@@ -30,8 +31,13 @@ public class BikeDto {
     private Long bikeId;
     private String deviceId;
     private String imeiId;
-
+    private double price;
+    private int unitMinutes;
+    private String type;
+    private BikeCfg.OperationType operationType;
     private Long agentId;
     private boolean online;
     private boolean isDeleted;
+    private String licence;
+    private String bleMac;
 }

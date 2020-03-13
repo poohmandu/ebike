@@ -1,0 +1,118 @@
+/*
+ * Copyright 2020 聂钊 nz@qdigo.com
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package com.qdigo.ebike.controlcenter.listener.device;
+
+import com.qdigo.ebicycle.constants.ConfigConstants;
+import com.qdigo.ebicycle.constants.Const;
+import com.qdigo.ebicycle.constants.MQ;
+import com.qdigo.ebicycle.domain.device.PLSqlPackage;
+import com.qdigo.ebicycle.domain.mongo.device.PLPackage;
+import com.qdigo.ebicycle.repository.deviceRepo.PLSqlRepository;
+import com.qdigo.ebicycle.repository.mongo.PLMongoRepository;
+import com.qdigo.ebicycle.service.bike.BikeGpsStatusService;
+import com.qdigo.ebicycle.service.device.PLService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.core.ExchangeTypes;
+import org.springframework.amqp.rabbit.annotation.Exchange;
+import org.springframework.amqp.rabbit.annotation.Queue;
+import org.springframework.amqp.rabbit.annotation.QueueBinding;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
+
+import javax.inject.Inject;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
+
+//@RestController
+//@RequestMapping("/v1.0/bikeProtocol")
+@Component
+//@ConditionalOnProperty(name = "server.port", havingValue = Const.MQPorts)
+@ConditionalOnExpression("'${my.env}'=='prod' and ${server.port}==${my.mq-port}")
+@Slf4j
+public class BikeLocation {
+
+    @Inject
+    private MongoTemplate mongoTemplate;
+    @Inject
+    private PLSqlRepository plSqlRepository;
+    @Inject
+    private PLMongoRepository plMongoRepository;
+    @Inject
+    private PLService plService;
+    @Inject
+    private BikeGpsStatusService bikeGpsStatusService;
+
+    /**
+     * GPS基站定位包接口
+     *
+     * @param form
+     * @return
+     * @throws IOException
+     */
+    //@RequestMapping(value = "/GPSLocation", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RabbitListener(bindings = @QueueBinding(
+        value = @Queue(value = "getGPSLocation", autoDelete = "true", durable = "true"),
+        exchange = @Exchange(value = MQ.Topic.Exchange.pl, type = ExchangeTypes.TOPIC),
+        key = MQ.Topic.Key.up_pl, ignoreDeclarationExceptions = "true"))
+    public void getGPSLocation(PLPackage form) {
+        // 对imei号进行修正
+        String imei = ConfigConstants.imei.getConstant() + form.getPlImei();
+        form.setPlImei(imei);
+        try {
+
+            // 对mongoDB的PLPackage文档进行新增
+            plMongoRepository.insert(form);
+
+            if (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - form.getTimestamp()) < Const.pgNotFoundSeconds) {
+                //启一个异步调用 完成业务逻辑
+                plService.updateStatus(form);
+            }
+
+            // 对mySql的PL表进行更新
+            PLSqlPackage plSqlPackage = formToSqlDomain(form);
+            plSqlRepository.save(plSqlPackage);
+            bikeGpsStatusService.saveBikeGpsStatus(form);
+
+        } catch (Exception e) {
+            log.error("PL在MQ的消费过程中异常:", e);
+            TransactionAspectSupport.currentTransactionStatus().setRollbackOnly();
+        }
+
+    }
+
+
+    private static PLSqlPackage formToSqlDomain(PLPackage f) {
+        PLSqlPackage l = new PLSqlPackage();
+        l.setPlAutoLocked(f.getPlAutoLocked());
+        l.setPlCellid(f.getPlCellid());
+        l.setPlDoorLock(f.getPlDoorLock());
+        l.setPlElectric(f.getPlElectric());
+        l.setPlError(f.getPlError());
+        l.setPlImei(f.getPlImei());
+        l.setPlLac(f.getPlLac());
+        l.setPlLocked(f.getPlLocked());
+        l.setPlShaked(f.getPlShaked());
+        l.setPlSingal(f.getPlSingal());
+        l.setPlTumble(f.getPlTumble());
+        l.setPlWheelInput(f.getPlWheelInput());
+        return l;
+    }
+
+}

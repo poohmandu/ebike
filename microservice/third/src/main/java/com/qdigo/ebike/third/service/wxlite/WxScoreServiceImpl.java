@@ -21,7 +21,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.qdigo.ebike.api.RemoteService;
-import com.qdigo.ebike.api.domain.dto.ResponseDTO;
+import com.qdigo.ebike.common.core.domain.ResponseDTO;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.CompleteOrderParam;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.StartOrderParam;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;

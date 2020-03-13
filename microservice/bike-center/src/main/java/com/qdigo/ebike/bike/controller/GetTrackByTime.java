@@ -19,7 +19,7 @@ package com.qdigo.ebike.bike.controller;
 import brave.httpclient.TracingHttpClientBuilder;
 import com.qdigo.ebike.api.domain.dto.control.Location;
 import com.qdigo.ebike.api.service.control.TrackService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;

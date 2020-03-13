@@ -18,7 +18,7 @@ package com.qdigo.ebike.api.service.third.wxlite;
 
 import com.alibaba.fastjson.JSONObject;
 import com.qdigo.ebike.api.ApiRoute;
-import com.qdigo.ebike.api.domain.dto.ResponseDTO;
+import com.qdigo.ebike.common.core.domain.ResponseDTO;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.CompleteOrderParam;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.StartOrderParam;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;

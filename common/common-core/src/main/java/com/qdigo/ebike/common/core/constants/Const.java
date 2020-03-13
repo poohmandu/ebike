@@ -33,6 +33,7 @@ public final class Const {
     public static final int imeiLength = 15; //imei长度
     public static final String wxlite = "weixin"; //小程序 deviceId
     public static final String zfblite = "zfblite"; //支付宝小程序 deviceId
+    public static final int dataCleanDays = 20;
 
     public static final int zmScoreExpireDays = 20;
 
@@ -75,7 +76,7 @@ public final class Const {
 
     public static class AopOrder {
         // ->(1(2(3(4(5 (process) 5)4)3)2)1)->
-        private static final int Base = -100;
+        private static final int Base = -1000;
         public static final int CatAspect = Base + 1;
         public static final int LogAspect = Base + 2;
         public static final int JobLockAspect = Base + 3;

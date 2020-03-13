@@ -24,7 +24,7 @@ import com.qdigo.ebike.api.service.order.thirdrecord.OrderThirdRecordService;
 import com.qdigo.ebike.api.service.third.insurance.DataPayService;
 import com.qdigo.ebike.api.service.third.insurance.HmbService;
 import com.qdigo.ebike.common.core.constants.Const;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.usercenter.domain.entity.User;
 import com.qdigo.ebike.usercenter.domain.vo.UserResponse;

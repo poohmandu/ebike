@@ -18,7 +18,7 @@ package com.qdigo.ebike.stationcenter.controller;
 
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.user.UserService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.stationcenter.domain.entity.AgentArea;
 import com.qdigo.ebike.stationcenter.repository.AgentAreaRepository;
 import lombok.Builder;

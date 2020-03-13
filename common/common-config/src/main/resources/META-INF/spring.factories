@@ -5,4 +5,6 @@ com.qdigo.ebike.commonconfig.configuration.database.DatabaseConfiguration,\
 com.qdigo.ebike.commonconfig.configuration.database.PageableConfig,\
 com.qdigo.ebike.commonconfig.configuration.JacksonConfiguration,\
 com.qdigo.ebike.commonconfig.configuration.FeignDateFormatRegister,\
-com.qdigo.ebike.commonconfig.configuration.RabbitmqConfiguration
+com.qdigo.ebike.commonconfig.configuration.RabbitmqConfiguration,\
+com.qdigo.ebike.commonconfig.configuration.properties.QdigoPropertiesConfig,\
+com.qdigo.ebike.commonconfig.configuration.AsyncConfiguration

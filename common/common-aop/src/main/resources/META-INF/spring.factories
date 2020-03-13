@@ -1,3 +1,4 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
 com.qdigo.ebike.commonaop.aspects.CacheAspect,\
-com.qdigo.ebike.commonaop.aspects.AccessAspect
+com.qdigo.ebike.commonaop.aspects.AccessAspect,\
+com.qdigo.ebike.commonaop.aspects.TokenAspect

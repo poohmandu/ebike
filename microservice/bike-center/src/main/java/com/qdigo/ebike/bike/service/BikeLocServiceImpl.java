@@ -24,6 +24,7 @@ import com.qdigo.ebike.api.service.station.StationGeoService;
 import com.qdigo.ebike.bike.domain.entity.Bike;
 import com.qdigo.ebike.bike.domain.entity.BikeStatus;
 import com.qdigo.ebike.bike.repository.BikeRepository;
+import com.qdigo.ebike.bike.service.inner.BikeStatusInnerService;
 import com.qdigo.ebike.common.core.constants.BikeCfg;
 import com.qdigo.ebike.common.core.constants.Keys;
 import com.qdigo.ebike.common.core.constants.Status;
@@ -59,7 +60,7 @@ public class BikeLocServiceImpl implements BikeLocService {
     private final BikeRepository bikeRepository;
     private final RedisTemplate<String, String> redisTemplate;
     private final StationGeoService geoService;
-    private final BikeStatusService statusService;
+    private final BikeStatusInnerService statusService;
 
     private final static String collectionName = "BikeLoc";
 

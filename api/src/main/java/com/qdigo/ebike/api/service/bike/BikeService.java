@@ -17,6 +17,7 @@
 package com.qdigo.ebike.api.service.bike;
 
 import com.qdigo.ebike.api.ApiRoute;
+import com.qdigo.ebike.api.domain.dto.bike.BikeConfigDto;
 import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -37,5 +38,11 @@ public interface BikeService {
 
     @PostMapping(ApiRoute.BikeCenter.Bike.findByDeviceId)
     BikeDto findByDeviceId(@RequestParam("deviceId") String deviceId);
+
+    @PostMapping(ApiRoute.BikeCenter.Bike.findByImeiOrDeviceId)
+    BikeDto findByImeiOrDeviceId(@RequestParam("imeiOrDeviceId") String imeiOrDeviceId);
+
+    @PostMapping(ApiRoute.BikeCenter.Bike.findConfigByType)
+    BikeConfigDto findConfigByType(@RequestParam("type") String type);
 
 }

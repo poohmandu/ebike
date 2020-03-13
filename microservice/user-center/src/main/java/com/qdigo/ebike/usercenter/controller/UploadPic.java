@@ -17,7 +17,7 @@
 package com.qdigo.ebike.usercenter.controller;
 
 import com.mongodb.client.gridfs.model.GridFSFile;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.http.NetUtil;
 import com.qdigo.ebike.usercenter.domain.entity.User;
 import com.qdigo.ebike.usercenter.repository.UserRepository;

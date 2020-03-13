@@ -18,12 +18,13 @@ package com.qdigo.ebike.third.service.push.wxpush;
 
 import com.alibaba.fastjson.JSON;
 import com.google.common.collect.ImmutableMap;
-import com.qdigo.ebicycle.constants.Config;
-import com.qdigo.ebicycle.constants.Const;
-import com.qdigo.ebicycle.constants.Keys;
-import com.qdigo.ebicycle.o.dto.WsMessage;
-import com.qdigo.ebicycle.service.push.WxlitePush;
-import com.qdigo.ebicycle.service.util.NetUtil;
+import com.qdigo.ebike.common.core.constants.Const;
+import com.qdigo.ebike.common.core.constants.Keys;
+import com.qdigo.ebike.common.core.util.http.NetUtil;
+import com.qdigo.ebike.commonconfig.configuration.Config;
+import com.qdigo.ebike.third.domain.dto.WsMessage;
+import com.qdigo.ebike.third.service.wxlite.WxlitePush;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.httpclient.HttpStatus;
@@ -34,7 +35,6 @@ import org.apache.http.client.methods.RequestBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.HttpClients;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
@@ -44,6 +44,7 @@ import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.text.MessageFormat;
@@ -56,19 +57,18 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by niezhao on 2017/4/6.
  */
-@Service
 @Slf4j
+@Service
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class WebSocketService extends TextWebSocketHandler {
 
     private static ConcurrentMap<String, WebSocketSession> sessions = new ConcurrentHashMap<>();
-    @Inject
-    private RedisTemplate<String, String> redisTemplate;
-    @Inject
-    private WxlitePush wxlitePush;
-    @Inject
+
+    private final RedisTemplate<String, String> redisTemplate;
+    private final WxlitePush wxlitePush;
+    @Resource
     private WebSocketHandler webSocketHandler;
-    @Inject
-    private RabbitTemplate rabbitTemplate;
+
 
     @Value("${server.port}")
     private String port;
@@ -207,9 +207,9 @@ public class WebSocketService extends TextWebSocketHandler {
         }
         val http = MessageFormat.format("http://{0}/v1.0/operation/webSocket/sendMessage", host);
         HttpUriRequest request = RequestBuilder.post(http)
-            .setEntity(new StringEntity(jsonStr, ContentType.APPLICATION_JSON))
-            .setConfig(Config.REQUEST_CONFIG)
-            .build();
+                .setEntity(new StringEntity(jsonStr, ContentType.APPLICATION_JSON))
+                .setConfig(Config.REQUEST_CONFIG)
+                .build();
         try (CloseableHttpResponse response = HttpClients.createDefault().execute(request)) {
             log.debug("{},websocket消息发送http接口返回:{}", host, response.getStatusLine());
             if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK) {

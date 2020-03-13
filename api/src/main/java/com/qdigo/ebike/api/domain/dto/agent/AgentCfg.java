@@ -24,6 +24,8 @@ import lombok.Data;
  */
 @Data
 public class AgentCfg {
+    private Long agentId;
+
     private boolean speedLimit = false; //该代理商车是否限速
     private int dayMaxHours = 8; //每天封顶骑行小时
     private boolean longRentDisplay = true; //是否显示长租

@@ -18,8 +18,8 @@ package com.qdigo.ebike.bike.controller;
 
 import com.google.common.collect.Lists;
 import com.qdigo.ebike.bike.domain.entity.BikeStatus;
-import com.qdigo.ebike.bike.service.BikeStatusService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.bike.service.inner.BikeStatusInnerService;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.geo.GeoUtil;
 import com.qdigo.ebike.common.core.util.geo.LocationConvert;
 import lombok.*;
@@ -39,7 +39,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 public class GetBikesNearBy {
 
-    private final BikeStatusService statusService;
+    private final BikeStatusInnerService statusService;
 
     /**
      * 查询附近车辆

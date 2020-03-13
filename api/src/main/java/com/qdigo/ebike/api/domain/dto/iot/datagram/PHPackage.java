@@ -45,7 +45,7 @@ public class PHPackage implements Serializable {
     private Integer phHandleBarError;   //有无转把故障 0:无
     private Integer phControlError;     //有无控制器故障 0：无
     private Integer phHold;             //保留
-    private String phSoc;       //gps锂电池 剩余电量
+    private Integer phSoc;       //gps锂电池 剩余电量
     private Long timestamp = System.currentTimeMillis();
 
     private String phServer;
@@ -267,11 +267,11 @@ public class PHPackage implements Serializable {
         return this;
     }
 
-    public String getPhSoc() {
+    public Integer getPhSoc() {
         return phSoc;
     }
 
-    public PHPackage setPhSoc(String phSoc) {
+    public PHPackage setPhSoc(Integer phSoc) {
         this.phSoc = phSoc;
         return this;
     }

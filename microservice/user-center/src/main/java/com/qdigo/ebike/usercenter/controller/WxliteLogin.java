@@ -23,7 +23,7 @@ import com.qdigo.ebike.common.core.constants.Const;
 import com.qdigo.ebike.common.core.constants.Keys;
 import com.qdigo.ebike.common.core.errors.exception.runtime.NoneMatchException;
 import com.qdigo.ebike.common.core.util.ConvertUtil;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.aspects.AccessAspect;
 import com.qdigo.ebike.usercenter.domain.entity.User;
 import com.qdigo.ebike.usercenter.domain.vo.UserResponse;

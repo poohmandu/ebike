@@ -18,22 +18,24 @@ package com.qdigo.ebike.third.service.push.wxpush;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.qdigo.ebicycle.domain.bike.Bike;
-import com.qdigo.ebicycle.domain.bike.BikeStatus;
-import com.qdigo.ebicycle.domain.mongo.RideTrack;
-import com.qdigo.ebicycle.domain.ride.RideOrder;
-import com.qdigo.ebicycle.o.dto.Point;
-import com.qdigo.ebicycle.o.dto.WsMessage;
-import com.qdigo.ebicycle.repository.bikeRepo.BikeRepository;
-import com.qdigo.ebicycle.repository.dao.RideRecordDao;
-import com.qdigo.ebicycle.service.ride.RideTrackService;
+import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
+import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
+import com.qdigo.ebike.api.domain.dto.order.RideDto;
+import com.qdigo.ebike.api.domain.dto.third.map.Point;
+import com.qdigo.ebike.api.domain.dto.third.map.RideTrackDto;
+import com.qdigo.ebike.api.service.bike.BikeService;
+import com.qdigo.ebike.api.service.bike.BikeStatusService;
+import com.qdigo.ebike.api.service.control.RideTrackService;
+import com.qdigo.ebike.api.service.order.ride.OrderRideService;
+import com.qdigo.ebike.third.domain.dto.WsMessage;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -44,18 +46,18 @@ import java.util.stream.Collectors;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class WebSocketHandler {
 
-    @Inject
+    @Resource
     private WebSocketService webSocketService;
-    @Inject
-    private RideRecordDao rideRecordDao;
-    @Inject
-    private BikeRepository bikeRepository;
-    @Inject
-    private RideTrackService rideTrackService;
-    @Inject
-    private MongoTemplate mongoTemplate;
+
+    private final OrderRideService rideService;
+    private final BikeService bikeService;
+    private final RideTrackService rideTrackService;
+    private final BikeStatusService bikeStatusService;
+
+
 
     @Async
     public void onHeartBeat(String mobileNo, long timestamp) {
@@ -86,19 +88,21 @@ public class WebSocketHandler {
 
     private void bikeInfoServer(String mobileNo) {
         try {
-            RideOrder rideOrder = rideRecordDao.findByRidingUser(mobileNo);
-            if (rideOrder == null) {
+            RideDto rideDto = rideService.findRidingByMobileNo(mobileNo);
+            if (rideDto == null) {
                 return;
             }
-            Bike bike = rideOrder.getBike();
-            BikeStatus status = bike.getBikeStatus();
+            String imei = rideDto.getImei();
+            BikeDto bikeDto = bikeService.findByImei(imei);
+            BikeStatusDto statusDto = bikeStatusService.findStatusByBikeIId(bikeDto.getBikeId());
+
             ResponseBody body = new ResponseBody();
-            body.setImei(bike.getImeiId());
-            body.setLatitude(status.getLatitude());
-            body.setLongitude(status.getLongitude());
-            body.setBikeType(bike.getType());
-            body.setStatus(status.getStatus());
-            body.setMac(bike.getBleMac());
+            body.setImei(bikeDto.getImeiId());
+            body.setLatitude(statusDto.getLatitude());
+            body.setLongitude(statusDto.getLongitude());
+            body.setBikeType(bikeDto.getType());
+            body.setStatus(statusDto.getStatus());
+            body.setMac(bikeDto.getBleMac());
             WsMessage.ResponseMessage responseMessage = body.toResponseMessage("获得车辆信息");
             WsMessage.Message message = responseMessage.toMessage(mobileNo, WsMessage.BizType.bikeInfo);
             webSocketService.sendMessage(message);
@@ -109,28 +113,28 @@ public class WebSocketHandler {
 
     private void ridingRouteServer(String mobileNo) {
         try {
-            RideOrder rideOrder = rideRecordDao.findByRidingUser(mobileNo);
-            if (rideOrder == null) {
+            RideDto rideDto = rideService.findRidingByMobileNo(mobileNo);
+            if (rideDto == null) {
                 return;
             }
-            RideTrack trackCursor = rideTrackService.getOneWithCursor(rideOrder.getRideRecordId());
+            RideTrackDto rideTrackDto = rideTrackService.getOneWithCursor(rideDto.getRideRecordId());
             long start;
-            if (trackCursor == null) {
-                start = rideOrder.getStartTime().getTime();
+            if (rideTrackDto == null) {
+                start = rideDto.getStartTime().getTime();
             } else {
-                start = trackCursor.getTimestamp();
+                start = rideTrackDto.getTimestamp();
             }
             if (TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis() - start) < 50) {
                 return;
             }
-            rideTrackService.insertRideTracks(rideOrder.getRideRecordId());
-            List<RideTrack> rideTracks = rideTrackService.getRideTrackAfter(rideOrder.getRideRecordId(), start);
+            rideTrackService.insertRideTracks(rideDto.getRideRecordId());
+            List<RideTrackDto> rideTracks = rideTrackService.getRideTrackAfter(rideDto.getRideRecordId(), start);
             List<Point> points = rideTracks.stream()
-                .filter(rideTrack -> rideTrack.getLatitude() != 0 && rideTrack.getLongitude() != 0 && rideTrack.getTimestamp() != 0)
-                .map(rideTrack -> new Point().setTimestamp(rideTrack.getTimestamp())
-                    .setLongitude(rideTrack.getLongitude())
-                    .setLatitude(rideTrack.getLatitude()))
-                .collect(Collectors.toList());
+                    .filter(rideTrack -> rideTrack.getLatitude() != 0 && rideTrack.getLongitude() != 0 && rideTrack.getTimestamp() != 0)
+                    .map(rideTrack -> new Point().setTimestamp(rideTrack.getTimestamp())
+                            .setLongitude(rideTrack.getLongitude())
+                            .setLatitude(rideTrack.getLatitude()))
+                    .collect(Collectors.toList());
             if (points.isEmpty()) {
                 return;
             }
@@ -142,7 +146,7 @@ public class WebSocketHandler {
             if (!send) {
                 return;
             }
-            RideTrack last = rideTracks.get(rideTracks.size() - 1);
+            RideTrackDto last = rideTracks.get(rideTracks.size() - 1);
             rideTrackService.saveCursorRideTrack(last);
         } catch (Exception err) {
             log.error("ridingRouteServer发生异常", err);

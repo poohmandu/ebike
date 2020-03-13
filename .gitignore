@@ -32,9 +32,9 @@ build/
 ### Logs ###
 logs/**
 *.log
+*.log.gz
 
 ### Other ###
-*.class
 *.*~
 *~
 .merge_file*

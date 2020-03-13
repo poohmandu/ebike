@@ -46,7 +46,7 @@ public class IotHostRule extends AbstractLoadBalancerRule {
     private RedisTemplate<String, String> redisTemplate;
     @NacosInjected
     private NamingService namingService;
-    @Value("${qdigo.iot-service-name}")
+    @Value("${qdigo.netty.iot-service-name}")
     private String iotServiceName;
 
     @Override

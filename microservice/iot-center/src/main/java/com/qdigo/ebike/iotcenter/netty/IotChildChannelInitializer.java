@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.iotcenter.netty;
 
-import com.qdigo.ebike.iotcenter.config.NettyServerProperties;
+import com.qdigo.ebike.commonconfig.configuration.properties.QdigoNettyProperties;
 import com.qdigo.ebike.iotcenter.handler.GSMDataDecoder;
 import com.qdigo.ebike.iotcenter.handler.ParseBytesHandler;
 import io.netty.buffer.ByteBuf;
@@ -42,7 +42,7 @@ public class IotChildChannelInitializer extends ChannelInitializer<SocketChannel
     @Resource
     private ParseBytesHandler parseBytesHandler;
     @Resource
-    private NettyServerProperties properties;
+    private QdigoNettyProperties properties;
 
     @Override
     protected void initChannel(SocketChannel ch) {

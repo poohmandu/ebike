@@ -20,4 +20,4 @@ spring:
 qdigo:
   netty:
     port: 13078
-    readerIdle: 150
+    readerIdle: 300

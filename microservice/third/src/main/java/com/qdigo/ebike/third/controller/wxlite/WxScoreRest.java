@@ -23,7 +23,7 @@ import com.qdigo.ebike.api.service.third.wxlite.WxscoreService;
 import com.qdigo.ebike.api.service.user.UserAccountService;
 import com.qdigo.ebike.api.service.user.UserService;
 import com.qdigo.ebike.api.service.user.UserStatusService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.third.service.wxlite.WxScoreServiceImpl;
 import lombok.RequiredArgsConstructor;

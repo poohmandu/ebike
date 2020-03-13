@@ -20,7 +20,7 @@ import com.qdigo.ebike.api.domain.dto.PageDto;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.service.order.ride.OrderRideService;
 import com.qdigo.ebike.common.core.util.FormatUtil;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.usercenter.repository.UserRepository;
 import lombok.Builder;

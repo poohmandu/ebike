@@ -19,7 +19,7 @@ package com.qdigo.ebike.agentcenter.controller;
 import com.qdigo.ebike.agentcenter.domain.entity.AgentJoint;
 import com.qdigo.ebike.agentcenter.repository.AgentJointRepository;
 import com.qdigo.ebike.api.service.third.sms.SmsService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

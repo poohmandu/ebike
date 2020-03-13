@@ -17,7 +17,7 @@
 package com.qdigo.ebike.usercenter.controller;
 
 import com.qdigo.ebike.common.core.constants.Status;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.commonaop.aspects.AccessAspect;
 import com.qdigo.ebike.usercenter.domain.entity.User;
@@ -36,6 +36,7 @@ import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
 import javax.inject.Inject;
 
 @Slf4j
@@ -47,7 +48,8 @@ public class GetUserInfo {
     private final UserRepository userRepository;
     private final UserInnerService userService;
     private final UserStatusInnerService userStatusInnerService;
-    private final AccessAspect accessAspect;
+    @Resource
+    private AccessAspect accessAspect;
 
     /**
      * 获取用户信息

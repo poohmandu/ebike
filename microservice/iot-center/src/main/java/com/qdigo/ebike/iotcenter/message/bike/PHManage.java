@@ -104,7 +104,7 @@ public class PHManage implements PackageManageStrateyg<PHPacketDto> {
                 .setPhSentity(phReqDto.getPhSentity())
                 .setPhSequence((long) phReqDto.getPhSequence())
                 .setPhShaked(phReqDto.getPhShaked())
-                .setPhSoc(String.valueOf(phReqDto.getPhSoc()))
+                .setPhSoc(phReqDto.getPhSoc())
                 .setPhStar(phReqDto.getPhStar())
                 .setPhTumble(phReqDto.getPhTumble())
                 .setPhWheelInput(phReqDto.getPhWheelInput())

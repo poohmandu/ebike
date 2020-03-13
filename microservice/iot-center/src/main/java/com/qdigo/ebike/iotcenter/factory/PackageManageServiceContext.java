@@ -26,7 +26,7 @@ import java.text.MessageFormat;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import static com.qdigo.ebike.iotcenter.service.api.ParsePackageStrategy.*;
+import static com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg.*;
 
 /**
  * Description: 

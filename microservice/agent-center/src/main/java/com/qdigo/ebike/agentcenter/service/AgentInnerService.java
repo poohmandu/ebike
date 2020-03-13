@@ -101,6 +101,7 @@ public class AgentInnerService {
             agentConfig = new AgentConfig();
         }
         AgentCfg config = new AgentCfg(); // 没有id 和 agentId
+        config.setAgentId(agentId);
         config.setSpeedLimit(agentConfig.getSpeedLimit() == null ? config.isSpeedLimit() : agentConfig.getSpeedLimit());
         config.setShareStation(agentConfig.getShareStation() == null ? config.isShareStation() : agentConfig.getShareStation());
         config.setLongRentDisplay(agentConfig.getLongRentDisplay() == null ? config.isLongRentDisplay() : agentConfig.getLongRentDisplay());

@@ -22,7 +22,7 @@ import com.qdigo.ebike.api.domain.dto.third.map.RideTrackDto;
 import com.qdigo.ebike.api.service.control.RideTrackService;
 import com.qdigo.ebike.api.service.order.ride.OrderRideService;
 import com.qdigo.ebike.common.core.util.FormatUtil;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.geo.LocationConvert;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

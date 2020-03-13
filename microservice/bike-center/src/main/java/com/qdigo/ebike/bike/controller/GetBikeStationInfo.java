@@ -22,7 +22,7 @@ import com.qdigo.ebike.api.service.station.StationStatusService;
 import com.qdigo.ebike.bike.domain.entity.BikeStatus;
 import com.qdigo.ebike.bike.repository.BikeStatusRepository;
 import com.qdigo.ebike.bike.service.ChargerServiceImpl;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import lombok.Builder;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;

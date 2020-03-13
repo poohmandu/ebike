@@ -17,7 +17,7 @@
 package com.qdigo.ebike.common.core.errors.exception;
 
 
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import org.springframework.http.ResponseEntity;

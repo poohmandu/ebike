@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.usercenter.service.inner;
 
-import com.qdigo.ebike.api.domain.dto.ResponseDTO;
+import com.qdigo.ebike.common.core.domain.ResponseDTO;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;
 import com.qdigo.ebike.api.service.order.longrent.OrderLongRentService;
 import com.qdigo.ebike.api.service.third.wxlite.WxliteService;

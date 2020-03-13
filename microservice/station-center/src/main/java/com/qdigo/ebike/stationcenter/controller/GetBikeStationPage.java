@@ -20,7 +20,7 @@ import com.google.common.collect.ImmutableMap;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.agent.AgentConfigService;
 import com.qdigo.ebike.api.service.user.UserService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.geo.GeoUtil;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.stationcenter.domain.entity.BikeStation;

@@ -41,4 +41,7 @@ public interface AgentConfigService {
     @PostMapping(ApiRoute.AgentCenter.Config.allowAgents)
     List<Long> allowAgents(@NotNull @RequestParam("agentId") long agentId);
 
+    @PostMapping(ApiRoute.AgentCenter.Config.findByImei)
+    AgentCfg findByImei(@RequestParam("imei") String imei);
+
 }

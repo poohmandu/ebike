@@ -25,7 +25,7 @@ import javax.persistence.*;
  * Created by niezhao on 2017/7/22.
  */
 @Entity
-@Table
+@Table(name = "user_address")
 @ToString
 public class UserAddress extends Address {
 

@@ -17,7 +17,7 @@
 package com.qdigo.ebike.usercenter.controller;
 
 
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.usercenter.repository.UserRepository;
 import com.qdigo.ebike.usercenter.service.inner.UserInnerService;

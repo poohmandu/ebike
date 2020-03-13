@@ -17,13 +17,10 @@
 package com.qdigo.ebike.commonconfig.configuration;
 
 import com.rabbitmq.client.Channel;
-import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
-import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
-import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
+import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,23 +36,33 @@ import org.springframework.context.annotation.Configuration;
 public class RabbitmqConfiguration {
 
     //生产者
+    //@Bean
+    //public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+    //    RabbitTemplate template = new RabbitTemplate(connectionFactory);
+    //    template.setMessageConverter(new Jackson2JsonMessageConverter());
+    //    return template;
+    //}
+
+    /**
+     *  由RabbitAutoConfiguration源码可知存在MessageConverter的bean会自动加载
+     *  ObjectProvider 提供可能的注入
+     * @return
+     */
     @Bean
-    public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate template = new RabbitTemplate(connectionFactory);
-        template.setMessageConverter(new Jackson2JsonMessageConverter());
-        return template;
+    public MessageConverter messageConverter() {
+        return new Jackson2JsonMessageConverter();
     }
 
     //消费者
-    @Bean("rabbitListenerContainerFactory")
-    @ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type",
-            havingValue = "simple", matchIfMissing = true)
-    SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(
-            SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
-        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-        configurer.configure(factory, connectionFactory);
-        factory.setMessageConverter(new Jackson2JsonMessageConverter());
-        return factory;
-    }
+    //@Bean("rabbitListenerContainerFactory")
+    //@ConditionalOnProperty(prefix = "spring.rabbitmq.listener", name = "type",
+    //        havingValue = "simple", matchIfMissing = true)
+    //SimpleRabbitListenerContainerFactory simpleRabbitListenerContainerFactory(
+    //        SimpleRabbitListenerContainerFactoryConfigurer configurer, ConnectionFactory connectionFactory) {
+    //    SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+    //    configurer.configure(factory, connectionFactory);
+    //    factory.setMessageConverter(messageConverter());
+    //    return factory;
+    //}
 
 }

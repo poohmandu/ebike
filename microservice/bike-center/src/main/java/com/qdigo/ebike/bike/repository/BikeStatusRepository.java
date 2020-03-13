@@ -16,7 +16,6 @@
 
 package com.qdigo.ebike.bike.repository;
 
-import com.qdigo.ebike.bike.domain.entity.Bike;
 import com.qdigo.ebike.bike.domain.entity.BikeStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -31,7 +30,7 @@ public interface BikeStatusRepository extends JpaRepository<BikeStatus, Serializ
     @Query(value = "select b from BikeStatus b where b.longitude between ?1 and ?2 and b.latitude between ?3 and ?4")
     List<BikeStatus> findByLocation(Double minLng, Double maxLng, Double minLat, Double maxLat);
 
-    Optional<BikeStatus> findByBike(Bike bike);
+    Optional<BikeStatus> findByBikeBikeId(Long bikeId);
 
     List<BikeStatus> findByStationId(Long stationId);
 

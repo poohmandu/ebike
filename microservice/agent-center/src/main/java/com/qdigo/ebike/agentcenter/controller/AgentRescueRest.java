@@ -21,7 +21,7 @@ import com.qdigo.ebike.agentcenter.repository.AgentAdminConfigRepository;
 import com.qdigo.ebike.agentcenter.service.AgentInnerService;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.user.UserService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import lombok.RequiredArgsConstructor;
 import lombok.Value;

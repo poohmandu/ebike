@@ -24,7 +24,7 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: dev.nacos.qdigo.com:8848
+        server-addr: dev.nacos.qdigo.com:8848$
 ---
 spring:
   profiles: prod

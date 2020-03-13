@@ -22,6 +22,7 @@ import com.qdigo.ebike.common.core.constants.Const;
 import com.qdigo.ebike.common.core.constants.Constants;
 import com.qdigo.ebike.common.core.constants.Keys;
 import com.qdigo.ebike.common.core.util.FormatUtil;
+import com.qdigo.ebike.third.service.push.wxpush.WebSocketService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
@@ -46,6 +47,7 @@ public class PushServiceImpl implements PushService {
 
     private final Environment env;
     private final RedisTemplate<String, String> redisTemplate;
+    private final WebSocketService webSocketService;
 
     private boolean isDev() {
         return env.acceptsProfiles(Profiles.of(Constants.SPRING_PROFILE_DEVELOPMENT));
@@ -73,7 +75,7 @@ public class PushServiceImpl implements PushService {
         try {
             val mobileNo = param.getMobileNo();
             if (Const.wxlite.equals(param.getDeviceId())) {
-                webSocketService.pushMessage(mobileNo, alert, pushType, data);
+                webSocketService.pushMessage(mobileNo, param.getAlert(), param.getPushType(), param.getData());
                 return true;
             } else {
                 return JPush.pushNotation(mobileNo, param.getAlert(), param.getPushType(), param.getData()).isPresent();

@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.qdigo.ebike.api.service.third.address.AmapService;
 import com.qdigo.ebike.api.service.user.UserService;
 import com.qdigo.ebike.common.core.constants.Keys;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.http.NetUtil;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import com.qdigo.ebike.usercenter.domain.entity.User;

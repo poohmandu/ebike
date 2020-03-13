@@ -17,7 +17,7 @@
 package com.qdigo.ebike.iotcenter.netty;
 
 import com.qdigo.ebike.common.core.util.http.NetUtil;
-import com.qdigo.ebike.iotcenter.config.NettyServerProperties;
+import com.qdigo.ebike.commonconfig.configuration.properties.QdigoNettyProperties;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelOption;
@@ -44,7 +44,7 @@ public class SocketServer {
     @Resource(name = "workerGroup")
     private EventLoopGroup workerGroup;
     @Resource
-    private NettyServerProperties nettyServerProperties;
+    private QdigoNettyProperties qdigoNettyProperties;
     @Resource
     private IotChildChannelInitializer iotChildChannelInitializer;
 
@@ -73,7 +73,7 @@ public class SocketServer {
 
             // Bind and start to accept incoming connections.
             // (7)  //配置完成，开始绑定server，通过调用sync同步方法阻塞直到绑定成功
-            serverChannelFuture = b.bind(nettyServerProperties.getPort()).sync();
+            serverChannelFuture = b.bind(qdigoNettyProperties.getPort()).sync();
 
             log.info("netty server 已启动");
 
@@ -82,7 +82,7 @@ public class SocketServer {
             // gracefully
             // shut down your server.
             //这样导致springboot主线程阻塞，无法继续加载剩下的bean
-            //serverChannelFuture.channel().closeFuture().sync();
+            serverChannelFuture.channel().closeFuture().sync();
 
         } finally {
             log.info("netty server被关闭");

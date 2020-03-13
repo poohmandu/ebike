@@ -21,7 +21,7 @@ import com.qdigo.ebike.api.domain.dto.station.StationDto;
 import com.qdigo.ebike.api.service.agent.AgentConfigService;
 import com.qdigo.ebike.api.service.bike.BikeLocService;
 import com.qdigo.ebike.api.service.station.StationService;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import lombok.Builder;
 import lombok.Data;

@@ -20,7 +20,7 @@ import com.qdigo.ebike.api.service.third.wxlite.WxliteService;
 import com.qdigo.ebike.api.service.third.zfblite.ZfbliteService;
 import com.qdigo.ebike.common.core.constants.Const;
 import com.qdigo.ebike.common.core.constants.Keys;
-import com.qdigo.ebike.common.core.util.R;
+import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.common.core.util.http.HeaderUtil;
 import com.qdigo.ebike.common.core.util.http.NetUtil;
 import com.qdigo.ebike.usercenter.domain.entity.User;
