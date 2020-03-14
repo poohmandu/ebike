@@ -16,21 +16,22 @@
 
 package com.qdigo.ebike.controlcenter.service.inner.datagram;
 
-import com.qdigo.ebicycle.aop.cat.CatAnnotation;
-import com.qdigo.ebicycle.constants.BikeCfg;
-import com.qdigo.ebicycle.constants.Keys;
-import com.qdigo.ebicycle.domain.bike.Bike;
-import com.qdigo.ebicycle.domain.bike.BikeGpsStatus;
-import com.qdigo.ebicycle.domain.mongo.device.PCPackage;
-import com.qdigo.ebicycle.repository.bikeRepo.BikeGpsStatusRepository;
-import com.qdigo.ebicycle.repository.bikeRepo.BikeRepository;
-import com.qdigo.ebicycle.service.bike.BikeService;
-import com.qdigo.ebicycle.service.cammand.DeviceService;
-import com.qdigo.ebicycle.service.util.FormatUtil;
+import com.qdigo.ebike.api.domain.dto.agent.ops.OpsUseRecordDto;
+import com.qdigo.ebike.api.domain.dto.bike.BikeGpsStatusDto;
+import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
+import com.qdigo.ebike.api.service.agent.ops.AgentOpsUseRecordService;
+import com.qdigo.ebike.api.service.bike.BikeGpsStatusService;
+import com.qdigo.ebike.api.service.bike.BikeStatusService;
+import com.qdigo.ebike.common.core.constants.BikeCfg;
+import com.qdigo.ebike.common.core.constants.Keys;
+import com.qdigo.ebike.common.core.constants.Status;
+import com.qdigo.ebike.common.core.util.FormatUtil;
+import com.qdigo.ebike.controlcenter.domain.entity.mongo.PCPackage;
+import com.qdigo.ebike.controlcenter.service.inner.command.DeviceService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
@@ -39,27 +40,27 @@ import javax.inject.Inject;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class PCService {
 
-    @Inject
-    private BikeGpsStatusRepository gpsStatusRepository;
-    @Inject
-    private BikeRepository bikeRepository;
-    @Inject
-    private BikeService bikeService;
-    @Inject
-    private DeviceService deviceService;
-    @Inject
-    private RedisTemplate<String, String> redisTemplate;
+    private final BikeStatusService bikeStatusService;
+    private final AgentOpsUseRecordService opsUseRecordService;
+    private final DeviceService deviceService;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final BikeGpsStatusService bikeGpsStatusService;
 
-    @Transactional
+    //@Transactional
     //@CatAnnotation
     public void bikeCommandService(PCPackage pc) {
         String imei = pc.getPcImei();
         //保存最新pcTime;
-        BikeGpsStatus gpsStatus = gpsStatusRepository.findByImei(imei).orElseThrow(() -> new NullPointerException("GPS表没有" + imei + "车辆"));
-        gpsStatus.setPcTime(FormatUtil.getCurTime());
-        gpsStatusRepository.save(gpsStatus);
+        BikeGpsStatusDto gpsStatusDto = bikeGpsStatusService.findByImei(imei);
+        if (gpsStatusDto == null) {
+            log.info("bikeGps未查询到imei号为{}的车辆", imei);
+            return;
+        }
+        gpsStatusDto.setPcTime(FormatUtil.getCurTime());
+        bikeGpsStatusService.update(gpsStatusDto);
 
         int cmd = pc.getPcCmd();
         String param = pc.getPcParam();
@@ -149,17 +150,15 @@ public class PCService {
     }
 
     public void onSmsOn(String imei) {
-        Bike bike = bikeRepository.findByImeiId(imei).orElseGet(null);
-        if (bike == null) {
+        BikeStatusDto bikeStatusDto = bikeStatusService.findByImei(imei);
+        if (bikeStatusDto == null) {
             return;
         }
-        if (bike.isDeleted()) {
+        if (bikeStatusDto.getStatus() != Status.BikeLogicStatus.available.getVal()) {
             return;
         }
-        if (bikeService.inUse(bike)) {
-            return;
-        }
-        if (bikeService.opsUserInUse(imei)) {
+        OpsUseRecordDto useRecordDto = opsUseRecordService.findByUsingBike(imei);
+        if (useRecordDto != null) {
             return;
         }
         log.debug("{}在无人借车情况下短信延迟上电", imei);

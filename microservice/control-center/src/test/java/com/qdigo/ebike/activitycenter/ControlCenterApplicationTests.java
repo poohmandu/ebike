@@ -18,7 +18,6 @@ package com.qdigo.ebike.activitycenter;
 
 import com.qdigo.ebike.controlcenter.domain.entity.mongo.PGPackage;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -50,7 +49,7 @@ class ControlCenterApplicationTests {
     private String[] dateArr = {"PG20200225"};
     public final static DateFormat df = new SimpleDateFormat("HH:mm:ss");
 
-    @Test
+    //@Test
     void contextLoads() {
         log.info("开始mongodb测试");
         Query query = new Query(Criteria.where("pgImei").in(imeiArr)

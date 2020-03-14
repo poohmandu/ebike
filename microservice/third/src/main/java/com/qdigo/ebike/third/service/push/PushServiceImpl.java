@@ -54,6 +54,17 @@ public class PushServiceImpl implements PushService {
     }
 
     @Override
+    public String pushWarn(WarnParam warnParam) {
+        if (this.isDev()) {
+            return null;
+        }
+        return JPush.opsPushNotations(warnParam.getMobiles(), warnParam.getAlert(),
+                Const.PushType.warn, warnParam.getData())
+                .map(pushResult -> String.valueOf(pushResult.msg_id))
+                .orElse(null);
+    }
+
+    @Override
     public boolean pushTimeNotation(TimeParam timeParam) {
         Param param = timeParam.getParam();
         if (this.isDev()) {

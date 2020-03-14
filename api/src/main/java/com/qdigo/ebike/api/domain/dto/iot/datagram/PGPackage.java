@@ -17,15 +17,13 @@
 package com.qdigo.ebike.api.domain.dto.iot.datagram;
 
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.experimental.Accessors;
 
 import java.io.Serializable;
 
 @Accessors(chain = true)
-@EqualsAndHashCode(callSuper = true)
 @Data
-public class PGPackage extends DatagramDto implements Serializable {
+public class PGPackage implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -48,4 +46,5 @@ public class PGPackage extends DatagramDto implements Serializable {
 
     private String pgClient;
     private String pgServer;
+    private Long timestamp = System.currentTimeMillis();
 }

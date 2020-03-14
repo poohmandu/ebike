@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.iotcenter.service;
 
-import com.qdigo.ebike.common.core.util.SpringContextHolder;
+import com.qdigo.ebike.commonconfig.configuration.properties.QdigoOnOffProperties;
 import com.qdigo.ebike.iotcenter.client.SendDownPackage;
 import com.qdigo.ebike.iotcenter.client.SendSpecialPackage;
 import com.qdigo.ebike.iotcenter.client.SendUpPackage;
@@ -47,6 +47,8 @@ public class ByteHandlerService {
     private ParsePackageServiceContext parsePackageServiceContext;
     @Resource
     private PackageManageServiceContext packageManageServiceContext;
+    @Resource
+    private QdigoOnOffProperties qdigoOnOffProperties;
 
     @SuppressWarnings("unchecked")
     public void parse(byte[] bytes, ChannelHandlerContext ctx) {
@@ -64,7 +66,7 @@ public class ByteHandlerService {
             SocketChannelMap.downConcurrentMap.put(imeiKey, ctx);
             //发送下行命令包
             SendDownPackage.sendDownCmd(bytes, imeiKey);
-            if (SpringContextHolder.testEnv("test")) {
+            if (qdigoOnOffProperties.isIotClientTest()) {
                 SendUpPackage.sendTestResp(imeiKey);
             }
         } else {

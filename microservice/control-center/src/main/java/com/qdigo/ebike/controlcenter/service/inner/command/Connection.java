@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.controlcenter.service.inner.cammand;
+package com.qdigo.ebike.controlcenter.service.inner.command;
 
 
 import com.qdigo.ebike.common.core.constants.*;

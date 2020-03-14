@@ -44,7 +44,10 @@ public interface BikeGpsStatusService {
     @PostMapping(ApiRoute.BikeCenter.BikeGpsStatus.updatePh)
     void updatePh(@RequestBody PHPackage phPackage);
 
-    @PostMapping(ApiRoute.BikeCenter.BikeGpsStatus.updatePg)
+    @PostMapping(ApiRoute.BikeCenter.BikeGpsStatus.updatePl)
     void updatePl(@RequestBody PLPackage plPackage);
+
+    @PostMapping(ApiRoute.BikeCenter.BikeGpsStatus.update)
+    void update(@RequestBody BikeGpsStatusDto bikeGpsStatusDto);
 
 }

@@ -16,22 +16,26 @@
 
 package com.qdigo.ebike.controlcenter.listener.device;
 
-import com.qdigo.ebicycle.constants.ConfigConstants;
-import com.qdigo.ebicycle.constants.Const;
-import com.qdigo.ebicycle.constants.MQ;
-import com.qdigo.ebicycle.domain.device.PLSqlPackage;
-import com.qdigo.ebicycle.domain.mongo.device.PLPackage;
-import com.qdigo.ebicycle.repository.deviceRepo.PLSqlRepository;
-import com.qdigo.ebicycle.repository.mongo.PLMongoRepository;
-import com.qdigo.ebicycle.service.bike.BikeGpsStatusService;
-import com.qdigo.ebicycle.service.device.PLService;
+
+import com.qdigo.ebike.api.service.bike.BikeGpsStatusService;
+import com.qdigo.ebike.common.core.constants.ConfigConstants;
+import com.qdigo.ebike.common.core.constants.Const;
+import com.qdigo.ebike.common.core.constants.MQ;
+import com.qdigo.ebike.common.core.util.ConvertUtil;
+import com.qdigo.ebike.controlcenter.domain.entity.device.PLSqlPackage;
+import com.qdigo.ebike.controlcenter.domain.entity.mongo.PLPackage;
+import com.qdigo.ebike.controlcenter.repository.PLSqlRepository;
+import com.qdigo.ebike.controlcenter.repository.mongo.PLMongoRepository;
+import com.qdigo.ebike.controlcenter.service.inner.datagram.PLService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import lombok.val;
 import org.springframework.amqp.core.ExchangeTypes;
 import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.interceptor.TransactionAspectSupport;
@@ -40,24 +44,17 @@ import javax.inject.Inject;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
-//@RestController
-//@RequestMapping("/v1.0/bikeProtocol")
-@Component
-//@ConditionalOnProperty(name = "server.port", havingValue = Const.MQPorts)
-@ConditionalOnExpression("'${my.env}'=='prod' and ${server.port}==${my.mq-port}")
 @Slf4j
+@Component
+@ConditionalOnProperty(name = "qdigo.on-off.mq-listener", havingValue = "true")
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class BikeLocation {
 
-    @Inject
-    private MongoTemplate mongoTemplate;
-    @Inject
-    private PLSqlRepository plSqlRepository;
-    @Inject
-    private PLMongoRepository plMongoRepository;
-    @Inject
-    private PLService plService;
-    @Inject
-    private BikeGpsStatusService bikeGpsStatusService;
+    private final MongoTemplate mongoTemplate;
+    private final PLSqlRepository plSqlRepository;
+    private final PLMongoRepository plMongoRepository;
+    private final PLService plService;
+    private final BikeGpsStatusService bikeGpsStatusService;
 
     /**
      * GPS基站定位包接口
@@ -88,7 +85,9 @@ public class BikeLocation {
             // 对mySql的PL表进行更新
             PLSqlPackage plSqlPackage = formToSqlDomain(form);
             plSqlRepository.save(plSqlPackage);
-            bikeGpsStatusService.saveBikeGpsStatus(form);
+
+            val plPackage = ConvertUtil.to(form, com.qdigo.ebike.api.domain.dto.iot.datagram.PLPackage.class);
+            bikeGpsStatusService.updatePl(plPackage);
 
         } catch (Exception e) {
             log.error("PL在MQ的消费过程中异常:", e);

@@ -14,20 +14,23 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.api.domain.dto.iot.datagram;
+package com.qdigo.ebike.api.service.third.devicesms;
 
-import lombok.Data;
+import com.qdigo.ebike.api.ApiRoute;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
- * Description: 
- * date: 2020/2/20 9:40 PM
+ * description: 
+ *
+ * date: 2020/3/14 11:03 AM
  * @author niezhao
- * @version
- * @since JDK 1.8
  */
-@Data
-public abstract class DatagramDto {
+@FeignClient(name = "third", contextId = "device-sms-youyun")
+public interface YouyunService {
 
-    private Long timestamp = System.currentTimeMillis();
+    @PostMapping(ApiRoute.Third.DeviceSms.Youyun.httpSend)
+    boolean httpSend(@RequestParam("simNo") Long simNo, @RequestParam("temp") String temp, @RequestParam("params") String params);
 
 }

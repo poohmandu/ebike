@@ -16,11 +16,22 @@
 
 package com.qdigo.ebike.api.service.agent.ops;
 
+import com.qdigo.ebike.api.ApiRoute;
+import com.qdigo.ebike.api.domain.dto.agent.ops.OpsUseRecordDto;
+import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
 /**
  * description:
  *
  * date: 2020/3/13 9:45 AM
  * @author niezhao
  */
-public interface AgentOpsUserService {
+@FeignClient(name = "agent-center", contextId = "agent-ops-use-record")
+public interface AgentOpsUseRecordService {
+
+    @PostMapping(ApiRoute.AgentCenter.Ops.UseRecord.findByUsingBike)
+    OpsUseRecordDto findByUsingBike(@RequestParam("imei") String imei);
+
 }

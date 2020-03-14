@@ -17,17 +17,18 @@
 package com.qdigo.ebike.controlcenter.listener.device;
 
 import com.alibaba.fastjson.JSON;
-import com.qdigo.ebicycle.constants.ConfigConstants;
-import com.qdigo.ebicycle.constants.Const;
-import com.qdigo.ebicycle.constants.Keys;
-import com.qdigo.ebicycle.constants.MQ;
-import com.qdigo.ebicycle.domain.mongo.device.PGPackage;
-import com.qdigo.ebicycle.service.util.FormatUtil;
-import com.qdigo.ebicycle.service.util.ThreadPool;
+import com.qdigo.ebike.common.core.constants.ConfigConstants;
+import com.qdigo.ebike.common.core.constants.Const;
+import com.qdigo.ebike.common.core.constants.Keys;
+import com.qdigo.ebike.common.core.constants.MQ;
+import com.qdigo.ebike.common.core.util.FormatUtil;
+import com.qdigo.ebike.commonconfig.configuration.ThreadPool;
+import com.qdigo.ebike.controlcenter.domain.entity.mongo.PGPackage;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
@@ -37,9 +38,10 @@ import java.util.concurrent.TimeUnit;
 /**
  * Created by niezhao on 2018/1/2.
  */
-@Component
 @Slf4j
-@ConditionalOnExpression("'${my.env}'=='prod' and ${server.port}==${my.mq-port}")
+@Component
+@ConditionalOnProperty(name = "qdigo.on-off.mq-listener", havingValue = "true")
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class CollectionMessage {
 
     @Inject

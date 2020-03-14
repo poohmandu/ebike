@@ -39,7 +39,7 @@ import com.qdigo.ebike.commonaop.annotations.Token;
 import com.qdigo.ebike.commonaop.constants.DB;
 import com.qdigo.ebike.controlcenter.domain.dto.BikePgInfo;
 import com.qdigo.ebike.controlcenter.domain.entity.mongo.PGPackage;
-import com.qdigo.ebike.controlcenter.service.inner.cammand.DeviceService;
+import com.qdigo.ebike.controlcenter.service.inner.command.DeviceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;

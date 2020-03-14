@@ -21,7 +21,7 @@ import com.qdigo.ebike.api.service.bike.BikeStatusService;
 import com.qdigo.ebike.common.core.constants.Keys;
 import com.qdigo.ebike.common.core.constants.Status;
 import com.qdigo.ebike.controlcenter.domain.entity.mongo.PGPackage;
-import com.qdigo.ebike.controlcenter.service.inner.cammand.DeviceService;
+import com.qdigo.ebike.controlcenter.service.inner.command.DeviceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;

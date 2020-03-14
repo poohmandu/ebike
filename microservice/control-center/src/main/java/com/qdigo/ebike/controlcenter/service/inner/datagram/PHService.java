@@ -21,6 +21,8 @@ import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
 import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import com.qdigo.ebike.api.service.agent.ops.OpsWarnService;
+import com.qdigo.ebike.api.service.bike.BikeStatusService;
 import com.qdigo.ebike.api.service.order.ride.OrderRideService;
 import com.qdigo.ebike.api.service.third.push.PushService;
 import com.qdigo.ebike.api.service.user.UserService;
@@ -55,6 +57,8 @@ public class PHService {
     private final RedisTemplate<String, String> redisTemplate;
     private final PushService pushService;
     private final UserService userService;
+    private final OpsWarnService warnService;
+    private final BikeStatusService bikeStatusService;
 
     @Transactional
     public void updateStatus(PHPackage ph, List<PHPackage> list, BikePhInfo bikePhInfo) {
@@ -121,21 +125,56 @@ public class PHService {
                 TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - Long.parseLong(seatCushionTimeStr)) > 5) {
 
             val electricBln = ph.getPhElectric() == 0;
-            warnService.warn(electricBln, Const.MailType.ElectricWarn, MessageFormat.format("deviceId:{0},没有外接电源,IMEI:{1}", deviceId, imei), bike);
-            warnService.warn(lowPowerVoltageBln, Const.MailType.PowerVoltageWarn, MessageFormat.format("deviceId:{0},电压过低,为{1}伏,IMEI:{2}", deviceId, ph.getPhPowerVoltage() / 100, imei), bike);
+            OpsWarnService.WarnParam param = OpsWarnService.WarnParam.builder().bln(electricBln).mailType(Const.MailType.ElectricWarn).agentId(bike.getAgentId())
+                    .alert(MessageFormat.format("deviceId:{0},没有外接电源,IMEI:{1}", deviceId, imei)).deviceId(deviceId).imei(imei)
+                    .latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+            this.warn(param);
+
+            OpsWarnService.WarnParam param1 = OpsWarnService.WarnParam.builder().bln(lowPowerVoltageBln).mailType(Const.MailType.PowerVoltageWarn).agentId(bike.getAgentId())
+                    .alert(MessageFormat.format("deviceId:{0},电压过低,为{1}伏,IMEI:{2}", deviceId, ph.getPhPowerVoltage() / 100, imei))
+                    .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+            this.warn(param1);
         } else {
             log.debug("【{}】5分钟内有管理员开过坐垫,屏蔽报警", imei);
         }
 
         val doorLockBln = ph.getPhDoorLock() == 1 && ph.getPhLocked() == 1;
-        warnService.warn(doorLockBln, Const.MailType.DoorLockWarn, MessageFormat.format("deviceId:{0},锁车情况下打开了电门锁,IMEI:{1}", deviceId, imei), bike);
+        OpsWarnService.WarnParam param = OpsWarnService.WarnParam.builder().bln(doorLockBln).mailType(Const.MailType.DoorLockWarn).agentId(bike.getAgentId())
+                .alert(MessageFormat.format("deviceId:{0},锁车情况下打开了电门锁,IMEI:{1}", deviceId, imei))
+                .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+        this.warn(param);
 
         val wheelInputBln = ph.getPhWheelInput() == 1 && ph.getPhLocked() == 1;
-        warnService.warn(wheelInputBln, Const.MailType.WheelInputWarn, MessageFormat.format("deviceId:{0},锁车情况下有轮车输入,IMEI:{1}", deviceId, imei), bike);
+        OpsWarnService.WarnParam param1 = OpsWarnService.WarnParam.builder().bln(wheelInputBln).mailType(Const.MailType.WheelInputWarn).agentId(bike.getAgentId())
+                .alert(MessageFormat.format("deviceId:{0},锁车情况下有轮车输入,IMEI:{1}", deviceId, imei))
+                .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+        this.warn(param1);
 
         val shakeBln = ph.getPhShaked() == 1 && ph.getPhLocked() == 1;
-        warnService.warn(shakeBln, Const.MailType.ShakeWarn, MessageFormat.format("deviceId:{0},锁车情况下有震动,IMEI:{1}", deviceId, imei), bike);
+        OpsWarnService.WarnParam param2 = OpsWarnService.WarnParam.builder().bln(shakeBln).mailType(Const.MailType.ShakeWarn).agentId(bike.getAgentId())
+                .alert(MessageFormat.format("deviceId:{0},锁车情况下有震动,IMEI:{1}", deviceId, imei))
+                .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
 
+        this.warn(param2);
+
+    }
+
+    private void warn(OpsWarnService.WarnParam warnParam) {
+        val imei = warnParam.getImei();
+        val key = Keys.warnOps.getKey(warnParam.getMailType().name(), imei);
+        if (warnParam.isBln()) {
+            if (!redisTemplate.hasKey(key)) {
+                redisTemplate.opsForValue().set(key, "1", 12, TimeUnit.HOURS);
+            } else {
+                redisTemplate.opsForValue().increment(key, 1);
+                val count = Integer.parseInt(redisTemplate.opsForValue().get(key));
+                if (count == 2) {
+                    warnService.pushWarn(warnParam);
+                }
+            }
+        } else {
+            redisTemplate.delete(key);
+        }
     }
 
     //rebuild
@@ -154,6 +193,11 @@ public class PHService {
         //} catch (Exception e) {
         //    log.error("PH中检查车辆状态出错");
         //}
+    }
+
+    public void updateStatus(BikePhInfo bikePhInfo) {
+        BikeStatusDto bikeStatusDto = bikePhInfo.getBikeStatusDto();
+        bikeStatusService.update(bikeStatusDto);
     }
 
     //rebuild

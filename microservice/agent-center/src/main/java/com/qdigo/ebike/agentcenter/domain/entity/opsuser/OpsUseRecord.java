@@ -30,10 +30,8 @@ public class OpsUseRecord {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @ManyToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ops_user", referencedColumnName = "user_name",
-            foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
-    private OpsUser opsUser;
+    @Column(name = "ops_user", nullable = false)
+    private String opsUser;
 
     @Column(name = "imei", nullable = false)
     private String imei;
@@ -55,11 +53,11 @@ public class OpsUseRecord {
         return this;
     }
 
-    public OpsUser getOpsUser() {
+    public String getOpsUser() {
         return opsUser;
     }
 
-    public OpsUseRecord setOpsUser(OpsUser opsUser) {
+    public OpsUseRecord setOpsUser(String opsUser) {
         this.opsUser = opsUser;
         return this;
     }

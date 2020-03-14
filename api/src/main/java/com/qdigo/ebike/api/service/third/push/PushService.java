@@ -24,6 +24,8 @@ import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
+import java.util.List;
+
 /**
  * Description: 
  * date: 2020/2/14 11:08 AM
@@ -34,11 +36,15 @@ import org.springframework.web.bind.annotation.RequestBody;
 @FeignClient(name = "third", contextId = "push")
 public interface PushService {
 
+    @PostMapping(ApiRoute.Third.Push.pushWarn)
+    String pushWarn(@RequestBody WarnParam warnParam);
+
     @PostMapping(ApiRoute.Third.Push.pushTimeNotation)
     boolean pushTimeNotation(@RequestBody TimeParam timeParam);
 
     @PostMapping(ApiRoute.Third.Push.pushNotation)
     boolean pushNotation(@RequestBody Param param);
+
 
     @Data
     @Builder
@@ -57,4 +63,11 @@ public interface PushService {
         private Object data;
     }
 
+    @Data
+    @Builder
+    class WarnParam {
+        private String alert;
+        private Object data;
+        private List<String> mobiles;
+    }
 }

@@ -120,4 +120,10 @@ public class BikeGpsStatusServiceImpl implements BikeGpsStatusService {
                 .setSingal(PL.getPlSingal())
                 .setImei(PL.getPlImei()));
     }
+
+    @Override
+    public void update(BikeGpsStatusDto bikeGpsStatusDto) {
+        BikeGpsStatus gpsStatus = ConvertUtil.to(bikeGpsStatusDto, BikeGpsStatus.class);
+        gpsStatusRepository.save(gpsStatus);
+    }
 }

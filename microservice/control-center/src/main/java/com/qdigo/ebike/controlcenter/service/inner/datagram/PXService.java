@@ -16,8 +16,8 @@
 
 package com.qdigo.ebike.controlcenter.service.inner.datagram;
 
-import com.qdigo.ebicycle.domain.mongo.device.PXPackage;
-import com.qdigo.ebicycle.repository.mongo.PXMongoRepository;
+import com.qdigo.ebike.controlcenter.domain.entity.mongo.PXPackage;
+import com.qdigo.ebike.controlcenter.repository.mongo.PXMongoRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
@@ -39,8 +39,8 @@ public class PXService {
     private PXMongoRepository pxMongoRepository;
     @Inject
     private MongoTemplate mongoTemplate;
-    private static final String collectionName = "PXPackage";
 
+    private static final String collectionName = "PXPackage";
 
     @Async
     public void insertPXAsync(PXPackage px) {

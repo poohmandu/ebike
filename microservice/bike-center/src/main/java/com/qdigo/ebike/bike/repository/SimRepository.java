@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.api.domain.dto.iot.datagram;
+package com.qdigo.ebike.bike.repository;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
+import com.qdigo.ebike.bike.domain.entity.Sim;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 
-@Data
-@Accessors(chain = true)
-public class PCPackage {
+import java.util.Optional;
 
-    private String id;
-
-    private String pcImei;
-    private int pcCmd;
-    private String pcParam;
-    private long pcSequence;
-
-    private long timestamp = System.currentTimeMillis();
-    private String pcClient;
-    private String pcServer;
-
+/**
+ * Created by niezhao on 2017/7/11.
+ */
+public interface SimRepository extends JpaRepository<Sim, Long>,JpaSpecificationExecutor {
+    Optional<Sim> findByImsi(Long imsi);
 }

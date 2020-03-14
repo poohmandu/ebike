@@ -18,6 +18,7 @@ package com.qdigo.ebike.iotcenter.message.bike;
 
 import com.qdigo.ebike.api.domain.dto.iot.datagram.PHPackage;
 import com.qdigo.ebike.common.core.constants.MQ;
+import com.qdigo.ebike.commonconfig.configuration.properties.QdigoOnOffProperties;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.gprs.ph.PHPacketDto;
 import com.qdigo.ebike.iotcenter.dto.http.req.gprs.PHReqDto;
@@ -46,13 +47,16 @@ public class PHManage implements PackageManageStrateyg<PHPacketDto> {
     private RabbitTemplate rabbitTemplate;
     @Resource
     private RedisTemplate<String, String> redisTemplate;
-
+    @Resource
+    private QdigoOnOffProperties onOffProperties;
 
     public void sendMsg(PHPacketDto phPacketDto) {
         try {
             PHReqDto phReqDto = buildPHReqDto(phPacketDto);
             PHPackage phPackage = buildPHPackage(phReqDto);
-            rabbitTemplate.convertAndSend(MQ.Topic.Exchange.ph, MQ.Topic.Key.up_ph, phPackage);
+            if (onOffProperties.isIotMqSend()) {
+                rabbitTemplate.convertAndSend(MQ.Topic.Exchange.ph, MQ.Topic.Key.up_ph, phPackage);
+            }
         } catch (Exception e) {
             log.error("发送上行PH包http请求异常 header0:" + phPacketDto.getHeader0() + ",header1:" + phPacketDto.getHeader1() + ",imei:" + phPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_PH_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_PH_HTTP_ERROR.getMsg());

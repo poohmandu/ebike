@@ -16,15 +16,12 @@
 
 package com.qdigo.ebike.controlcenter.controller;
 
-import com.qdigo.ebicycle.domain.bike.Bike;
-import com.qdigo.ebicycle.o.ro.BaseResponse;
-import com.qdigo.ebicycle.service.bike.BikeService;
-import com.qdigo.ebicycle.service.cammand.DeviceService;
-import com.qdigo.ebike.controlcenter.domain.dto.EBikeIdentifyForm;
 import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
 import com.qdigo.ebike.api.service.bike.BikeService;
 import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
+import com.qdigo.ebike.controlcenter.domain.dto.EBikeIdentifyForm;
+import com.qdigo.ebike.controlcenter.service.inner.command.DeviceService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -40,10 +37,8 @@ import java.util.concurrent.Callable;
 public class CloseBike {
 
     private final BikeService bikeService;
+    private final DeviceService deviceService;
 
-
-    @Inject
-    private DeviceService deviceService;
 
     /**
      * 断电请求
@@ -73,10 +68,10 @@ public class CloseBike {
             log.debug("user:{}待发送的send imei号为{}", mobileNo, imei);
             if (!deviceService.shutdown(imei, mobileNo)) {
                 log.debug("user:{}断电失败:{}", mobileNo, imei);
-                return new BaseResponse(402, "断电失败");
+                return R.ok(402, "断电失败");
             }
             log.debug("user:{}断电成功:{}", mobileNo, imei);
-            return new BaseResponse(200, "电动车已断电");
+            return R.ok(200, "电动车已断电");
         };
     }
 

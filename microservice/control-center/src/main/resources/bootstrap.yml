@@ -11,6 +11,7 @@ spring:
         file-extension: yaml
         ext-config:
           - data-id: datasource-${spring.profiles.active}.yaml
+            refresh: true
           - data-id: cloud-${spring.profiles.active}.yaml
             refresh: true
           - data-id: common-${spring.profiles.active}.yaml
@@ -24,7 +25,7 @@ spring:
   cloud:
     nacos:
       config:
-        server-addr: dev.nacos.qdigo.com:8848$
+        server-addr: dev.nacos.qdigo.com:8848
 ---
 spring:
   profiles: prod

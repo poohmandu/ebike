@@ -150,6 +150,26 @@ public interface ApiRoute {
 
             String pushTimeNotation = push + "/pushTimeNotation";
             String pushNotation = push + "/pushNotation";
+            String pushWarn = push + "/pushWarn";
+        }
+
+        interface DeviceSms{
+            String deviceSms = third + "/deviceSms";
+
+            interface Huahong{
+                String huahong = deviceSms + "/huahong";
+                String send = huahong + "/send";
+                String receive = huahong + "/receive";
+            }
+
+            interface Dahan{
+                String dahan = deviceSms + "/dahan";
+                String httpSend = dahan + "/httpSend";
+            }
+            interface Youyun{
+                String youyun = deviceSms + "/youyun";
+                String httpSend = youyun + "/httpSend";
+            }
         }
     }
 
@@ -186,12 +206,19 @@ public interface ApiRoute {
             String updatePg = bikeGpsStatus + "/updatePg";
             String updatePh = bikeGpsStatus + "/updatePh";
             String updatePl = bikeGpsStatus + "/updatePl";
+            String update = bikeGpsStatus + "/update";
         }
 
         interface BikeAddress {
             String bikeAddress = bikeCenter + "/bikeAddress";
 
             String updateBikeAddress = bikeAddress + "/updateBikeAddress";
+        }
+
+        interface SmsCard {
+            String smsCard = bikeCenter + "/smsCard";
+
+            String findByImsi = smsCard + "/findByImsi";
         }
     }
 
@@ -272,6 +299,19 @@ public interface ApiRoute {
             String takeawayConfig = agentCenter + "/takeawayConfig";
 
             String findByAgentId = takeawayConfig + "/findByAgentId";
+        }
+
+        interface Ops {
+            String ops = agentCenter + "/ops";
+
+            interface Warn {
+                String warn = ops + "/warn";
+                String pushWarn = warn + "/pushWarn";
+            }
+            interface UseRecord{
+                String useRecord = ops + "/useRecord";
+                String findByUsingBike = useRecord + "/findByUsingBike";
+            }
         }
 
     }

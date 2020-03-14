@@ -16,16 +16,18 @@
 
 package com.qdigo.ebike.iotcenter.message.bike;
 
+import com.qdigo.ebike.api.domain.dto.iot.datagram.PCPackage;
+import com.qdigo.ebike.common.core.constants.MQ;
+import com.qdigo.ebike.commonconfig.configuration.properties.QdigoOnOffProperties;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.gprs.pc.PCPacketDto;
-import com.qdigo.ebike.iotcenter.dto.http.req.gprs.PCReqDto;
 import com.qdigo.ebike.iotcenter.exception.IotServiceBizException;
 import com.qdigo.ebike.iotcenter.exception.IotServiceExceptionEnum;
 import com.qdigo.ebike.iotcenter.netty.SocketServer;
 import com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg;
 import com.qdigo.ebike.iotcenter.util.DateUtil;
-import com.qdigo.ebike.iotcenter.util.HttpClient;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -40,15 +42,19 @@ import static com.qdigo.ebike.iotcenter.service.api.PackageManageStrateyg.PCStra
 @Service(PCStratrgy)
 public class PCManage implements PackageManageStrateyg<PCPacketDto> {
 
-    private static final String url = "http://api.qdigo.net/v1.0/bikeProtocol/command";
+    @Resource
+    private RabbitTemplate rabbitTemplate;
     @Resource
     private RedisTemplate<String, String> redisTemplate;
-
+    @Resource
+    private QdigoOnOffProperties onOffProperties;
 
     public void sendMsg(PCPacketDto pcPacketDto) {
         try {
-            PCReqDto pcReqDto = buildPGReqDto(pcPacketDto);
-            HttpClient.sendMsg(url, pcReqDto);
+            PCPackage pcPackage = buildPCPackage(pcPacketDto);
+            if (onOffProperties.isIotMqSend()) {
+                rabbitTemplate.convertAndSend(MQ.Topic.Exchange.pc, MQ.Topic.Key.up_pc, pcPackage);
+            }
         } catch (Exception e) {
             log.error("发送上行PC包http请求异常 header0:" + pcPacketDto.getHeader0() + ",header1:" + pcPacketDto.getHeader1() + ",imei:" + pcPacketDto.getImei(), e);
             throw new IotServiceBizException(IotServiceExceptionEnum.SEND_UP_PC_HTTP_ERROR.getCode(), IotServiceExceptionEnum.SEND_UP_PC_HTTP_ERROR.getMsg());
@@ -56,7 +62,7 @@ public class PCManage implements PackageManageStrateyg<PCPacketDto> {
     }
 
     public void saveInfo(PCPacketDto dataPackDto) {
-        
+
     }
 
     public void saveUpPCInfo(PCPacketDto pcPacketDto) {
@@ -117,14 +123,14 @@ public class PCManage implements PackageManageStrateyg<PCPacketDto> {
         return bikePGMap;
     }
 
-    public PCReqDto buildPGReqDto(PCPacketDto pcPacketDto) {
-        PCReqDto pcReqDto = new PCReqDto();
-        pcReqDto.setPcImei(pcPacketDto.getImei());
-        pcReqDto.setPcCmd(pcPacketDto.getCmd());
-        pcReqDto.setPcSequence(pcPacketDto.getSeq());
-        pcReqDto.setPcParam(pcPacketDto.getParam());
-        pcReqDto.setPcClient(pcPacketDto.getClient());
-        pcReqDto.setPcServer(pcPacketDto.getServer());
-        return pcReqDto;
+    private PCPackage buildPCPackage(PCPacketDto pcPacketDto) {
+        return new PCPackage().setPcCmd(pcPacketDto.getCmd())
+                .setPcImei(String.valueOf(pcPacketDto.getImei()))
+                .setPcParam(pcPacketDto.getParam())
+                .setPcSequence(pcPacketDto.getSeq())
+                .setTimestamp(System.currentTimeMillis())
+                .setPcClient(pcPacketDto.getClient())
+                .setPcServer(pcPacketDto.getServer());
     }
+
 }

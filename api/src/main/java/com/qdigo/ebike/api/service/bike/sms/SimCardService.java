@@ -14,38 +14,24 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.api.service.agent.ops;
+package com.qdigo.ebike.api.service.bike.sms;
 
 import com.qdigo.ebike.api.ApiRoute;
-import com.qdigo.ebike.common.core.constants.Const;
-import lombok.Builder;
-import lombok.Data;
+import com.qdigo.ebike.api.domain.dto.bike.SimDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * description: 
  *
- * date: 2020/3/13 9:51 AM
+ * date: 2020/3/13 9:14 PM
  * @author niezhao
  */
-@FeignClient(name = "agent-center", contextId = "agent-ops-warn")
-public interface OpsWarnService {
+@FeignClient(name = "bike-center", contextId = "bike-sms")
+public interface SimCardService {
 
-    @PostMapping(ApiRoute.AgentCenter.Ops.Warn.pushWarn)
-    void pushWarn(@RequestBody WarnParam warnParam);
+    @PostMapping(ApiRoute.BikeCenter.SmsCard.findByImsi)
+    SimDto findByImsi(@RequestParam("imsi") Long imsi);
 
-    @Data
-    @Builder
-    class WarnParam {
-        private boolean bln;
-        private Const.MailType mailType;
-        private String alert;
-        private String imei;
-        private String deviceId;
-        private Long agentId;
-        private double longitude;
-        private double latitude;
-    }
 }

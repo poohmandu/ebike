@@ -18,7 +18,7 @@ package com.qdigo.ebike.iotcenter.message.bike;
 
 import com.qdigo.ebike.api.domain.dto.iot.datagram.PGPackage;
 import com.qdigo.ebike.common.core.constants.MQ;
-import com.qdigo.ebike.common.core.util.SpringContextHolder;
+import com.qdigo.ebike.commonconfig.configuration.properties.QdigoOnOffProperties;
 import com.qdigo.ebike.iotcenter.constants.BikeStatusEnum;
 import com.qdigo.ebike.iotcenter.dto.gprs.pg.PGPacketDto;
 import com.qdigo.ebike.iotcenter.exception.IotServiceBizException;
@@ -46,11 +46,13 @@ public class PGManage implements PackageManageStrateyg<PGPacketDto> {
     private RabbitTemplate rabbitTemplate;
     @Resource
     private RedisTemplate<String, String> redisTemplate;
+    @Resource
+    private QdigoOnOffProperties onOffProperties;
 
     public void sendMsg(PGPacketDto pgPacketDto) {
         try {
             PGPackage pgPackage = buildPGPackage(pgPacketDto);
-            if (!SpringContextHolder.testEnv("test")) {
+            if (onOffProperties.isIotMqSend()) {
                 rabbitTemplate.convertAndSend(MQ.Topic.Exchange.pg, MQ.Topic.Key.up_pg, pgPackage);
             }
         } catch (Exception e) {

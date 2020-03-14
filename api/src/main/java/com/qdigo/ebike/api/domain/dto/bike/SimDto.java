@@ -14,33 +14,20 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.commonconfig.configuration.properties;
+package com.qdigo.ebike.api.domain.dto.bike;
 
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
+import lombok.Data;
 
 /**
  * description: 
  *
- * date: 2020/3/6 10:43 AM
+ * date: 2020/3/13 5:19 PM
  * @author niezhao
  */
-@Configuration
-public class QdigoPropertiesConfig {
-
-    @Bean
-    public QdigoAsyncProperties qdigoAsyncProperties() {
-        return new QdigoAsyncProperties();
-    }
-
-    @Bean
-    public QdigoNettyProperties qdigoNettyProperties() {
-        return new QdigoNettyProperties();
-    }
-
-    @Bean
-    public QdigoOnOffProperties qdigoOnOffProperties() {
-        return new QdigoOnOffProperties();
-    }
-
+@Data
+public class SimDto {
+    private long imsi;
+    private long simNO;
+    private String ICCID;
+    private String simType;
 }
