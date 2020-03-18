@@ -20,7 +20,6 @@ package com.qdigo.ebike.common.core.errors.exception;
 import com.qdigo.ebike.common.core.domain.R;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import org.springframework.http.ResponseEntity;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -44,8 +43,8 @@ public class QdigoBizException extends Exception {
         this.statusCode = statusCode;
     }
 
-    public ResponseEntity toResponse() {
-        return ResponseEntity.ok(R.failed(this.statusCode, getMessage(), data));
+    public R toResponse() {
+        return R.failed(this.statusCode, getMessage(), data);
     }
 
 

@@ -23,6 +23,7 @@ import com.qdigo.ebike.common.core.util.ConvertUtil;
 import com.qdigo.ebike.stationcenter.domain.entity.BikeStation;
 import com.qdigo.ebike.stationcenter.repository.StationRepository;
 import com.qdigo.ebike.stationcenter.repository.dao.StationDao;
+import com.qdigo.ebike.stationcenter.service.StationDaoService;
 import lombok.RequiredArgsConstructor;
 
 import javax.inject.Inject;
@@ -41,6 +42,7 @@ public class StationServiceImpl implements StationService {
 
     private final StationDao stationDao;
     private final StationRepository stationRepository;
+    private final StationDaoService stationDaoService;
 
     @Override
     public StationDto getNearestStation(double GPSLng, double GPSLat, double radius) {
@@ -60,5 +62,11 @@ public class StationServiceImpl implements StationService {
         return stationRepository.findById(stationId)
                 .map(bikeStation -> ConvertUtil.to(bikeStation, StationDto.class))
                 .orElse(null);
+    }
+
+    @Override
+    public StationDto getNearestStationByAgents(Param param) {
+        BikeStation station = stationDaoService.findNearestStation(param.getLat(), param.getLng(), param.getAgentIds());
+        return ConvertUtil.to(station, StationDto.class);
     }
 }

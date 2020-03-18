@@ -30,8 +30,14 @@ import lombok.Data;
 public class UserDto implements Dto {
     private long userId;
     private String mobileNo;
+    private boolean isActive;
+    private String fullName;
+    private String realName;
+    private String idNo;
+    private String profileImageId;
     private String deviceId;
     private String wxliteOpenId;
     private String accessToken;
     private Long agentId;
+    private String countryCode;
 }

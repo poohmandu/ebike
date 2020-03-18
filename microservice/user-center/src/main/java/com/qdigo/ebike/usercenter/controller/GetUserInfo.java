@@ -87,7 +87,7 @@ public class GetUserInfo {
         }
         User user = userRepository.findOneByMobileNo(mobileNo).get();
 
-        Status.Step statusStep = userStatusInnerService.getStep(user);
+        Status.Step statusStep = userStatusInnerService.getStep(user, user.getAccount());
 
         boolean wxscoreEnable = userStatusInnerService.getUserWxscoreEnableCache(user);
         UserAccount account = user.getAccount();

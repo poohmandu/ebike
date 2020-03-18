@@ -16,7 +16,7 @@
 
 package com.qdigo.ebike.ordercenter.domain.entity.ride;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.FreeType;
 import com.qdigo.ebike.common.core.constants.Status;
 import lombok.Data;
 
@@ -34,11 +34,8 @@ public class RideFreeActivity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @JsonBackReference
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
-    @JoinColumn(name = "ride_record_id", referencedColumnName = "ride_record_id",
-        foreignKey = @ForeignKey(name = "none", value = ConstraintMode.NO_CONSTRAINT))
-    private RideRecord rideRecord;
+    @Column(name = "ride_record_id", nullable = false)
+    private Long rideRecordId;
 
     @Column(nullable = false, scale = 2, name = "free_consume")
     private double freeConsume; //免费金额
@@ -55,11 +52,6 @@ public class RideFreeActivity {
     @Column(nullable = false, name = "note")
     private String note; //说明
 
-    //免费类型
-    public enum FreeType {
-        time, money
-    }
-
     public long getId() {
         return id;
     }
@@ -69,12 +61,12 @@ public class RideFreeActivity {
         return this;
     }
 
-    public RideRecord getRideRecord() {
-        return rideRecord;
+    public Long getRideRecordId() {
+        return rideRecordId;
     }
 
-    public RideFreeActivity setRideRecord(RideRecord rideRecord) {
-        this.rideRecord = rideRecord;
+    public RideFreeActivity setRideRecordId(Long rideRecordId) {
+        this.rideRecordId = rideRecordId;
         return this;
     }
 

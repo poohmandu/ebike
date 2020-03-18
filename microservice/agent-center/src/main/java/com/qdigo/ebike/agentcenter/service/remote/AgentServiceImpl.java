@@ -45,4 +45,10 @@ public class AgentServiceImpl implements AgentService {
         List<Agent> agentList = agentRepository.findByCity(agentCity);
         return ConvertUtil.to(agentList, AgentDto.class);
     }
+
+    @Override
+    public AgentDto findById(Long agentId) {
+        Agent agent = agentRepository.findById(agentId).orElse(null);
+        return ConvertUtil.to(agent, AgentDto.class);
+    }
 }

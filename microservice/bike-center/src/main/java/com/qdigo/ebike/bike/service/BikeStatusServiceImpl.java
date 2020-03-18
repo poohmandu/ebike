@@ -19,9 +19,12 @@ package com.qdigo.ebike.bike.service;
 import com.qdigo.ebike.api.RemoteService;
 import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.service.bike.BikeStatusService;
+import com.qdigo.ebike.bike.domain.entity.Bike;
 import com.qdigo.ebike.bike.domain.entity.BikeStatus;
+import com.qdigo.ebike.bike.repository.BikeRepository;
 import com.qdigo.ebike.bike.repository.BikeStatusRepository;
 import com.qdigo.ebike.bike.repository.dao.BikeStatusDao;
+import com.qdigo.ebike.bike.service.inner.BikeStatusInnerService;
 import com.qdigo.ebike.common.core.util.ConvertUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,6 +45,8 @@ public class BikeStatusServiceImpl implements BikeStatusService {
 
     private final BikeStatusRepository statusRepository;
     private final BikeStatusDao bikeStatusDao;
+    private final BikeStatusInnerService bikeStatusInnerService;
+    private final BikeRepository bikeRepository;
 
     @Override
     public BikeStatusDto findStatusByBikeIId(Long bikeId) {
@@ -61,6 +66,12 @@ public class BikeStatusServiceImpl implements BikeStatusService {
         BikeStatus bikeStatus = statusRepository.findById(bikeStatusDto.getBikeStatusId()).get();
         bikeStatusDto.updated(bikeStatus);
         statusRepository.save(bikeStatus);
+    }
+
+    @Override
+    public String queryActualStatus(Long bikeId) {
+        Bike bike = bikeRepository.findById(bikeId).orElse(null);
+        return bikeStatusInnerService.queryActualStatus(bike);
     }
 
 }

@@ -151,8 +151,7 @@ public class UserStatusInnerService {
 
     //默认已经登录
     //@CatAnnotation
-    public Status.Step getStep(User user) {
-        UserAccount account = user.getAccount();
+    public Status.Step getStep(User user,UserAccount account) {
         double totalBalance = account.getBalance() + account.getGiftBalance();
         Boolean wxscoreEnable = self.getUserWxscoreEnableCache(user);
 

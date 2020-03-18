@@ -17,8 +17,12 @@
 package com.qdigo.ebike.usercenter.service.remote;
 
 import com.qdigo.ebike.api.RemoteService;
+import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.user.UserStatusService;
+import com.qdigo.ebike.common.core.constants.Status;
+import com.qdigo.ebike.common.core.util.ConvertUtil;
 import com.qdigo.ebike.usercenter.domain.entity.User;
+import com.qdigo.ebike.usercenter.domain.entity.UserAccount;
 import com.qdigo.ebike.usercenter.repository.UserRepository;
 import com.qdigo.ebike.usercenter.service.inner.UserStatusInnerService;
 import lombok.RequiredArgsConstructor;
@@ -43,5 +47,18 @@ public class UserStatusRemoteServiceImpl implements UserStatusService {
     public Boolean getUserWxscoreEnable(String mobileNo) {
         User user = userRepository.findOneByMobileNo(mobileNo).get();
         return userStatusInnerService.getUserWxscoreEnable(user);
+    }
+
+    @Override
+    public Status.Step getStep(StepParam param) {
+        User user = ConvertUtil.to(param.getUserDto(), User.class);
+        UserAccount userAccount = ConvertUtil.to(param.getUserAccountDto(), UserAccount.class);
+        return userStatusInnerService.getStep(user, userAccount);
+    }
+
+    @Override
+    public String hasNoFinishedWxscore(UserDto userDto) {
+        User user = ConvertUtil.to(userDto, User.class);
+        return userStatusInnerService.hasNoFinishedWxscore(user);
     }
 }

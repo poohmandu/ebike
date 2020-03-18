@@ -86,6 +86,9 @@ public class RideRecord {
     @OneToOne(cascade = {CascadeType.ALL}, mappedBy = "rideRecord", fetch = FetchType.LAZY)
     private RideRoute rideRoute;
 
+    @Column(name = "agent_id")
+    private Long agentId;
+
     @Version
     private int version;
 
@@ -224,6 +227,15 @@ public class RideRecord {
         return this;
     }
 
+    public Long getAgentId() {
+        return agentId;
+    }
+
+    public RideRecord setAgentId(Long agentId) {
+        this.agentId = agentId;
+        return this;
+    }
+
     public int getVersion() {
         return version;
     }
@@ -232,4 +244,6 @@ public class RideRecord {
         this.version = version;
         return this;
     }
+
+
 }

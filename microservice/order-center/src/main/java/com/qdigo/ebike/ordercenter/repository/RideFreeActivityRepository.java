@@ -19,8 +19,12 @@ package com.qdigo.ebike.ordercenter.repository;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideFreeActivity;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.List;
+
 /**
  * Created by niezhao on 2018/3/31.
  */
 public interface RideFreeActivityRepository extends JpaRepository<RideFreeActivity, Long> {
+
+    List<RideFreeActivity> findByRideRecordId(Long rideRecordId);
 }

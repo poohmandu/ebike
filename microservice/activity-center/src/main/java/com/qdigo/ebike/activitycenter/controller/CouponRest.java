@@ -22,8 +22,8 @@ import com.qdigo.ebike.activitycenter.domain.entity.coupon.Coupon;
 import com.qdigo.ebike.activitycenter.domain.entity.coupon.CouponTemplate;
 import com.qdigo.ebike.activitycenter.repository.CouponRepository;
 import com.qdigo.ebike.activitycenter.repository.InviteRepository;
-import com.qdigo.ebike.activitycenter.service.inner.coupon.CouponService;
-import com.qdigo.ebike.activitycenter.service.inner.invite.InviteService;
+import com.qdigo.ebike.activitycenter.service.inner.coupon.CouponInnerService;
+import com.qdigo.ebike.activitycenter.service.inner.invite.InviteInnerService;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.order.ride.OrderRideService;
@@ -60,8 +60,8 @@ public class CouponRest {
     private final UserService userService;
     private final InviteRepository inviteRepository;
     private final OrderRideService rideService;
-    private final CouponService couponService;
-    private final InviteService inviteService;
+    private final CouponInnerService couponInnerService;
+    private final InviteInnerService inviteInnerService;
     private final CouponRepository couponRepository;
 
 
@@ -90,7 +90,7 @@ public class CouponRest {
         if (inviter.getMobileNo().equals(invitee.getMobileNo())) {
             return R.ok(406, "邀请自己无效");
         }
-        List<Coupon> inviteCoupons = couponService.findInviteCoupons(inviter.getUserId());
+        List<Coupon> inviteCoupons = couponInnerService.findInviteCoupons(inviter.getUserId());
         int number = Const.inviteReward;
         if (inviteCoupons == null) {
             return R.ok(404, "邀请活动不存在");
@@ -104,9 +104,9 @@ public class CouponRest {
         }
         // 生成骑行券,邀请者赠给被邀请者 so 邀请者买单
         Long agentId = inviter.getAgentId();
-        couponService.createInviteCoupons(invitee.getUserId(), agentId, number);
+        couponInnerService.createInviteCoupons(invitee.getUserId(), agentId, number);
         // 保存邀请关系
-        inviteService.createInvite(inviter.getUserId(), invitee.getUserId());
+        inviteInnerService.createInvite(inviter.getUserId(), invitee.getUserId());
         return R.ok(200, "成功获得邀请奖励");
     }
 
@@ -134,7 +134,7 @@ public class CouponRest {
         if (rideDto != null) {
             return R.ok(401, "只有新用户才能领取哦");
         }
-        List<Coupon> inviteCoupons = couponService.findInviteCoupons(inviter.getUserId());
+        List<Coupon> inviteCoupons = couponInnerService.findInviteCoupons(inviter.getUserId());
         int number = Const.inviteReward;
         if (inviteCoupons == null) {
             return R.ok(404, "邀请活动不存在");
@@ -148,8 +148,8 @@ public class CouponRest {
         }
         // 生成骑行券
         Long agentId = inviter.getAgentId();
-        couponService.createInviteCoupons(invitee.getUserId(), agentId, Const.inviteReward);
-        inviteService.createInvite(inviter.getUserId(), invitee.getUserId());
+        couponInnerService.createInviteCoupons(invitee.getUserId(), agentId, Const.inviteReward);
+        inviteInnerService.createInvite(inviter.getUserId(), invitee.getUserId());
         return R.ok(200, "成功获得邀请奖励");
     }
 

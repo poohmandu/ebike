@@ -16,6 +16,7 @@
 
 package com.qdigo.ebike.agentcenter.domain.entity;
 
+import com.qdigo.ebike.api.domain.dto.agent.forceend.ForceEndType;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -36,7 +37,7 @@ public class AgentForceEndConfig {
 
     @Column(nullable = false, length = 20)
     @Enumerated(EnumType.STRING)
-    private Type type; // 计费类型
+    private ForceEndType type; // 计费类型
 
     private double levelOne = 20; //元,5公里内
 
@@ -52,7 +53,4 @@ public class AgentForceEndConfig {
 
     private int lineMeter = 100; //米,非0
 
-    public enum Type {
-        ladder, linear
-    }
 }

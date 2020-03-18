@@ -37,4 +37,7 @@ public interface AgentService {
     @PostMapping(ApiRoute.AgentCenter.Agent.findByCity)
     List<AgentDto> findByCity(@RequestParam("agentCity") String agentCity);
 
+    @PostMapping(ApiRoute.AgentCenter.Agent.findById)
+    AgentDto findById(@RequestParam("agentId") Long agentId);
+
 }

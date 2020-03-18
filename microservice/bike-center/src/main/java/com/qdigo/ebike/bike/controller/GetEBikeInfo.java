@@ -17,16 +17,14 @@
 package com.qdigo.ebike.bike.controller;
 
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Lists;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
-import com.qdigo.ebike.api.domain.dto.third.map.Point;
 import com.qdigo.ebike.api.service.control.RideTrackService;
 import com.qdigo.ebike.api.service.order.ride.OrderRideService;
 import com.qdigo.ebike.bike.domain.entity.Bike;
 import com.qdigo.ebike.bike.domain.entity.BikeStatus;
 import com.qdigo.ebike.bike.repository.BikeRepository;
-import com.qdigo.ebike.bike.service.inner.BikeStatusInnerService;
 import com.qdigo.ebike.bike.service.inner.BikeInnerService;
+import com.qdigo.ebike.bike.service.inner.BikeStatusInnerService;
 import com.qdigo.ebike.common.core.domain.R;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
 import lombok.Builder;
@@ -36,14 +34,11 @@ import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
 import java.text.DecimalFormat;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -102,30 +97,6 @@ public class GetEBikeInfo {
         private double latitude;
     }
 
-    @Transactional
-    @GetMapping(value = "/getRidingPolyline/{timestamp}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public R<?> getRidingPolyline(
-            @RequestHeader("mobileNo") String mobileNo,
-            @RequestHeader("mobiledeviceId") String deviceId, // 手机设备号
-            @RequestHeader("accessToken") String accessToken,
-            @PathVariable Long timestamp) {
-
-        RideDto rideDto = rideService.findRidingByMobileNo(mobileNo);
-        List<Point> points = Lists.newArrayList();
-
-        Map<String, Object> res;
-        if (rideDto != null && timestamp != null) {
-            rideTrackService.insertRideTracks(rideDto.getRideRecordId());
-            points = rideTrackService.getRideTrackAfterAndCursor(rideDto.getRideRecordId(), timestamp).stream()
-                    .filter(rideTrack -> rideTrack.getLatitude() != 0 && rideTrack.getLongitude() != 0)
-                    .map(rideTrack -> new Point().setTimestamp(rideTrack.getTimestamp())
-                            .setLongitude(rideTrack.getLongitude())
-                            .setLatitude(rideTrack.getLatitude()))
-                    .collect(Collectors.toList());
-        }
-        res = ImmutableMap.of("points", points, "size", points.size());
-        return R.ok(200, "成功返回该车行驶路线", res);
-    }
 
     @GetMapping(value = "/getEBikeInfo/{imei}", produces = MediaType.APPLICATION_JSON_VALUE)
     public R<?> getBikeInfo(

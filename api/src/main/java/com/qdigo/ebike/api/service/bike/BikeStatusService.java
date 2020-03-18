@@ -44,6 +44,8 @@ public interface BikeStatusService {
     @PostMapping(ApiRoute.BikeCenter.BikeStatus.update)
     void update(@RequestBody BikeStatusDto bikeStatusDto);
 
+    @PostMapping(ApiRoute.BikeCenter.BikeStatus.queryActualStatus)
+    String queryActualStatus(@RequestParam("bikeId") Long bikeId);
 
     default void setActualStatus(BikeStatusDto bikeStatus, String actualStatus) {
         if (Status.BikeActualStatus.ok.getVal().equals(actualStatus)) {

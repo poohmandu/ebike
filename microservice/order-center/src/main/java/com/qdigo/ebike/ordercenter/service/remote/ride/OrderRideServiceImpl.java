@@ -24,6 +24,7 @@ import com.qdigo.ebike.common.core.constants.Status;
 import com.qdigo.ebike.common.core.util.ConvertUtil;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideOrder;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideRecord;
+import com.qdigo.ebike.ordercenter.repository.RideOrderRepository;
 import com.qdigo.ebike.ordercenter.repository.RideRecordRepository;
 import com.qdigo.ebike.ordercenter.repository.dao.RideRecordDao;
 import lombok.RequiredArgsConstructor;
@@ -46,6 +47,7 @@ public class OrderRideServiceImpl implements OrderRideService {
 
     private final RideRecordDao rideRecordDao;
     private final RideRecordRepository rideRecordRepository;
+    private final RideOrderRepository rideOrderRepository;
 
     @Override
     public RideDto findRidingByImei(String imei) {
@@ -83,5 +85,22 @@ public class OrderRideServiceImpl implements OrderRideService {
         List<RideDto> rideDtos = ConvertUtil.to(rideRecordPage.getContent(), RideDto.class);
         return new PageDto<>(rideDtos, rideRecordPage.getTotalElements());
     }
+
+    @Override
+    public void updateRideRecord(RideDto rideDto) {
+        RideRecord rideRecord = rideRecordRepository.findById(rideDto.getRideRecordId()).get();
+        rideDto.updated(rideRecord);
+        rideRecordRepository.save(rideRecord);
+    }
+
+    @Override
+    public void updateRideOrder(RideDto rideDto) {
+        RideOrder rideOrder = rideOrderRepository.findById(rideDto.getRideRecordId()).orElse(null);
+        if (rideOrder != null) {
+            rideDto.updated(rideOrder);
+            rideOrderRepository.save(rideOrder);
+        }
+    }
+
 
 }

@@ -22,6 +22,7 @@ import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
@@ -53,5 +54,9 @@ public interface OrderRideService {
 
     @PostMapping(ApiRoute.OrderCenter.Ride.findEndPageByMobileNo)
     PageDto<RideDto> findEndPageByMobileNo(@RequestParam("mobileNo") String mobileNo, Pageable pageable);
+
+    void updateRideRecord(@RequestBody RideDto rideDto);
+
+    void updateRideOrder(@RequestBody RideDto rideDto);
 
 }

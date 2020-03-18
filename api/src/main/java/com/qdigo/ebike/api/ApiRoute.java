@@ -42,6 +42,8 @@ public interface ApiRoute {
             String userStatus = userCenter + "/userStatus";
 
             String getUserWxscoreEnable = userStatus + "/getUserWxscoreEnable";
+            String getStep = userStatus + "/getStep";
+            String hasNoFinishedWxscore = userStatus + "/hasNoFinishedWxscore";
         }
 
         interface UserWx {
@@ -59,6 +61,17 @@ public interface ApiRoute {
             String findByMobileNo = userAccount + "/findByMobileNo";
             String findByUserId = userAccount + "/findByUserId";
             String update = userAccount + "/update";
+        }
+
+        interface BlackList {
+            String blackList = userCenter + "/blackList";
+            String findByUserId = blackList + "/findByUserId";
+        }
+
+        interface UserRecord {
+            String userRecord = userCenter + "/userRecord";
+
+            String insertUserRecord = userRecord + "/insertUserRecord";
         }
     }
 
@@ -130,11 +143,23 @@ public interface ApiRoute {
             String identifyIdCard = dataPay + "/identifyIdCard";
         }
 
+        interface InsuranceRecord {
+            String insuranceRecord = third + "/insuranceRecord";
+
+            String findByMobileNoAndStartTimeAfter = insuranceRecord + "/findByMobileNoAndStartTimeAfter";
+        }
+
         interface Hmb {
             String hmb = third + "/hmb";
 
             String insure = hmb + "/insure";
             String identifyIdCard = hmb + "/identifyIdCard";
+        }
+
+        interface Ebl {
+            String ebl = third + "/picc";
+
+            String insure = ebl + "/insure";
         }
 
         interface Bgb {
@@ -153,20 +178,21 @@ public interface ApiRoute {
             String pushWarn = push + "/pushWarn";
         }
 
-        interface DeviceSms{
+        interface DeviceSms {
             String deviceSms = third + "/deviceSms";
 
-            interface Huahong{
+            interface Huahong {
                 String huahong = deviceSms + "/huahong";
                 String send = huahong + "/send";
                 String receive = huahong + "/receive";
             }
 
-            interface Dahan{
+            interface Dahan {
                 String dahan = deviceSms + "/dahan";
                 String httpSend = dahan + "/httpSend";
             }
-            interface Youyun{
+
+            interface Youyun {
                 String youyun = deviceSms + "/youyun";
                 String httpSend = youyun + "/httpSend";
             }
@@ -197,6 +223,7 @@ public interface ApiRoute {
             String findStatusByBikeIId = bikeStatus + "/findStatusByBikeIId";
             String findByImei = bikeStatus + "/findByImei";
             String update = bikeStatus + "/update";
+            String queryActualStatus = bikeStatus + "/queryActualStatus";
         }
 
         interface BikeGpsStatus {
@@ -263,6 +290,7 @@ public interface ApiRoute {
 
             String getNearestStation = station + "/getNearestStation";
             String findByStationId = station + "/findByStationId";
+            String getNearestStationByAgents = station + "/getNearestStationByAgents";
         }
 
         interface StationStatus {
@@ -287,6 +315,7 @@ public interface ApiRoute {
             String agent = agentCenter + "/agent";
 
             String findByCity = agent + "/findByCity";
+            String findById = agent + "/findById";
         }
 
         interface LongRentConfig {
@@ -301,6 +330,12 @@ public interface ApiRoute {
             String findByAgentId = takeawayConfig + "/findByAgentId";
         }
 
+        interface ForceEndConfig{
+            String forceEndConfig = agentCenter + "/forceEndConfig";
+
+            String findByAgentId = forceEndConfig + "/findByAgentId";
+        }
+
         interface Ops {
             String ops = agentCenter + "/ops";
 
@@ -308,7 +343,8 @@ public interface ApiRoute {
                 String warn = ops + "/warn";
                 String pushWarn = warn + "/pushWarn";
             }
-            interface UseRecord{
+
+            interface UseRecord {
                 String useRecord = ops + "/useRecord";
                 String findByUsingBike = useRecord + "/findByUsingBike";
             }
@@ -343,6 +379,12 @@ public interface ApiRoute {
             String findAnyByMobileNo = ride + "/findAnyByMobileNo";
             String findEndByMobileNo = ride + "/findEndByMobileNo";
             String findEndPageByMobileNo = ride + "/findEndPageByMobileNo";
+
+            interface RideBiz {
+                String rideBiz = ride + "/rideBiz";
+
+                String createRide = rideBiz + "/createRide";
+            }
         }
 
         interface JournalAccount {
@@ -351,6 +393,22 @@ public interface ApiRoute {
             String insert4Charge = journalAccount + "/insert4Charge";
             String insert4Ride = journalAccount + "/insert4Ride";
             String insert4LongRent = journalAccount + "/insert4LongRent";
+        }
+    }
+
+    interface ActivityCenter {
+        String activityCenter = api + "/activity-center";
+
+        interface Invite {
+            String invite = activityCenter + "/invite";
+
+            String finishInvite = invite + "/finishInvite";
+        }
+
+        interface Coupon {
+            String coupon = activityCenter + "/coupon";
+
+            String getFreeConsume = coupon + "/getFreeConsume";
         }
     }
 

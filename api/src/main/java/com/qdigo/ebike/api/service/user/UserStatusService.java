@@ -17,8 +17,14 @@
 package com.qdigo.ebike.api.service.user;
 
 import com.qdigo.ebike.api.ApiRoute;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
+import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import com.qdigo.ebike.common.core.constants.Status;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 /**
@@ -33,5 +39,18 @@ public interface UserStatusService {
 
     @PostMapping(ApiRoute.UserCenter.UserStatus.getUserWxscoreEnable)
     Boolean getUserWxscoreEnable(@RequestParam("mobileNo") String mobileNo);
+
+    @PostMapping(ApiRoute.UserCenter.UserStatus.getStep)
+    Status.Step getStep(@RequestBody StepParam param);
+
+    @PostMapping(ApiRoute.UserCenter.UserStatus.hasNoFinishedWxscore)
+    String hasNoFinishedWxscore(@RequestBody UserDto userDto);
+
+    @Data
+    @Builder
+    class StepParam {
+        private UserDto userDto;
+        private UserAccountDto userAccountDto;
+    }
 
 }

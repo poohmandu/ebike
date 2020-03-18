@@ -17,6 +17,7 @@
 package com.qdigo.ebike.api.domain.dto.third.insurance;
 
 import com.qdigo.ebike.common.core.constants.BikeCfg;
+import lombok.Builder;
 import lombok.Data;
 
 /**
@@ -27,6 +28,7 @@ import lombok.Data;
  * @since JDK 1.8
  */
 @Data
+@Builder
 public class InsuranceParam {
     private long rideRecordId;
     private String mobileNo;

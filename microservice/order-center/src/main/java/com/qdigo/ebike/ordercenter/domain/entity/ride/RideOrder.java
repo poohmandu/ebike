@@ -49,7 +49,8 @@ public class RideOrder {
 
     private int unitMinutes;
 
-    private long agentId;
+    @Column(name = "agent_id")
+    private Long agentId;
 
     @NotNull
     private Date startTime = new Date();
@@ -108,11 +109,11 @@ public class RideOrder {
         return this;
     }
 
-    public long getAgentId() {
+    public Long getAgentId() {
         return agentId;
     }
 
-    public RideOrder setAgentId(long agentId) {
+    public RideOrder setAgentId(Long agentId) {
         this.agentId = agentId;
         return this;
     }
@@ -151,5 +152,20 @@ public class RideOrder {
     public RideOrder setVersion(int version) {
         this.version = version;
         return this;
+    }
+
+    public static RideOrder fromRideRecord(RideRecord rideRecord, Long agentId) {
+        if (rideRecord == null)
+            return null;
+        return new RideOrder()
+                .setRideRecordId(rideRecord.getRideRecordId())
+                .setRideStatus(rideRecord.getRideStatus())
+                .setAgentId(agentId)
+                .setImei(rideRecord.getImei())
+                .setPrice(rideRecord.getPrice())
+                .setStartLoc(rideRecord.getStartLoc())
+                .setStartTime(rideRecord.getStartTime())
+                .setUnitMinutes(rideRecord.getUnitMinutes())
+                .setMobileNo(rideRecord.getMobileNo());
     }
 }

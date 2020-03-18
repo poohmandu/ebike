@@ -16,6 +16,7 @@
 
 package com.qdigo.ebike.api.domain.dto.agent;
 
+import com.qdigo.ebike.common.core.constants.Const;
 import lombok.Data;
 
 /**
@@ -28,6 +29,20 @@ import lombok.Data;
 @Data
 public class AgentDto {
     private Long agentId;
+    private String agentMerchantName;
+    private String agentName;
+    private String agentCode;
+    private String address;
+    private String mobileNo;
+    private String agentProvince;
     private String city;
-    private Boolean isDeleted;
+    private String agentIdNo;
+    private String agentLoginNo;
+    private String agentPassword;
+    private String company;
+    private Double profit;
+    private Const.AgentType AgentType;
+    private Long parentId;
+    private String operationDistrict = "";
+    private Boolean isDeleted = false;
 }
