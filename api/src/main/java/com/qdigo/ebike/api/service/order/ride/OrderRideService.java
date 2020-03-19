@@ -55,8 +55,10 @@ public interface OrderRideService {
     @PostMapping(ApiRoute.OrderCenter.Ride.findEndPageByMobileNo)
     PageDto<RideDto> findEndPageByMobileNo(@RequestParam("mobileNo") String mobileNo, Pageable pageable);
 
+    @PostMapping(ApiRoute.OrderCenter.Ride.updateRideRecord)
     void updateRideRecord(@RequestBody RideDto rideDto);
 
+    @PostMapping(ApiRoute.OrderCenter.Ride.updateRideOrder)
     void updateRideOrder(@RequestBody RideDto rideDto);
 
 }

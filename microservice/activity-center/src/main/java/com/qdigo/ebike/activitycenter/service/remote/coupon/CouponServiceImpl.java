@@ -16,9 +16,12 @@
 
 package com.qdigo.ebike.activitycenter.service.remote.coupon;
 
+import com.qdigo.ebike.activitycenter.domain.entity.coupon.Coupon;
 import com.qdigo.ebike.activitycenter.service.inner.coupon.CouponInnerService;
 import com.qdigo.ebike.api.RemoteService;
+import com.qdigo.ebike.api.domain.dto.activity.coupon.CouponDto;
 import com.qdigo.ebike.api.service.activity.coupon.CouponService;
+import com.qdigo.ebike.common.core.util.ConvertUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -40,6 +43,18 @@ public class CouponServiceImpl implements CouponService {
     @Override
     public Double getFreeConsume(Long userId) {
         return couponInnerService.getFreeConsume(userId);
+    }
+
+    @Override
+    public CouponDto getConsumeCoupon(Long userId) {
+        Coupon coupon = couponInnerService.getConsumeCoupon(userId);
+        return ConvertUtil.to(coupon, CouponDto.class);
+    }
+
+    @Override
+    public void consumeCashCoupon(ConsumeCashParam param) {
+        Coupon coupon = ConvertUtil.to(param.getCouponDto(), Coupon.class);
+        couponInnerService.consumeCashCoupon(coupon, param.getOriginAmount(), param.getRideRecordId());
     }
 
 }

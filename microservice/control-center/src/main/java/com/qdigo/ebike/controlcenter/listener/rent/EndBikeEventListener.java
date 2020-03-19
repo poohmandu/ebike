@@ -16,21 +16,23 @@
 
 package com.qdigo.ebike.controlcenter.listener.rent;
 
-import com.qdigo.ebicycle.constants.Const;
-import com.qdigo.ebicycle.constants.Keys;
-import com.qdigo.ebicycle.constants.Status;
-import com.qdigo.ebicycle.daoService.wxscore.WxscoreDaoService;
-import com.qdigo.ebicycle.domain.order.OrderWxscore;
-import com.qdigo.ebicycle.domain.ride.RideRecord;
-import com.qdigo.ebicycle.domain.user.User;
-import com.qdigo.ebicycle.o.dto.ResponseDTO;
-import com.qdigo.ebicycle.o.dto.payment.wxscore.WxscoreOrder;
-import com.qdigo.ebicycle.service.credit.CreditService;
-import com.qdigo.ebicycle.service.push.PushService;
-import com.qdigo.ebicycle.service.ride.RideTrackService;
-import com.qdigo.ebicycle.service.ride.RideWxscoreService;
-import com.qdigo.ebicycle.service.third.WxScoreService;
-import com.qdigo.ebicycle.service.user.UserRecordService;
+import com.qdigo.ebike.api.domain.dto.order.RideDto;
+import com.qdigo.ebike.api.domain.dto.order.wxscore.WxscoreDto;
+import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;
+import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import com.qdigo.ebike.api.service.control.RideTrackService;
+import com.qdigo.ebike.api.service.order.wxscore.OrderWxscoreBizService;
+import com.qdigo.ebike.api.service.order.wxscore.OrderWxscoreDaoService;
+import com.qdigo.ebike.api.service.third.push.PushService;
+import com.qdigo.ebike.api.service.third.wxlite.WxscoreService;
+import com.qdigo.ebike.api.service.user.UserCreditService;
+import com.qdigo.ebike.api.service.user.UserRecordService;
+import com.qdigo.ebike.common.core.constants.Const;
+import com.qdigo.ebike.common.core.constants.Keys;
+import com.qdigo.ebike.common.core.constants.Status;
+import com.qdigo.ebike.common.core.domain.ResponseDTO;
+import com.qdigo.ebike.controlcenter.domain.dto.rent.EndDTO;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
 import org.springframework.context.event.EventListener;
@@ -38,9 +40,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -48,42 +48,38 @@ import java.util.concurrent.TimeUnit;
  */
 @Slf4j
 @Component
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class EndBikeEventListener {
 
-    @Inject
-    private PushService pushService;
-    @Inject
-    private RideTrackService rideTrackService;
-    @Inject
-    private UserRecordService userRecordService;
-    @Inject
-    private CreditService creditService;
-    @Inject
+    private final PushService pushService;
+    private final UserRecordService userRecordService;
+    private final UserCreditService creditService;
+    private final OrderWxscoreBizService wxscoreBizService;
+    private final WxscoreService wxscoreService;
+    private final RideTrackService rideTrackService;
+    private final OrderWxscoreDaoService wxscoreDaoService;
+
     private RedisTemplate<String, String> redisTemplate;
-    @Resource
-    private RideWxscoreService rideWxscoreService;
-    @Resource
-    private WxScoreService wxScoreService;
-    @Resource
-    private WxscoreDaoService wxscoreDaoService;
+
 
     @Async
     @EventListener
     public void onApplicationEvent(EndBikeSuccessEvent event) {
         try {
-            RideRecord rideRecord = event.getRideRecord();
+            EndDTO endDTO = event.getEndDTO();
+            RideDto rideRecord = endDTO.getRideDto();
+            UserDto userDto = endDTO.getUserDto();
             if (rideRecord == null) {
                 return;
             }
-            User user = rideRecord.getUser();
-            String mobileNo = user.getMobileNo();
+            String mobileNo = rideRecord.getMobileNo();
 
             MDC.put("mobileNo", mobileNo);
 
             //  插入用户信息记录
-            this.insertUserRecord(rideRecord);
+            this.insertUserRecord(rideRecord, userDto);
             //  记录用户信用分
-            this.updateCreditInfo(rideRecord);
+            this.updateCreditInfo(rideRecord, userDto);
             //  清理redis相关key
             this.clearRedis(mobileNo);
 
@@ -100,9 +96,9 @@ public class EndBikeEventListener {
             rideTrackService.insertRideTracks(rideRecord.getRideRecordId());
 
             // 推送还车成功消息
-            this.pushEndBikeMessage(rideRecord);
+            this.pushEndBikeMessage(rideRecord, userDto);
 
-            log.debug("{}用户在监听器里触发完成还车的其他流程", user.getMobileNo());
+            log.debug("{}用户在监听器里触发完成还车的其他流程", userDto.getMobileNo());
         } catch (Exception e) {
             log.error("还车后置流程发生异常:", e);
             throw e;
@@ -111,40 +107,41 @@ public class EndBikeEventListener {
         }
     }
 
-    private void pushEndBikeMessage(RideRecord rideRecord) {
+    private void pushEndBikeMessage(RideDto rideRecord, UserDto user) {
         String alert;
         if (rideRecord.getRideStatus() == Status.RideStatus.end.getVal()) {
             alert = "成功还车,此次骑行花费" + rideRecord.getConsume() + "元";
         } else {
             alert = "成功还车,订单状态异常";
         }
-        pushService.pushNotation(rideRecord.getUser(), alert, Const.PushType.appEndSuccess, "");
+        PushService.Param param = PushService.Param.builder().mobileNo(user.getMobileNo())
+                .deviceId(user.getDeviceId()).pushType(Const.PushType.appEndSuccess).alert(alert).build();
+        pushService.pushNotation(param);
     }
 
-    private void insertUserRecord(RideRecord rideRecord) {
+    private void insertUserRecord(RideDto rideRecord, UserDto userDto) {
         String alert;
         if (rideRecord.getRideStatus() == Status.RideStatus.end.getVal()) {
             alert = "成功还车,此次骑行花费" + rideRecord.getConsume() + "元";
         } else {
             alert = "成功还车,订单状态异常";
         }
-        userRecordService.insertUserRecord(rideRecord.getUser(), alert);
+        userRecordService.insertUserRecord(userDto.getUserId(), alert);
     }
 
-    private void updateCreditInfo(RideRecord rideRecord) {
+    private void updateCreditInfo(RideDto rideRecord, UserDto userDto) {
         if (rideRecord.getRideStatus() == Status.RideStatus.end.getVal()) {
-            creditService.updateCreditInfo(rideRecord.getUser(), Status.CreditEvent.normalDrive.getVal(), Status.CreditEvent.normalDrive.getScore());
+            creditService.updateCreditInfo(userDto.getUserId(), Status.CreditEvent.normalDrive.getVal(), Status.CreditEvent.normalDrive.getScore());
         }
     }
 
-    private void updateWxscore(RideRecord rideRecord) {
+    private void updateWxscore(RideDto rideRecord) {
         try {
             long rideRecordId = rideRecord.getRideRecordId();
-            Optional<OrderWxscore> optional = rideWxscoreService.hasRideWxscoreOrder(rideRecord);
-            if (optional.isPresent()) {
-                OrderWxscore wxscore = optional.get();
-                if (wxscore.getState() == OrderWxscore.State.USER_ACCEPTED) {
-                    ResponseDTO<WxscoreOrder> dto = wxScoreService.queryByOrderNo(wxscore.getOutOrderNo(), wxscore.getAppId());
+            WxscoreDto wxscore = wxscoreBizService.hasRideWxscoreOrder(rideRecordId);
+            if (wxscore != null) {
+                if (wxscore.getState() == WxscoreService.State.USER_ACCEPTED) {
+                    ResponseDTO<WxscoreOrder> dto = wxscoreService.queryByOrderNo(wxscore.getOutOrderNo(), wxscore.getAppId());
                     if (dto.isSuccess()) {
                         WxscoreOrder wxscoreOrder = dto.getData();
                         wxscoreDaoService.finishOrder(wxscoreOrder);

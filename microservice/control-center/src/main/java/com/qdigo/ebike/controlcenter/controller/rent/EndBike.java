@@ -30,7 +30,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.inject.Inject;
@@ -114,13 +113,13 @@ public class EndBike {
                 param.longitude, param.latitude, param.accuracy, param.provider, param.ble, param.forceEnd);
 
         if (resDTO.isSuccess()) {
-            return ResponseEntity.ok(new BaseResponse(200, "还车前条件检验成功"));
+            return R.ok(200, "还车前条件检验成功");
         }
         if (resDTO.getStatusCode() == 405) {
             EndDTO endDTO = resDTO.getData();
-            EndDTO.EndOrderTipDTO orderTipDTO = endDTO.getOrderTipDTO();
+            EndDTO.EndOrderTipDTO orderTipDTO = endDTO.getOut().getOrderTipDTO();
 
-            return ResponseEntity.ok(new BaseResponse(resDTO.getStatusCode(), resDTO.getMessage(), orderTipDTO));
+            return R.ok(resDTO.getStatusCode(), resDTO.getMessage(), orderTipDTO);
         }
         resDTO.setData(null);
         return resDTO.toResponse();

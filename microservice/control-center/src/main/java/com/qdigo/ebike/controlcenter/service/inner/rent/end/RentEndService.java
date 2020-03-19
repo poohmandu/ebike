@@ -26,6 +26,7 @@ import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.agent.AgentConfigService;
 import com.qdigo.ebike.api.service.bike.BikeStatusService;
 import com.qdigo.ebike.api.service.order.ride.OrderRideService;
+import com.qdigo.ebike.api.service.order.ride.RideBizService;
 import com.qdigo.ebike.api.service.order.ride.RideFreeActivityService;
 import com.qdigo.ebike.api.service.user.UserAccountService;
 import com.qdigo.ebike.api.service.user.UserService;
@@ -62,7 +63,8 @@ public class RentEndService {
     private final UserAccountService userAccountService;
     private final UserService userService;
     private final RideFreeActivityService freeActivityService;
-
+    private final AccountConsumeService accountConsumeService;
+    private final RideBizService rideBizService;
 
     private final ApplicationContext context;
 
@@ -71,27 +73,39 @@ public class RentEndService {
     //@RetryOnOptimistic //乐观锁的开始和事务的开始要一致,所以rideRecord要重新查询 (刷新version)
     public EndResponse endRideRecord(EndDTO endDTO, boolean isGPS) throws QdigoBizException {
         val rideDto = endDTO.getRideDto();
-        val rideRecordId = rideDto.getRideRecordId();
-        log.debug("开始结束骑行订单:{}", rideRecordId);
+        val bikeStatus = endDTO.getBikeStatusDto();
+        log.debug("开始结束骑行订单:{}", rideDto.getRideRecordId());
 
         //(1) 获取消费详情
         ConsumeDetail consumeDetail = endDTO.getOut().getConsumeDetail();
-        //(2) 保存消费减免信息
-        rideActivityService.createRideFreeActivities(consumeDetail.getFreeActivities());
-        //(3) 完成消费
-        rideRecordService.finishConsume(endDTO, consumeDetail);
-        //（3）更新骑行订单:rideRecord、rideRoute、coupon、userAccount、journalAccount
-        rideRecordService.finishRide(endDTO, consumeDetail, isGPS);
-        // (5) 更新车辆状态
-        bikeStatusDaoService.updateStatus(bikeStatus.getBikeStatusId(), Status.BikeLogicStatus.available);
+        if (consumeDetail != null) {
+            RideFreeActivityService.DetailParam param = RideFreeActivityService.DetailParam.builder()
+                    .accountDto(endDTO.getUserAccountDto()).agentCfg(endDTO.getAgentCfg()).rideDto(rideDto)
+                    .userDto(endDTO.getUserDto()).build();
+            consumeDetail = freeActivityService.getConsumeDetail(param);
+            endDTO.getOut().setConsumeDetail(consumeDetail);
+        }
 
-        EndResponse endResponse = EndResponse.build(rideRecord, consumeDetail.getConsumeNote());
+        //(2) 保存消费减免信息
+        freeActivityService.createRideFreeActivities(consumeDetail.getFreeActivities());
+        //(3) 完成消费
+        accountConsumeService.finishConsume(endDTO);
+        //（3）更新骑行订单:rideRecord、rideRoute、coupon、userAccount、journalAccount
+        val finishParam = RideBizService.FinishParam.builder().isGPSLoc(isGPS).lat(endDTO.getLatitude())
+                .lng(endDTO.getLongitude()).rideDto(rideDto).stationId(endDTO.getOut().getStationId()).build();
+        RideDto finishRide = rideBizService.finishRide(finishParam);
+        endDTO.setRideDto(finishRide);
+        // (5) 更新车辆状态
+        bikeStatus.setStatus(Status.BikeLogicStatus.available.getVal());
+        bikeStatusService.update(bikeStatus);
+
+        EndResponse endResponse = EndResponse.build(endDTO);
 
         TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronizationAdapter() {
             @Override
             public void afterCommit() {
                 log.debug("完成相关数据库更新,准备包装返回,并提交事务");
-                context.publishEvent(new EndBikeSuccessEvent(this, rideRecord, endResponse));
+                context.publishEvent(new EndBikeSuccessEvent(this, endDTO));
             }
 
             @Override
@@ -131,6 +145,7 @@ public class RentEndService {
                 .bikeStatusDto(bikeStatusDto)
                 .userDto(userDto)
                 .userAccountDto(accountDto)
+                .out(new EndDTO.Out())
                 .build();
     }
 
@@ -152,23 +167,24 @@ public class RentEndService {
 
     //@Transactional
     public ResponseDTO<EndDTO> buttonEndValidate(String imei) {
-        RideRecord rideRecord = rideRecordDao.findRecordByRidingBike(imei);
-        log.debug("车辆:{}通过按钮还车", imei);
-        if (rideRecord == null) {
-            log.debug("bike:{}已经还过车了", imei);
-            return new ResponseDTO<>(400, "该车已经还车");
-        } else {
-            val endDTO = EndDTO.builder()
-                    .longitude(0)
-                    .latitude(0)
-                    .imeiIdOrDeviceId(imei)
-                    .forceEnd(false)
-                    .deviceMode(Const.DeviceMode.GPS)
-                    .accuracy(-1)
-                    .mobileNo(rideRecord.getUser().getMobileNo())
-                    .rideRecord(rideRecord).build();
-            return this.endValidate(endDTO);
-        }
+        //RideRecord rideRecord = rideRecordDao.findRecordByRidingBike(imei);
+        //log.debug("车辆:{}通过按钮还车", imei);
+        //if (rideRecord == null) {
+        //    log.debug("bike:{}已经还过车了", imei);
+        //    return new ResponseDTO<>(400, "该车已经还车");
+        //} else {
+        //    val endDTO = EndDTO.builder()
+        //            .longitude(0)
+        //            .latitude(0)
+        //            .imeiIdOrDeviceId(imei)
+        //            .forceEnd(false)
+        //            .deviceMode(Const.DeviceMode.GPS)
+        //            .accuracy(-1)
+        //            .mobileNo(rideRecord.getUser().getMobileNo())
+        //            .rideRecord(rideRecord).build();
+        //    return this.endValidate(endDTO);
+        //}
+        return null;
     }
 
     public ResponseDTO<EndDTO> autoEndValidate(final String imei) {

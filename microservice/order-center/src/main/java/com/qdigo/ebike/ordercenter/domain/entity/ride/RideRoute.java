@@ -16,8 +16,6 @@
 
 package com.qdigo.ebike.ordercenter.domain.entity.ride;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-
 import javax.persistence.*;
 
 /**
@@ -31,10 +29,8 @@ public class RideRoute {
     @GeneratedValue(strategy = GenerationType.AUTO)
     private long id;
 
-    @JsonBackReference
-    @OneToOne(cascade = CascadeType.ALL, optional = false, fetch = FetchType.LAZY)
-    @JoinColumn(name = "ride_record_id", unique = true, nullable = false)
-    private RideRecord rideRecord;
+    @Column(name = "ride_record_id", nullable = false, unique = true)
+    private Long rideRecordId;
 
     @Column(nullable = false, name = "start_lng")
     private double startLng;
@@ -63,12 +59,12 @@ public class RideRoute {
         return this;
     }
 
-    public RideRecord getRideRecord() {
-        return rideRecord;
+    public Long getRideRecordId() {
+        return rideRecordId;
     }
 
-    public RideRoute setRideRecord(RideRecord rideRecord) {
-        this.rideRecord = rideRecord;
+    public RideRoute setRideRecordId(Long rideRecordId) {
+        this.rideRecordId = rideRecordId;
         return this;
     }
 

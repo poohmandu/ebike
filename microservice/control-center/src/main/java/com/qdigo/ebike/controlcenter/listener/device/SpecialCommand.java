@@ -16,11 +16,12 @@
 
 package com.qdigo.ebike.controlcenter.listener.device;
 
-import com.qdigo.ebicycle.constants.ConfigConstants;
-import com.qdigo.ebicycle.constants.MQ;
-import com.qdigo.ebicycle.domain.mongo.device.PCPackage;
-import com.qdigo.ebicycle.service.common.ButtonEndService;
-import com.qdigo.ebicycle.web.errors.exception.QdigoBizException;
+import com.qdigo.ebike.common.core.constants.ConfigConstants;
+import com.qdigo.ebike.common.core.constants.MQ;
+import com.qdigo.ebike.common.core.errors.exception.QdigoBizException;
+import com.qdigo.ebike.controlcenter.domain.entity.mongo.PCPackage;
+import com.qdigo.ebike.controlcenter.service.inner.rent.ButtonEndService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -28,7 +29,7 @@ import org.springframework.amqp.rabbit.annotation.Exchange;
 import org.springframework.amqp.rabbit.annotation.Queue;
 import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.inject.Inject;
@@ -36,18 +37,19 @@ import javax.inject.Inject;
 /**
  * Created by niezhao on 2017/6/27.
  */
-@Component
 @Slf4j
-@ConditionalOnExpression("'${my.env}'=='prod' and ${server.port}==${my.mq-port}")
+@Component
+@ConditionalOnProperty(name = "qdigo.on-off.mq-listener", havingValue = "true")
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class SpecialCommand {
 
     @Inject
     private ButtonEndService buttonEndService;
 
     @RabbitListener(bindings = @QueueBinding(
-        value = @Queue(value = "specialPC", autoDelete = "true", durable = "false"),
-        exchange = @Exchange(value = MQ.Topic.Exchange.pc, type = ExchangeTypes.TOPIC),
-        key = MQ.Topic.Key.up_pc_special, ignoreDeclarationExceptions = "true"))
+            value = @Queue(value = "specialPC", autoDelete = "true", durable = "false"),
+            exchange = @Exchange(value = MQ.Topic.Exchange.pc, type = ExchangeTypes.TOPIC),
+            key = MQ.Topic.Key.up_pc_special, ignoreDeclarationExceptions = "true"))
     public String specialPC(PCPackage pc) throws QdigoBizException {
         pc.setPcImei(ConfigConstants.imei.getConstant() + pc.getPcImei());
         log.debug("接收到specialPC:{}", pc);

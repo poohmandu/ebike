@@ -17,12 +17,12 @@
 package com.qdigo.ebike.controlcenter.domain.dto.rent;
 
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
+import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.ConsumeDetail;
 import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.common.core.util.FormatUtil;
 import lombok.Builder;
 import lombok.Data;
 
-import javax.validation.constraints.NotNull;
 import java.time.Duration;
 
 @Data
@@ -43,7 +43,7 @@ public class EndResponse {
     public static EndResponse build(EndDTO endDTO) {
         RideDto rideRecord = endDTO.getRideDto();
         UserAccountDto accountDto = endDTO.getUserAccountDto();
-
+        ConsumeDetail consumeDetail = endDTO.getOut().getConsumeDetail();
 
         long seconds = Duration.between(rideRecord.getStartTime().toInstant(), rideRecord.getEndTime().toInstant()).getSeconds();
         return EndResponse.builder()
@@ -55,7 +55,7 @@ public class EndResponse {
                 .orderAmount(FormatUtil.getMoney(rideRecord.getConsume()))
                 .price(rideRecord.getPrice())
                 .unitMinutes(rideRecord.getUnitMinutes())
-                .consumeNote(consumeNote)
+                .consumeNote(consumeDetail.getConsumeNote())
                 .type(0)
                 .build();
     }

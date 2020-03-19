@@ -17,6 +17,7 @@
 package com.qdigo.ebike.ordercenter.service.remote.ride;
 
 import com.qdigo.ebike.api.RemoteService;
+import com.qdigo.ebike.api.domain.dto.activity.coupon.CouponDto;
 import com.qdigo.ebike.api.domain.dto.agent.AgentCfg;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.ConsumeDetail;
@@ -26,6 +27,7 @@ import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.activity.coupon.CouponService;
 import com.qdigo.ebike.api.service.order.ride.RideFreeActivityService;
+import com.qdigo.ebike.api.service.user.UserAccountService;
 import com.qdigo.ebike.common.core.constants.Status;
 import com.qdigo.ebike.common.core.errors.exception.runtime.DataConflictException;
 import com.qdigo.ebike.common.core.util.ConvertUtil;
@@ -36,6 +38,7 @@ import com.qdigo.ebike.ordercenter.repository.RideFreeActivityRepository;
 import com.qdigo.ebike.ordercenter.repository.dao.UserLongRentDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.time.Duration;
@@ -57,6 +60,53 @@ public class RideFreeActivityServiceImpl implements RideFreeActivityService {
     private final RideFreeActivityRepository rideFreeActivityRepository;
     private final UserLongRentDao userLongRentDao;
     private final CouponService couponService;
+    private final UserAccountService accountService;
+
+    @Transactional
+    @Override
+    public void createRideFreeActivities(List<FreeActivityDto> rideFreeActivities) {
+        List<RideFreeActivity> activities = ConvertUtil.to(rideFreeActivities, RideFreeActivity.class);
+        rideFreeActivityRepository.saveAll(activities);
+    }
+
+    @Override
+    @Transactional
+    public ConsumeResult consumeFreeActivities(ConsumeParam param) {
+        List<FreeActivityDto> rideFreeActivities = param.getFreeActivities();
+        UserAccountDto account = param.getAccountDto();
+        RideDto rideDto = param.getRideDto();
+        ConsumeResult result = new ConsumeResult(account);
+        if (rideFreeActivities.stream().noneMatch(rideFreeActivity -> rideFreeActivity.getFreeType().equals(FreeType.money))) {
+            return result;
+        }
+        //1.消费优惠券
+        if (rideFreeActivities.stream().anyMatch(rideFreeActivity -> rideFreeActivity.getFreeActivity().equals(Status.FreeActivity.coupon))) {
+            CouponDto coupon = couponService.getConsumeCoupon(param.getUserDto().getUserId());
+            if (coupon != null) {
+                Date endTime;
+                if (rideDto.getEndTime() != null) {
+                    endTime = rideDto.getEndTime();
+                } else {
+                    endTime = new Date();
+                }
+                double originConsume = this.calConsume(rideDto.getStartTime(), endTime, rideDto.getUnitMinutes(),
+                        rideDto.getPrice(), param.getAgentCfg());
+                CouponService.ConsumeCashParam cashParam = CouponService.ConsumeCashParam.builder().originAmount(originConsume)
+                        .couponDto(coupon).rideRecordId(rideDto.getRideRecordId()).build();
+                couponService.consumeCashCoupon(cashParam);
+            }
+        }
+        //2.消费赠送余额
+        rideFreeActivities.stream().filter(rideFreeActivity -> rideFreeActivity.getFreeActivity().equals(Status.FreeActivity.giftBalance))
+                .findAny().ifPresent(rideFreeActivity -> {
+            double freeConsume = rideFreeActivity.getFreeConsume();
+            account.setGiftBalance(FormatUtil.getMoney(account.getGiftBalance() - freeConsume));
+            accountService.update(account);
+        });
+        //TODO: 其他消费需要update的
+
+        return result;
+    }
 
     @Override
     public ConsumeDetail getConsumeDetail(DetailParam param) {

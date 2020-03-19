@@ -20,8 +20,8 @@ import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.common.core.constants.Status;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +47,7 @@ public interface UserStatusService {
     String hasNoFinishedWxscore(@RequestBody UserDto userDto);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class StepParam {
         private UserDto userDto;
         private UserAccountDto userAccountDto;

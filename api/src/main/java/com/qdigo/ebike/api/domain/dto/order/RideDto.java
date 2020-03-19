@@ -18,6 +18,7 @@ package com.qdigo.ebike.api.domain.dto.order;
 
 import com.qdigo.ebike.api.domain.Dto;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import java.util.Date;
 
@@ -29,6 +30,7 @@ import java.util.Date;
  * @since JDK 1.8
  */
 @Data
+@Accessors(chain = true)
 public class RideDto implements Dto {
     private long rideRecordId;
     private String mobileNo;
@@ -45,4 +47,5 @@ public class RideDto implements Dto {
     private double actualConsume;
     private int freeActivity;
     private Long agentId;
+    private int version;
 }

@@ -17,8 +17,13 @@
 package com.qdigo.ebike.api.service.activity.coupon;
 
 import com.qdigo.ebike.api.ApiRoute;
+import com.qdigo.ebike.api.domain.dto.activity.coupon.CouponDto;
+import lombok.Builder;
+import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * description: 
@@ -30,6 +35,19 @@ import org.springframework.web.bind.annotation.PostMapping;
 public interface CouponService {
 
     @PostMapping(ApiRoute.ActivityCenter.Coupon.getFreeConsume)
-    Double getFreeConsume(Long userId);
+    Double getFreeConsume(@RequestParam("userId") Long userId);
 
+    @PostMapping(ApiRoute.ActivityCenter.Coupon.getConsumeCoupon)
+    CouponDto getConsumeCoupon(@RequestParam("userId") Long userId);
+
+    @PostMapping(ApiRoute.ActivityCenter.Coupon.consumeCashCoupon)
+    void consumeCashCoupon(@RequestBody ConsumeCashParam param);
+
+    @Data
+    @Builder
+    class ConsumeCashParam {
+        private CouponDto couponDto;
+        private double originAmount;
+        private long rideRecordId;
+    }
 }

@@ -39,6 +39,20 @@ public interface RideBizService {
     @PostMapping(ApiRoute.OrderCenter.Ride.RideBiz.createRide)
     RideDto createRide(@RequestBody StartParam param);
 
+    @PostMapping(ApiRoute.OrderCenter.Ride.RideBiz.finishRide)
+    RideDto finishRide(@RequestBody FinishParam finishParam);
+
+    @Data
+    @Builder
+    class FinishParam {
+        private Double lat;
+        private Double lng;
+        private Long stationId;
+        private Boolean isGPSLoc;
+
+        private RideDto rideDto;
+    }
+
     @Data
     @Builder
     class StartParam {

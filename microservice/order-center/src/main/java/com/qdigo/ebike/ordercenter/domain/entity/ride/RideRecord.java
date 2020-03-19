@@ -16,7 +16,6 @@
 
 package com.qdigo.ebike.ordercenter.domain.entity.ride;
 
-import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.qdigo.ebike.common.core.constants.Status;
 
 import javax.persistence.*;
@@ -81,10 +80,6 @@ public class RideRecord {
     //@JsonManagedReference
     //@OneToMany(mappedBy = "rideRecord")
     //private List<RideFreeActivity> freeActivities;
-
-    @JsonManagedReference
-    @OneToOne(cascade = {CascadeType.ALL}, mappedBy = "rideRecord", fetch = FetchType.LAZY)
-    private RideRoute rideRoute;
 
     @Column(name = "agent_id")
     private Long agentId;
@@ -215,15 +210,6 @@ public class RideRecord {
 
     public RideRecord setFreeActivity(int freeActivity) {
         this.freeActivity = freeActivity;
-        return this;
-    }
-
-    public RideRoute getRideRoute() {
-        return rideRoute;
-    }
-
-    public RideRecord setRideRoute(RideRoute rideRoute) {
-        this.rideRoute = rideRoute;
         return this;
     }
 

@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.controlcenter.listener.rent;
+package com.qdigo.ebike.usercenter.repository;
 
-import com.qdigo.ebike.controlcenter.domain.dto.rent.EndDTO;
-import org.springframework.context.ApplicationEvent;
+import com.qdigo.ebike.usercenter.domain.entity.UserCredit;
+import com.qdigo.ebike.usercenter.domain.entity.UserCreditRecord;
+import org.springframework.data.jpa.repository.JpaRepository;
+
+import java.util.List;
 
 /**
- * Created by niezhao on 2018/1/10.
+ * Created by niezhao on 2017/2/23.
  */
-public class EndBikeSuccessEvent extends ApplicationEvent {
-
-    private EndDTO endDTO;
-
-    public EndBikeSuccessEvent(Object source, EndDTO endDTO) {
-        super(source);
-        this.endDTO = endDTO;
-    }
-
-    public EndDTO getEndDTO() {
-        return endDTO;
-    }
+public interface UserCreditRecordRepository extends JpaRepository<UserCreditRecord, Long> {
+    List<UserCreditRecord> findByUserCredit(UserCredit userCredit);
 }

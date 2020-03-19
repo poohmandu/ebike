@@ -14,24 +14,29 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.controlcenter.listener.rent;
+package com.qdigo.ebike.api.domain.dto.activity.coupon;
 
-import com.qdigo.ebike.controlcenter.domain.dto.rent.EndDTO;
-import org.springframework.context.ApplicationEvent;
+import lombok.Data;
+
+import java.util.Date;
 
 /**
- * Created by niezhao on 2018/1/10.
+ * description: 
+ *
+ * date: 2020/3/18 10:03 PM
+ * @author niezhao
  */
-public class EndBikeSuccessEvent extends ApplicationEvent {
-
-    private EndDTO endDTO;
-
-    public EndBikeSuccessEvent(Object source, EndDTO endDTO) {
-        super(source);
-        this.endDTO = endDTO;
-    }
-
-    public EndDTO getEndDTO() {
-        return endDTO;
-    }
+@Data
+public class CouponDto {
+    private long id;
+    private boolean valid;
+    private boolean redeemed;
+    private long userId;
+    private Long rideRecordId;
+    private Long agentId;
+    private double originAmount;
+    private Date startTime;
+    private Date endTime;
+    private int userTimesCirculated;
+    private long created;
 }

@@ -114,6 +114,7 @@ public class RentEndValidateService {
         WxscoreDto wxscoreDto = wxscoreBizService.hasRideWxscoreOrder(rideDto.getRideRecordId());
         if (wxscoreDto != null) {
             log.debug("微信支付分渠道用户直接通过账户验证");
+            endDTO.getOut().setWxscoreDto(wxscoreDto);
             return new ResponseDTO<>(200, "账户验证通过");
         }
 

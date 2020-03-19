@@ -23,4 +23,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
  * Created by niezhao on 2018/1/26.
  */
 public interface RideRouteRepository extends JpaRepository<RideRoute, Long> {
+
+    RideRoute findByRideRecordId(Long rideRecordId);
+
 }

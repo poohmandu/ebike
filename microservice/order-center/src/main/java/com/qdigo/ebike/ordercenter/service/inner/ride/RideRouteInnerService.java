@@ -44,9 +44,9 @@ public class RideRouteInnerService {
     private final StationGeoService geoService;
 
     @Transactional
-    public void createRideRoute(RideRecord rideRecord, Long agentId, BikeStatusDto bikeStatusDto, double gpsLat, double gpsLng) {
+    public void createRideRoute(Long rideRecordId, Long agentId, BikeStatusDto bikeStatusDto, double gpsLat, double gpsLng) {
         val rideRoute = new RideRoute()
-                .setRideRecord(rideRecord)
+                .setRideRecordId(rideRecordId)
                 .setAgentId(agentId)
                 .setEndLat(0.0)
                 .setEndLng(0.0)
@@ -63,18 +63,16 @@ public class RideRouteInnerService {
         rideRouteRepository.save(rideRoute);
     }
 
-    //@Transactional
-    //public void updateRideRoute(RideRecord rideRecord, double gpsLat, double gpsLng) {
-    //    val rideRoute = rideRecord.getRideRoute();
-    //    if (rideRoute != null) {
-    //        rideRoute.setEndLat(gpsLat)
-    //                .setEndLng(gpsLng);
-    //        if (rideRoute.getEndStationId() == null) {
-    //            rideRoute.setEndStationId(rideRecord.getBike().getBikeStatus().getStationId());
-    //        }
-    //        rideRouteRepository.save(rideRoute);
-    //    }
-    //}
+    @Transactional
+    public void updateRideRoute(Long rideRecordId, double gpsLat, double gpsLng, Long stationId) {
+        RideRoute rideRoute = rideRouteRepository.findByRideRecordId(rideRecordId);
+        if (rideRoute != null) {
+            rideRoute.setEndLat(gpsLat)
+                    .setEndLng(gpsLng);
+            rideRoute.setEndStationId(stationId);
+            rideRouteRepository.save(rideRoute);
+        }
+    }
 
 
 }

@@ -16,15 +16,19 @@
 
 package com.qdigo.ebike.api.service.order.ride;
 
+import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.agent.AgentCfg;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.ConsumeDetail;
 import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.FreeActivityDto;
 import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 
@@ -37,16 +41,29 @@ import java.util.List;
 @FeignClient(name = "order-center", contextId = "ride-free-activity")
 public interface RideFreeActivityService {
 
-    void consumeFreeActivities();
+    @PostMapping(ApiRoute.OrderCenter.Ride.RideFreeActivity.createRideFreeActivities)
+    void createRideFreeActivities(@RequestBody List<FreeActivityDto> rideFreeActivities);
 
-    ConsumeDetail getConsumeDetail(DetailParam param);
+    @PostMapping(ApiRoute.OrderCenter.Ride.RideFreeActivity.consumeFreeActivities)
+    ConsumeResult consumeFreeActivities(@RequestBody ConsumeParam param);
+
+    @PostMapping(ApiRoute.OrderCenter.Ride.RideFreeActivity.getConsumeDetail)
+    ConsumeDetail getConsumeDetail(@RequestBody DetailParam param);
 
     @Data
     @Builder
     class ConsumeParam {
+        private RideDto rideDto;
+        private AgentCfg agentCfg;
         private UserDto userDto;
         private UserAccountDto accountDto;
         private List<FreeActivityDto> freeActivities;
+    }
+
+    @Data
+    @AllArgsConstructor
+    class ConsumeResult {
+        private UserAccountDto userAccountDto;
     }
 
     @Data

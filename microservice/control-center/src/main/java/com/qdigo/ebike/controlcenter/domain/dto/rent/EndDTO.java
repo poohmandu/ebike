@@ -21,6 +21,7 @@ import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.domain.dto.order.rideforceend.ForceEndInfo;
 import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.ConsumeDetail;
+import com.qdigo.ebike.api.domain.dto.order.wxscore.WxscoreDto;
 import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.common.core.constants.Const;
@@ -28,6 +29,7 @@ import com.qdigo.ebike.controlcenter.domain.entity.mongo.PGPackage;
 import lombok.Builder;
 import lombok.Data;
 
+import javax.annotation.Nullable;
 import javax.validation.constraints.NotNull;
 
 @Data
@@ -48,20 +50,26 @@ public class EndDTO {
     //private boolean withLBS; //可根据经纬度判断
     private double longitude;// 经度 withLBS=true时有意义
     private double latitude;// 纬度 withLBS=true时有意义
-    private double accuracy = -1.0; //精度 withLBS=true时有意义
+    private double accuracy; //精度 withLBS=true时有意义
     private String provider;
 
     private boolean forceEnd;
 
-    private Out out = new Out();
+    private Out out;
 
     //输出参数
     @Data
     public static class Out {
+        @Nullable
         private EndOrderTipDTO orderTipDTO;
+        @Nullable
         private ForceEndInfo forceEndInfo;
+        @Nullable
         private ConsumeDetail consumeDetail;
+        @Nullable
         private Long stationId;
+        @Nullable
+        private WxscoreDto wxscoreDto;
     }
 
     @Data

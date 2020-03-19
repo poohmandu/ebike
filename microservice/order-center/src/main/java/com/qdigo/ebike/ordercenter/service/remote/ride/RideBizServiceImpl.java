@@ -18,12 +18,15 @@ package com.qdigo.ebike.ordercenter.service.remote.ride;
 
 import com.qdigo.ebike.api.RemoteService;
 import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
+import com.qdigo.ebike.api.domain.dto.control.Location;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import com.qdigo.ebike.api.service.control.TrackService;
 import com.qdigo.ebike.api.service.order.ride.RideBizService;
 import com.qdigo.ebike.common.core.constants.Status;
 import com.qdigo.ebike.common.core.util.ConvertUtil;
 import com.qdigo.ebike.common.core.util.FormatUtil;
+import com.qdigo.ebike.common.core.util.geo.GeoUtil;
 import com.qdigo.ebike.common.core.util.geo.LocationConvert;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideOrder;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideRecord;
@@ -54,6 +57,7 @@ public class RideBizServiceImpl implements RideBizService {
     private RideRecordRepository rideRecordRepository;
     private RideRouteInnerService rideRouteService;
     private RideOrderRepository rideOrderRepository;
+    private TrackService trackService;
 
 
     @Override
@@ -88,7 +92,7 @@ public class RideBizServiceImpl implements RideBizService {
                 .setMobileNo(mobileNo)
                 .setAgentId(bike.getAgentId());
         rideRecord = rideRecordRepository.save(rideRecord);
-        rideRouteService.createRideRoute(rideRecord, bike.getAgentId(), param.getBikeStatusDto(), lat, lng);
+        rideRouteService.createRideRoute(rideRecord.getRideRecordId(), bike.getAgentId(), param.getBikeStatusDto(), lat, lng);
 
         RideOrder rideOrder = RideOrder.fromRideRecord(rideRecord, bike.getAgentId());
         rideOrderRepository.save(rideOrder);
@@ -96,16 +100,62 @@ public class RideBizServiceImpl implements RideBizService {
 
     }
 
+    //最新的结束订单方式
+    //@CatAnnotation
     @Transactional
-    public void updateRideRoute(RideRecord rideRecord, double gpsLat, double gpsLng) {
-        val rideRoute = rideRecord.getRideRoute();
-        if (rideRoute != null) {
-            rideRoute.setEndLat(gpsLat)
-                    .setEndLng(gpsLng);
-            if (rideRoute.getEndStationId() == null) {
-                rideRoute.setEndStationId(rideRecord.getBike().getBikeStatus().getStationId());
-            }
-            rideRouteRepository.save(rideRoute);
+    public RideDto finishRide(FinishParam finishParam) {
+        double lat = finishParam.getLat();
+        double lng = finishParam.getLng();
+        Boolean isGPSLoc = finishParam.getIsGPSLoc();
+        Long stationId = finishParam.getStationId();
+
+        RideRecord rideRecord = ConvertUtil.to(finishParam.getRideDto(), RideRecord.class);
+        if (!isGPSLoc) {
+            val toGps = LocationConvert.fromAmapToGps(lat, lng);
+            lng = toGps.get("lng");
+            lat = toGps.get("lat");
         }
+        val mobileNo = rideRecord.getMobileNo();
+
+        rideRecord.setEndLoc(FormatUtil.locStr(lng, lat))
+                .setEndTime(new Date())
+                .setRideStatus(Status.RideStatus.end.getVal());
+
+        this.updateDistance(rideRecord);
+
+        rideRouteService.updateRideRoute(rideRecord.getRideRecordId(), lat, lng, stationId);
+
+        rideRecordRepository.save(rideRecord);
+
+        rideOrderRepository.findById(rideRecord.getRideRecordId())
+                .ifPresent(rideOrder -> rideOrderRepository.deleteById(rideRecord.getRideRecordId()));
+        log.debug("user:{}成功更新rideRecord:{}的数据,rideRecord.rideStatus:{}", mobileNo, rideRecord.getRideRecordId(), rideRecord.getRideStatus());
+        return ConvertUtil.to(rideRecord, RideDto.class);
     }
+
+    private void updateDistance(RideRecord rideRecord) {
+        log.debug("开始计算rideRecord:{}的骑行路程", rideRecord.getRideRecordId());
+
+        val start = rideRecord.getStartTime();
+        val end = rideRecord.getEndTime();
+        val imei = rideRecord.getImei();
+
+        List<Location> points = trackService.getMoveTrackByTime(imei, start, end);
+        points = trackService.averagePoints(points);
+
+        double distance = 0; // 单位:米
+        if (!points.isEmpty()) {
+            for (int i = 1; i < points.size(); i++) {
+                val lng1 = points.get(i - 1).getPgLongitude();
+                val lat1 = points.get(i - 1).getPgLatitude();
+                val lng2 = points.get(i).getPgLongitude();
+                val lat2 = points.get(i).getPgLatitude();
+                distance += GeoUtil.getDistanceForMeter(lat1, lng1, lat2, lng2);
+            }
+        }
+        rideRecord.setDistance((int) distance);
+        log.debug("rideRecord:{}成功计算并存储路程,为{}米", rideRecord.getRideRecordId(), distance);
+    }
+
+
 }

@@ -16,14 +16,20 @@
 
 package com.qdigo.ebike.api.service.order.wxscore;
 
+import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.agent.AgentCfg;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
+import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.ConsumeDetail;
 import com.qdigo.ebike.api.domain.dto.order.wxscore.WxscoreDto;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import com.qdigo.ebike.common.core.errors.exception.QdigoBizException;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -36,12 +42,15 @@ import java.util.List;
 @FeignClient(name = "order-center", contextId = "order-wxscore-biz")
 public interface OrderWxscoreBizService {
 
-    WxscoreDto hasRideWxscoreOrder(Long rideRecordId);
+    @PostMapping(ApiRoute.OrderCenter.Wxscore.hasRideWxscoreOrder)
+    WxscoreDto hasRideWxscoreOrder(@RequestParam("rideRecordId") Long rideRecordId);
 
-    void startWxscoreOrder(WxsocreStart wxsocreStart);
+    @PostMapping(ApiRoute.OrderCenter.Wxscore.startWxscoreOrder)
+    void startWxscoreOrder(@RequestBody WxsocreStart wxsocreStart);
 
     //rebuild 抛qdigobiz异常
-    void completeWxscoreOrder(RideRecord rideRecord, int totalAmount, RideActivityService.ConsumeDetail consumeDetail, List<WxscoreOrder.Discount> otherDiscounts);
+    @PostMapping(ApiRoute.OrderCenter.Wxscore.completeWxscoreOrder)
+    void completeWxscoreOrder(@RequestBody WxscoreComplete wxscoreComplete) throws QdigoBizException;
 
     @Data
     @Builder
@@ -51,5 +60,18 @@ public interface OrderWxscoreBizService {
 
         private AgentCfg agentCfg;
         private RideDto rideDto;
+    }
+
+    @Data
+    @Builder
+    class WxscoreComplete {
+        private UserDto userDto;
+        private RideDto rideDto;
+        private WxscoreDto wxscoreDto;
+        private ConsumeDetail consumeDetail;
+        private List<WxscoreOrder.Discount> otherDiscounts;
+
+        private Integer totalAmount;
+
     }
 }

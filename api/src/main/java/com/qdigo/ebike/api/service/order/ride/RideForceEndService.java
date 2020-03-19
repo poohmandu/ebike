@@ -16,11 +16,14 @@
 
 package com.qdigo.ebike.api.service.order.ride;
 
+import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.domain.dto.order.rideforceend.ForceEndInfo;
 import lombok.Builder;
 import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 /**
  * description: 
@@ -31,7 +34,21 @@ import org.springframework.cloud.openfeign.FeignClient;
 @FeignClient(name = "order-center", contextId = "ride-force-end")
 public interface RideForceEndService {
 
-    ForceEndInfo getForceEndInfo( Param param);
+    @PostMapping(ApiRoute.OrderCenter.Ride.RideForceEnd.insert)
+    void insert(@RequestBody CreateParam createParam);
+
+    @PostMapping(ApiRoute.OrderCenter.Ride.RideForceEnd.getForceEndInfo)
+    ForceEndInfo getForceEndInfo(@RequestBody Param param);
+
+    @Data
+    @Builder
+    class CreateParam {
+        private long rideRecordId;
+        private long agentId;
+        private double lat;
+        private double lng;
+        private ForceEndInfo forceEndInfo;
+    }
 
     @Data
     @Builder

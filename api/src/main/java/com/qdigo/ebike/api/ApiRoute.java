@@ -73,6 +73,12 @@ public interface ApiRoute {
 
             String insertUserRecord = userRecord + "/insertUserRecord";
         }
+
+        interface UserCredit {
+            String userCredit = userCenter + "/userCredit";
+
+            String updateCreditInfo = userCredit + "/updateCreditInfo";
+        }
     }
 
     interface Third {
@@ -330,7 +336,7 @@ public interface ApiRoute {
             String findByAgentId = takeawayConfig + "/findByAgentId";
         }
 
-        interface ForceEndConfig{
+        interface ForceEndConfig {
             String forceEndConfig = agentCenter + "/forceEndConfig";
 
             String findByAgentId = forceEndConfig + "/findByAgentId";
@@ -379,12 +385,31 @@ public interface ApiRoute {
             String findAnyByMobileNo = ride + "/findAnyByMobileNo";
             String findEndByMobileNo = ride + "/findEndByMobileNo";
             String findEndPageByMobileNo = ride + "/findEndPageByMobileNo";
+            String updateRideRecord = ride + "/updateRideRecord";
+            String updateRideOrder = ride + "/updateRideOrder";
 
             interface RideBiz {
                 String rideBiz = ride + "/rideBiz";
 
                 String createRide = rideBiz + "/createRide";
+                String finishRide = rideBiz + "/finishRide";
             }
+
+            interface RideForceEnd {
+                String rideForceEnd = ride + "/rideForceEnd";
+
+                String insert = rideForceEnd + "/insert";
+                String getForceEndInfo = rideForceEnd + "/getForceEndInfo";
+            }
+
+            interface RideFreeActivity {
+                String rideFreeActivity = ride + "/rideFreeActivity";
+
+                String createRideFreeActivities = rideFreeActivity + "/createRideFreeActivities";
+                String consumeFreeActivities = rideFreeActivity + "/consumeFreeActivities";
+                String getConsumeDetail = rideFreeActivity + "/getConsumeDetail";
+            }
+
         }
 
         interface JournalAccount {
@@ -393,6 +418,16 @@ public interface ApiRoute {
             String insert4Charge = journalAccount + "/insert4Charge";
             String insert4Ride = journalAccount + "/insert4Ride";
             String insert4LongRent = journalAccount + "/insert4LongRent";
+        }
+
+        interface Wxscore {
+            String wxscore = orderCenter + "/wxscore";
+
+            String hasRideWxscoreOrder = wxscore + "/hasRideWxscoreOrder";
+            String startWxscoreOrder = wxscore + "/startWxscoreOrder";
+            String completeWxscoreOrder = wxscore + "/completeWxscoreOrder";
+
+            String finishOrder = wxscore + "/finishOrder";
         }
     }
 
@@ -409,6 +444,8 @@ public interface ApiRoute {
             String coupon = activityCenter + "/coupon";
 
             String getFreeConsume = coupon + "/getFreeConsume";
+            String getConsumeCoupon = coupon + "/getConsumeCoupon";
+            String consumeCashCoupon = coupon + "/consumeCashCoupon";
         }
     }
 

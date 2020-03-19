@@ -30,8 +30,8 @@ import com.qdigo.ebike.api.service.station.StationService;
 import com.qdigo.ebike.common.core.constants.Status;
 import com.qdigo.ebike.common.core.util.FormatUtil;
 import com.qdigo.ebike.common.core.util.geo.GeoUtil;
-import com.qdigo.ebike.commonaop.annotations.ThreadCache;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideForceEnd;
+import com.qdigo.ebike.ordercenter.repository.RideForceEndRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -56,18 +56,21 @@ public class RideForceEndServiceImpl implements RideForceEndService {
     private final AgentForceEndConfigService forceEndConfigService;
     private final StationGeoService geoService;
     private final StationService stationService;
+    private final RideForceEndRepository rideForceEndRepository;
 
+    @Override
     @Transactional
-    public void insert(long rideRecordId, long agentId, double lat, double lng, ForceEndInfo forceEndInfo) {
+    public void insert(CreateParam createParam) {
+        ForceEndInfo forceEndInfo = createParam.getForceEndInfo();
         RideForceEnd rideForceEnd = new RideForceEnd();
-        rideForceEnd.setRideRecordId(rideRecordId);
-        rideForceEnd.setAgentId(agentId);
+        rideForceEnd.setRideRecordId(createParam.getRideRecordId());
+        rideForceEnd.setAgentId(createParam.getAgentId());
         rideForceEnd.setAmount(forceEndInfo.getAmount());
         rideForceEnd.setAmountNote(forceEndInfo.getAmountNote());
         rideForceEnd.setDistanceMeter(forceEndInfo.getDistanceMeter());
-        rideForceEnd.setLatitude(lat);
-        rideForceEnd.setLongitude(lng);
-        forceEndRepository.save(rideForceEnd);
+        rideForceEnd.setLatitude(createParam.getLat());
+        rideForceEnd.setLongitude(createParam.getLng());
+        rideForceEndRepository.save(rideForceEnd);
     }
 
     // 车辆的经纬度
