@@ -27,7 +27,7 @@ import java.util.Date;
 public class OpsUseRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "ops_user", nullable = false)

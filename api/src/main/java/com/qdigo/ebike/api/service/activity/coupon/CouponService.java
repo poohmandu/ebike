@@ -18,8 +18,8 @@ package com.qdigo.ebike.api.service.activity.coupon;
 
 import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.activity.coupon.CouponDto;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -44,7 +44,7 @@ public interface CouponService {
     void consumeCashCoupon(@RequestBody ConsumeCashParam param);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class ConsumeCashParam {
         private CouponDto couponDto;
         private double originAmount;

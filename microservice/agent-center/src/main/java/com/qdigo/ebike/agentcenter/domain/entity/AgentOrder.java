@@ -35,7 +35,7 @@ public class AgentOrder extends AbstractAuditingEntity {
     private static final long serialVersionUID = 4914546031111204672L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long agentOrderId;
 
     private Date  refDate;    //提交日期

@@ -97,8 +97,8 @@ public class UserStatusInnerService {
     }
 
     @ThreadCache(key = "userId")
-    public boolean getUserScoreEnable(User user) {
-        String zmScore = user.getAccount().getZmScore();
+    public boolean getUserScoreEnable(UserAccount userAccount) {
+        String zmScore = userAccount.getZmScore();
         //修改过,现在只要不为空就算通过了芝麻信用
         return StringUtils.isNotBlank(zmScore);
     }
@@ -106,10 +106,9 @@ public class UserStatusInnerService {
 
     //@CatAnnotation
     @ThreadCache(key = {"userId"})
-    public boolean getUserWxscoreEnableCache(User user) {
+    public boolean getUserWxscoreEnableCache(User user, UserAccount account) {
         if (!wxliteService.isWxlite(user.getDeviceId()))
             return false;
-        UserAccount account = user.getAccount();
         return account.getWxscore().equals("AVAILABLE");
     }
 
@@ -151,14 +150,14 @@ public class UserStatusInnerService {
 
     //默认已经登录
     //@CatAnnotation
-    public Status.Step getStep(User user,UserAccount account) {
+    public Status.Step getStep(User user, UserAccount account) {
         double totalBalance = account.getBalance() + account.getGiftBalance();
-        Boolean wxscoreEnable = self.getUserWxscoreEnableCache(user);
+        Boolean wxscoreEnable = self.getUserWxscoreEnableCache(user, account);
 
         if (wxscoreEnable && totalBalance >= 0) //新用户为0
             return Status.Step.finished; //为负还是需要先补足
 
-        Boolean zmScoreEnable = self.getUserScoreEnable(user);
+        Boolean zmScoreEnable = self.getUserScoreEnable(account);
         Boolean studentEnable = self.getUserStudentEnable(user.getMobileNo());
         log.debug("信用认证阶段,押金:{},芝麻信用分:{},学生认证:{}", account.getDeposit(), zmScoreEnable, studentEnable);
         if (!wxscoreEnable && account.getDeposit() <= 0 && !zmScoreEnable && !studentEnable)

@@ -17,8 +17,8 @@
 package com.qdigo.ebike.api.service.user;
 
 import com.qdigo.ebike.api.ApiRoute;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -38,7 +38,7 @@ public interface UserBlackListService {
     BlackListDto findByUserId(@RequestParam("userId") Long userId);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class BlackListDto {
         private long id;
         private long userId;

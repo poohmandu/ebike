@@ -17,8 +17,8 @@
 package com.qdigo.ebike.api.service.bike;
 
 import com.qdigo.ebike.api.ApiRoute;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -36,7 +36,7 @@ public interface BikeAddressService {
     BikeAddressDto updateBikeAddress(@RequestParam("lat") double lat, @RequestParam("lng") double lng, @RequestParam("imei") String imei);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class BikeAddressDto {
         private String imei;
         private double longitude;

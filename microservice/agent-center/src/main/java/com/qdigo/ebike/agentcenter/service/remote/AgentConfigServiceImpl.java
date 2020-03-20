@@ -17,7 +17,6 @@
 package com.qdigo.ebike.agentcenter.service.remote;
 
 import com.qdigo.ebike.agentcenter.domain.entity.Agent;
-import com.qdigo.ebike.agentcenter.repository.dao.AgentDao;
 import com.qdigo.ebike.agentcenter.service.AgentInnerService;
 import com.qdigo.ebike.api.RemoteService;
 import com.qdigo.ebike.api.domain.dto.agent.AgentCfg;
@@ -40,7 +39,6 @@ import java.util.stream.Collectors;
 public class AgentConfigServiceImpl implements AgentConfigService {
 
     private final AgentInnerService agentInnerService;
-    private final AgentDao agentDao;
 
     @Override
     public AgentCfg getAgentConfig(Long agentId) {
@@ -51,12 +49,6 @@ public class AgentConfigServiceImpl implements AgentConfigService {
     public List<Long> allowAgents(long agentId) {
         List<Agent> agents = agentInnerService.allowAgents(agentId);
         return agents.stream().map(Agent::getAgentId).collect(Collectors.toList());
-    }
-
-    @Override
-    public AgentCfg findByImei(String imei) {
-        Agent agent = agentDao.findByImei(imei);
-        return agentInnerService.getAgentConfig(agent.getAgentId());
     }
 
 }

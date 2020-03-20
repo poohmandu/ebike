@@ -84,9 +84,10 @@ public class DeviceService {
             return true;
         }
         try {
+            log.info("配置生效,模拟发送");
             TimeUnit.MILLISECONDS.sleep(1000);
         } catch (InterruptedException e) {
-            log.info("配置生效,模拟发送");
+            log.info("配置生效,模拟发送失败");
         }
         return false;
     }

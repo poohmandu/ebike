@@ -24,8 +24,9 @@ import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.FreeActivityDto;
 import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -51,7 +52,7 @@ public interface RideFreeActivityService {
     ConsumeDetail getConsumeDetail(@RequestBody DetailParam param);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class ConsumeParam {
         private RideDto rideDto;
         private AgentCfg agentCfg;
@@ -62,12 +63,13 @@ public interface RideFreeActivityService {
 
     @Data
     @AllArgsConstructor
+    @NoArgsConstructor
     class ConsumeResult {
         private UserAccountDto userAccountDto;
     }
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class DetailParam {
         private UserDto userDto;
         private RideDto rideDto;

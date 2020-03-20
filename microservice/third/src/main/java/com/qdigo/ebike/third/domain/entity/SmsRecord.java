@@ -28,7 +28,7 @@ public class SmsRecord {
     }
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long smsRecordId;
 
     @Column(nullable = false)

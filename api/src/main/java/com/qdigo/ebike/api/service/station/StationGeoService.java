@@ -17,7 +17,8 @@
 package com.qdigo.ebike.api.service.station;
 
 import com.qdigo.ebike.api.ApiRoute;
-import lombok.Value;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -48,7 +49,8 @@ public interface StationGeoService {
     @PostMapping(ApiRoute.StationCenter.StationGeo.isAtArea)
     Long isAtArea(@RequestParam("lat") double lat, @RequestParam("lng") double lng, @RequestParam("agentId") long agentId);
 
-    @Value
+    @Data
+    @Accessors(chain = true)
     class StationGeoDto {
         private Long stationId;
         private Long agentId;

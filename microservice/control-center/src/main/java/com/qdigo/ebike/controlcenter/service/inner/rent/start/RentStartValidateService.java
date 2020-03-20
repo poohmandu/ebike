@@ -170,7 +170,7 @@ public class RentStartValidateService {
         val account = startDto.getUserAccountDto();
         val imei = bike.getImeiId();
 
-        val stepParam = UserStatusService.StepParam.builder().userDto(user).userAccountDto(account).build();
+        UserStatusService.StepParam stepParam = new UserStatusService.StepParam().setUserDto(user).setUserAccountDto(account);
         Status.Step step = userStatusService.getStep(stepParam);
 
         if (step == Status.Step.deposit) {
@@ -264,7 +264,7 @@ public class RentStartValidateService {
                 Status.BikeActualStatus.cannotOps.getVal(),
                 Status.BikeActualStatus.internalError.getVal(),
                 Status.BikeActualStatus.noPower.getVal(),
-                Status.BikeActualStatus.pgNotFound.getVal(),
+                //Status.BikeActualStatus.pgNotFound.getVal(),
                 Status.BikeActualStatus.userReport.getVal());
 
         if (actualStatusNotOk) {

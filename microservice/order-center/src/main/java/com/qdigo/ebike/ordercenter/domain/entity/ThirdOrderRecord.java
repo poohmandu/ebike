@@ -25,7 +25,7 @@ import java.util.Date;
 public class ThirdOrderRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long thirdOrderRecordId;
 
     @Column(nullable = false)

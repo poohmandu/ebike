@@ -17,6 +17,7 @@
 package com.qdigo.ebike.controlcenter.domain.dto;
 
 import com.qdigo.ebike.api.domain.dto.agent.AgentCfg;
+import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
 import com.qdigo.ebike.api.domain.dto.bike.BikeGpsStatusDto;
 import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
@@ -34,6 +35,7 @@ import javax.annotation.Nullable;
 @Data
 @Builder
 public class BikePgInfo {
+    private BikeDto bikeDto;
     private BikeStatusDto bikeStatusDto;
     private BikeGpsStatusDto bikeGpsStatusDto;
     private AgentCfg agentCfg;

@@ -314,7 +314,6 @@ public interface ApiRoute {
 
             String getAgentConfig = config + "/getAgentConfig";
             String allowAgents = config + "/allowAgents";
-            String findByImei = config + "/findByImei";
         }
 
         interface Agent {

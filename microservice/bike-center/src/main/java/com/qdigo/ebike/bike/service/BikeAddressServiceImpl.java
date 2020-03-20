@@ -60,10 +60,9 @@ public class BikeAddressServiceImpl implements BikeAddressService {
             bk.setLongitude(ad.getLongitude());
             bk.setProvince(ad.getProvince());
             bikeAddressRepository.save(bk);
-            return BikeAddressDto.builder().adCode(bk.getAdCode()).address(bk.getAddress()).city(bk.getCity())
-                    .cityCode(bk.getCityCode()).district(bk.getDistrict()).imei(bk.getImei())
-                    .latitude(bk.getLatitude()).longitude(bk.getLongitude()).province(bk.getProvince())
-                    .build();
+            return new BikeAddressDto().setAdCode(bk.getAdCode()).setAddress(bk.getAddress()).setCity(bk.getCity())
+                    .setCityCode(bk.getCityCode()).setDistrict(bk.getDistrict()).setImei(bk.getImei())
+                    .setLatitude(bk.getLatitude()).setLongitude(bk.getLongitude()).setProvince(bk.getProvince());
         }
     }
 }

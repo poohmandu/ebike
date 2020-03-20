@@ -56,10 +56,9 @@ public class ZfbliteServiceImpl implements ZfbliteService {
 
         try {
             AlipaySystemOauthTokenResponse response = alipayClient.execute(request);
-            return LoginRes.builder().accessToken(response.getAccessToken()).alipayUserId(response.getUserId())
-                    .expiresIn(response.getExpiresIn()).reExpiresIn(response.getReExpiresIn())
-                    .refreshToken(response.getRefreshToken()).userId(response.getUserId())
-                    .build();
+            return new LoginRes().setAccessToken(response.getAccessToken()).setAlipayUserId(response.getUserId())
+                    .setExpiresIn(response.getExpiresIn()).setReExpiresIn(response.getReExpiresIn())
+                    .setRefreshToken(response.getRefreshToken()).setUserId(response.getUserId());
         } catch (AlipayApiException e) {
             log.error("支付宝小程序调用失败:{}", e.getMessage());
             throw new RuntimeException(e);

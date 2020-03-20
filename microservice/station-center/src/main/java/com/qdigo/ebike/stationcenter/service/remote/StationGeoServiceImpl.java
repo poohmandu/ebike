@@ -74,7 +74,7 @@ public class StationGeoServiceImpl implements StationGeoService {
                     list = PolygonUtil.run(list, m_compensate);
                 }
                 if (GeoUtil.isInPolygon(lat, lng, list)) {
-                    return new StationGeoDto(station.getStationId(), station.getAgentId());
+                    return new StationGeoDto().setStationId(station.getStationId()).setAgentId(station.getAgentId());
                 }
             } else {
                 double radius = station.getRadius();
@@ -83,7 +83,7 @@ public class StationGeoServiceImpl implements StationGeoService {
                     radius += m_compensate;
                 }
                 if (meter < radius) {
-                    return new StationGeoDto(station.getStationId(), station.getAgentId());
+                    return new StationGeoDto().setStationId(station.getStationId()).setAgentId(station.getAgentId());
                 }
             }
         }

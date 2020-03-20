@@ -30,7 +30,7 @@ import java.util.Date;
 public class EntityCard {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long entityCardId;
 
     @Column(nullable = false, unique = true, length = 25)

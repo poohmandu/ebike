@@ -91,8 +91,8 @@ public class RideFreeActivityServiceImpl implements RideFreeActivityService {
                 }
                 double originConsume = this.calConsume(rideDto.getStartTime(), endTime, rideDto.getUnitMinutes(),
                         rideDto.getPrice(), param.getAgentCfg());
-                CouponService.ConsumeCashParam cashParam = CouponService.ConsumeCashParam.builder().originAmount(originConsume)
-                        .couponDto(coupon).rideRecordId(rideDto.getRideRecordId()).build();
+                CouponService.ConsumeCashParam cashParam = new CouponService.ConsumeCashParam().setOriginAmount(originConsume)
+                        .setCouponDto(coupon).setRideRecordId(rideDto.getRideRecordId());
                 couponService.consumeCashCoupon(cashParam);
             }
         }

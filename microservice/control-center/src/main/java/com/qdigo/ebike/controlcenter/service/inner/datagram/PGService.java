@@ -294,8 +294,8 @@ public class PGService {
                 deviceService.forceEnable(imei, "system");
                 deviceService.shutdown(imei, "system");
             }
-            PushService.Param param = PushService.Param.builder().mobileNo(userDto.getMobileNo()).deviceId(userDto.getDeviceId())
-                    .pushType(Const.PushType.areaWarn).alert("你已骑出规定的服务区,请骑回服务区").build();
+            PushService.Param param = new PushService.Param().setMobileNo(userDto.getMobileNo()).setDeviceId(userDto.getDeviceId())
+                    .setPushType(Const.PushType.areaWarn).setAlert("你已骑出规定的服务区,请骑回服务区");
             pushService.pushNotation(param);
             redisTemplate.opsForValue().set(key, FormatUtil.getCurTime());
         });

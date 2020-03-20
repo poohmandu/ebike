@@ -32,7 +32,7 @@ import java.util.Date;
 public class Coupon {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     private boolean valid = true; //优惠券过期、优惠券已使用、关联的优惠券模板删除会使该优惠券变为不可用

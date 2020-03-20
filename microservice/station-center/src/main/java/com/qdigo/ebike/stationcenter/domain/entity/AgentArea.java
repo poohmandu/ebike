@@ -24,7 +24,7 @@ import java.util.List;
 public class AgentArea {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long areaId;
 
     @Column(nullable = false, length = 50)

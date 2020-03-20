@@ -104,8 +104,8 @@ public class PHService {
                                 UserDto userDto = userService.findByMobileNo(mobileNo);
 
                                 final String alert = "您正在骑行的车辆,电量过低，请注意及时充电";
-                                PushService.Param param = PushService.Param.builder().alert(alert).pushType(Const.PushType.warn)
-                                        .mobileNo(mobileNo).deviceId(userDto.getDeviceId()).build();
+                                PushService.Param param = new PushService.Param().setAlert(alert).setPushType(Const.PushType.warn)
+                                        .setMobileNo(mobileNo).setDeviceId(userDto.getDeviceId());
                                 pushService.pushNotation(param);
                             }
                         }
@@ -125,35 +125,35 @@ public class PHService {
                 TimeUnit.MILLISECONDS.toMinutes(System.currentTimeMillis() - Long.parseLong(seatCushionTimeStr)) > 5) {
 
             val electricBln = ph.getPhElectric() == 0;
-            OpsWarnService.WarnParam param = OpsWarnService.WarnParam.builder().bln(electricBln).mailType(Const.MailType.ElectricWarn).agentId(bike.getAgentId())
-                    .alert(MessageFormat.format("deviceId:{0},没有外接电源,IMEI:{1}", deviceId, imei)).deviceId(deviceId).imei(imei)
-                    .latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+            OpsWarnService.WarnParam param = new OpsWarnService.WarnParam().setBln(electricBln).setMailType(Const.MailType.ElectricWarn).setAgentId(bike.getAgentId())
+                    .setAlert(MessageFormat.format("deviceId:{0},没有外接电源,IMEI:{1}", deviceId, imei)).setDeviceId(deviceId).setImei(imei)
+                    .setLatitude(bikeStatus.getLatitude()).setLongitude(bikeStatus.getLongitude());
             this.warn(param);
 
-            OpsWarnService.WarnParam param1 = OpsWarnService.WarnParam.builder().bln(lowPowerVoltageBln).mailType(Const.MailType.PowerVoltageWarn).agentId(bike.getAgentId())
-                    .alert(MessageFormat.format("deviceId:{0},电压过低,为{1}伏,IMEI:{2}", deviceId, ph.getPhPowerVoltage() / 100, imei))
-                    .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+            OpsWarnService.WarnParam param1 = new OpsWarnService.WarnParam().setBln(lowPowerVoltageBln).setMailType(Const.MailType.PowerVoltageWarn).setAgentId(bike.getAgentId())
+                    .setAlert(MessageFormat.format("deviceId:{0},电压过低,为{1}伏,IMEI:{2}", deviceId, ph.getPhPowerVoltage() / 100, imei))
+                    .setDeviceId(deviceId).setImei(imei).setLatitude(bikeStatus.getLatitude()).setLongitude(bikeStatus.getLongitude());
             this.warn(param1);
         } else {
             log.debug("【{}】5分钟内有管理员开过坐垫,屏蔽报警", imei);
         }
 
         val doorLockBln = ph.getPhDoorLock() == 1 && ph.getPhLocked() == 1;
-        OpsWarnService.WarnParam param = OpsWarnService.WarnParam.builder().bln(doorLockBln).mailType(Const.MailType.DoorLockWarn).agentId(bike.getAgentId())
-                .alert(MessageFormat.format("deviceId:{0},锁车情况下打开了电门锁,IMEI:{1}", deviceId, imei))
-                .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+        OpsWarnService.WarnParam param = new OpsWarnService.WarnParam().setBln(doorLockBln).setMailType(Const.MailType.DoorLockWarn).setAgentId(bike.getAgentId())
+                .setAlert(MessageFormat.format("deviceId:{0},锁车情况下打开了电门锁,IMEI:{1}", deviceId, imei))
+                .setDeviceId(deviceId).setImei(imei).setLatitude(bikeStatus.getLatitude()).setLongitude(bikeStatus.getLongitude());
         this.warn(param);
 
         val wheelInputBln = ph.getPhWheelInput() == 1 && ph.getPhLocked() == 1;
-        OpsWarnService.WarnParam param1 = OpsWarnService.WarnParam.builder().bln(wheelInputBln).mailType(Const.MailType.WheelInputWarn).agentId(bike.getAgentId())
-                .alert(MessageFormat.format("deviceId:{0},锁车情况下有轮车输入,IMEI:{1}", deviceId, imei))
-                .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+        OpsWarnService.WarnParam param1 = new OpsWarnService.WarnParam().setBln(wheelInputBln).setMailType(Const.MailType.WheelInputWarn).setAgentId(bike.getAgentId())
+                .setAlert(MessageFormat.format("deviceId:{0},锁车情况下有轮车输入,IMEI:{1}", deviceId, imei))
+                .setDeviceId(deviceId).setImei(imei).setLatitude(bikeStatus.getLatitude()).setLongitude(bikeStatus.getLongitude());
         this.warn(param1);
 
         val shakeBln = ph.getPhShaked() == 1 && ph.getPhLocked() == 1;
-        OpsWarnService.WarnParam param2 = OpsWarnService.WarnParam.builder().bln(shakeBln).mailType(Const.MailType.ShakeWarn).agentId(bike.getAgentId())
-                .alert(MessageFormat.format("deviceId:{0},锁车情况下有震动,IMEI:{1}", deviceId, imei))
-                .deviceId(deviceId).imei(imei).latitude(bikeStatus.getLatitude()).longitude(bikeStatus.getLongitude()).build();
+        OpsWarnService.WarnParam param2 = new OpsWarnService.WarnParam().setBln(shakeBln).setMailType(Const.MailType.ShakeWarn).setAgentId(bike.getAgentId())
+                .setAlert(MessageFormat.format("deviceId:{0},锁车情况下有震动,IMEI:{1}", deviceId, imei))
+                .setDeviceId(deviceId).setImei(imei).setLatitude(bikeStatus.getLatitude()).setLongitude(bikeStatus.getLongitude());
 
         this.warn(param2);
 

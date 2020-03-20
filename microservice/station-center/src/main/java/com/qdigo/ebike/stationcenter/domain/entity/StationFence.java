@@ -31,7 +31,7 @@ import java.util.List;
 public class StationFence {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long fenceId;
 
     @JsonBackReference

@@ -31,7 +31,7 @@ public class FaultReport extends AbstractAuditingEntity {
     private static final long serialVersionUID = 6090057048066807964L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long faultReportId;
 
     //@ManyToOne(cascade = {CascadeType.ALL}, fetch = FetchType.LAZY, optional = false)

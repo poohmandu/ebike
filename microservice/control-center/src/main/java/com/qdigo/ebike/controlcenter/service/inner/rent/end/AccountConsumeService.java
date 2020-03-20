@@ -67,9 +67,9 @@ public class AccountConsumeService {
         ConsumeDetail consumeDetail = endDTO.getOut().getConsumeDetail();
 
         //核销.会修改giftBalance、coupon
-        RideFreeActivityService.ConsumeParam consumeParam = RideFreeActivityService.ConsumeParam.builder()
-                .accountDto(account).agentCfg(agentCfg).rideDto(rideRecord).userDto(user)
-                .freeActivities(consumeDetail.getFreeActivities()).build();
+        RideFreeActivityService.ConsumeParam consumeParam = new RideFreeActivityService.ConsumeParam()
+                .setAccountDto(account).setAgentCfg(agentCfg).setRideDto(rideRecord).setUserDto(user)
+                .setFreeActivities(consumeDetail.getFreeActivities());
         val consumeResult = freeActivityService.consumeFreeActivities(consumeParam);
         account = consumeResult.getUserAccountDto();
         double rideRecordConsume = consumeDetail.getConsume(); //最终费用
@@ -84,8 +84,8 @@ public class AccountConsumeService {
 
             Assert.isTrue(forceEndConsume >= 0, "强制还车付费不能为负");
             rideRecordConsume += forceEndConsume;
-            val createParam = RideForceEndService.CreateParam.builder().agentId(agentCfg.getAgentId()).lat(status.getLatitude())
-                    .lng(status.getLongitude()).rideRecordId(rideRecord.getRideRecordId()).forceEndInfo(forceEndInfo).build();
+            val createParam = new RideForceEndService.CreateParam().setAgentId(agentCfg.getAgentId()).setLat(status.getLatitude())
+                    .setLng(status.getLongitude()).setRideRecordId(rideRecord.getRideRecordId()).setForceEndInfo(forceEndInfo);
             forceEndService.insert(createParam);
         }
         List<WxscoreOrder.Discount> otherDiscount = new ArrayList<>();
@@ -122,9 +122,9 @@ public class AccountConsumeService {
             } else {
                 wxFinalConsume = rideRecordConsume;
             }
-            val wxscoreComplete = OrderWxscoreBizService.WxscoreComplete.builder().consumeDetail(consumeDetail)
-                    .otherDiscounts(discounts).rideDto(rideRecord).totalAmount(FormatUtil.yuanToFen(wxFinalConsume))
-                    .userDto(user).wxscoreDto(wxscoreDto).build();
+            val wxscoreComplete = new OrderWxscoreBizService.WxscoreComplete().setConsumeDetail(consumeDetail)
+                    .setOtherDiscounts(discounts).setRideDto(rideRecord).setTotalAmount(FormatUtil.yuanToFen(wxFinalConsume))
+                    .setUserDto(user).setWxscoreDto(wxscoreDto);
             wxscoreBizService.completeWxscoreOrder(wxscoreComplete);
         } else {
             log.debug("用户消费流程走正常余额渠道");
@@ -139,8 +139,8 @@ public class AccountConsumeService {
         }
 
         // 记录流水
-        val param = OrderJournalAccountService.Param.builder().amount(-rideRecordConsume).startAccount(startBalance)
-                .mobileNo(user.getMobileNo()).agentId(agentCfg.getAgentId()).rideRecordId(rideRecord.getRideRecordId()).build();
+        val param = new OrderJournalAccountService.Param().setAmount(-rideRecordConsume).setStartAccount(startBalance)
+                .setMobileNo(user.getMobileNo()).setAgentId(agentCfg.getAgentId()).setRideRecordId(rideRecord.getRideRecordId());
         journalAccountService.insert4Ride(param);
 
         rideRecord.setConsume(FormatUtil.getMoney(rideRecordConsume))

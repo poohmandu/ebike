@@ -17,8 +17,8 @@
 package com.qdigo.ebike.api.service.third.zfblite;
 
 import com.qdigo.ebike.api.ApiRoute;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -37,8 +37,8 @@ public interface ZfbliteService {
     LoginRes getOpenId(@RequestParam("deviceId") String postCode);
 
 
-    @Getter
-    @Builder
+    @Data
+    @Accessors(chain = true)
     class LoginRes {
         private String accessToken;
         private String alipayUserId;

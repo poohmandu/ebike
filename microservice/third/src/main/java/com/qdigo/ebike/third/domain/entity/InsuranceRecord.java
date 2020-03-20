@@ -27,7 +27,7 @@ import java.util.Date;
 @Table(name = "insurance_record")
 public class InsuranceRecord {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false)

@@ -31,7 +31,7 @@ import java.util.Date;
 public class UserLongRent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "user_id", nullable = false)
@@ -46,7 +46,7 @@ public class UserLongRent {
     @Column(nullable = false)
     private double consume;
 
-    @Column(nullable = false, name = "startTime")
+    @Column(nullable = false, name = "start_time")
     private Date startTime;
 
     @Column(nullable = false, name = "end_time")

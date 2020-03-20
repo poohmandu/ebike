@@ -33,7 +33,7 @@ public class Bike extends AbstractAuditingEntity implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bikeId;
     @Column(length = 20, nullable = false, unique = true)
     private String deviceId = "";// 车架号（10位）

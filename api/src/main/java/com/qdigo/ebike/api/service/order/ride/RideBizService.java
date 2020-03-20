@@ -21,8 +21,8 @@ import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
 import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +43,7 @@ public interface RideBizService {
     RideDto finishRide(@RequestBody FinishParam finishParam);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class FinishParam {
         private Double lat;
         private Double lng;
@@ -54,7 +54,7 @@ public interface RideBizService {
     }
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class StartParam {
         private Double lat;
         private Double lng;

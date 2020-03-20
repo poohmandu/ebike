@@ -16,8 +16,8 @@
 
 package com.qdigo.ebike.api.domain.dto.third.wx.wxpush;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * description: 骑行提醒
@@ -26,7 +26,7 @@ import lombok.Data;
  * @author niezhao
  */
 @Data
-@Builder
+@Accessors(chain = true)
 public class DriveNotice implements PushTemp {
     private static final String tempId = "Wj1gjCAqM6S8CZWfpq9gd5YKDzrxCRMU-Jc3R47C3NE";
     //车辆编号

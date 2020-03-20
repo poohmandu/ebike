@@ -353,8 +353,8 @@ public class WxScoreServiceImpl implements WxscoreService {
                 .build();
         String sign = sign(data);
 
-        return WxscoreService.WxscoreUseRes.builder().mch_id(mch_id).nonce_str(nonceStr)
-                .sign(sign).packageStr(aPackage).sign_type(sign_type).timestamp(timestamp).build();
+        return new WxscoreService.WxscoreUseRes().setMch_id(mch_id).setNonce_str(nonceStr)
+                .setSign(sign).setPackageStr(aPackage).setSign_type(sign_type).setTimestamp(timestamp);
     }
 
     //@CatAnnotation
@@ -464,8 +464,8 @@ public class WxScoreServiceImpl implements WxscoreService {
                 .put("sign_type", sign_type)
                 .build();
         String sign = sign(data);
-        return WxscoreService.WxscoreEnableRes.builder().mch_id(mch_id).service_id(service_id).out_request_no(outRequestNo)
-                .timestamp(timestamp).nonce_str(nonceStr).sign_type(sign_type).sign(sign).build();
+        return new WxscoreService.WxscoreEnableRes().setMch_id(mch_id).setService_id(service_id).setOut_request_no(outRequestNo)
+                .setTimestamp(timestamp).setNonce_str(nonceStr).setSign_type(sign_type).setSign(sign);
     }
 
     public WxscoreService.WxscoreDetailRes wxscoreDetail(String out_order_no) {
@@ -480,8 +480,8 @@ public class WxScoreServiceImpl implements WxscoreService {
                 .put("sign_type", sign_type)
                 .build();
         String sign = sign(data);
-        return WxscoreService.WxscoreDetailRes.builder().mch_id(mch_id).service_id(service_id).out_order_no(out_order_no)
-                .timestamp(timestamp).nonce_str(nonceStr).sign_type(sign_type).sign(sign).build();
+        return new WxscoreService.WxscoreDetailRes().setMch_id(mch_id).setService_id(service_id).setOut_order_no(out_order_no)
+                .setTimestamp(timestamp).setNonce_str(nonceStr).setSign_type(sign_type).setSign(sign);
     }
 
 }

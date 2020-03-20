@@ -16,11 +16,11 @@
 
 package com.qdigo.ebike.api.domain.dto.third.wx.wxscore;
 
-import lombok.Builder;
-import lombok.Getter;
+import lombok.Data;
+import lombok.experimental.Accessors;
 
-@Getter
-@Builder
+@Data
+@Accessors(chain = true)
 public final class StartOrderParam {
     private String appId;
     private String openId;

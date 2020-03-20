@@ -16,10 +16,8 @@
 
 package com.qdigo.ebike.api.domain.dto.third.wx.wxpush;
 
-import com.qdigo.ebike.api.domain.dto.user.UserDto;
-import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * description: 还车提醒
@@ -28,7 +26,7 @@ import lombok.EqualsAndHashCode;
  * @author niezhao
  */
 @Data
-@Builder
+@Accessors(chain = true)
 public class ReturnNotice implements PushTemp {
     private static final String tempId = "2ygeypXs6cvJakbWBhMT9tY2CD0PCEt2BIodKcbG0kk";
     //消费金额

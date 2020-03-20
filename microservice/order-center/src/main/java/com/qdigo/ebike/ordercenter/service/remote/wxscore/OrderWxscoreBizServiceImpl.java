@@ -98,14 +98,13 @@ public class OrderWxscoreBizServiceImpl implements OrderWxscoreBizService {
                     rideDto.getUnitMinutes(), rideDto.getPrice(), config.getDayMaxHours());
 
 
-            StartOrderParam param = StartOrderParam.builder()
-                    .agentId(agentId)
-                    .appId(appId)
-                    .feeDesc(feeDesc)
-                    .openId(openId)
-                    .rideRecordId(rideDto.getRideRecordId())
-                    .userId(userDto.getUserId())
-                    .build();
+            StartOrderParam param = new StartOrderParam()
+                    .setAgentId(agentId)
+                    .setAppId(appId)
+                    .setFeeDesc(feeDesc)
+                    .setOpenId(openId)
+                    .setRideRecordId(rideDto.getRideRecordId())
+                    .setUserId(userDto.getUserId());
             ResponseDTO<String> startOrder = wxscoreService.startOrder(param);
             String errMessage;
             if (startOrder.isNotSuccess()) {
@@ -185,14 +184,13 @@ public class OrderWxscoreBizServiceImpl implements OrderWxscoreBizService {
             rentFee.setFee_desc(null);
             rentFee.setFee_count(null);
 
-            CompleteOrderParam param = CompleteOrderParam.builder()
-                    .appId(appId)
-                    .discounts(discounts)
-                    .fees(fees)
-                    .realStartTime(realStartTime)
-                    .finishTicket(orderDto.getFinish_ticket())
-                    .outOrderNo(outOrderNo)
-                    .build();
+            CompleteOrderParam param = new CompleteOrderParam()
+                    .setAppId(appId)
+                    .setDiscounts(discounts)
+                    .setFees(fees)
+                    .setRealStartTime(realStartTime)
+                    .setFinishTicket(orderDto.getFinish_ticket())
+                    .setOutOrderNo(outOrderNo);
 
             ResponseDTO<Void> completeDepositOrder = wxscoreService.completeOrder(param);
             if (completeDepositOrder.isNotSuccess()) {

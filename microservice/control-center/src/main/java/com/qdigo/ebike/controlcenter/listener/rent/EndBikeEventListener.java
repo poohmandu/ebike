@@ -114,8 +114,8 @@ public class EndBikeEventListener {
         } else {
             alert = "成功还车,订单状态异常";
         }
-        PushService.Param param = PushService.Param.builder().mobileNo(user.getMobileNo())
-                .deviceId(user.getDeviceId()).pushType(Const.PushType.appEndSuccess).alert(alert).build();
+        PushService.Param param = new PushService.Param().setMobileNo(user.getMobileNo())
+                .setDeviceId(user.getDeviceId()).setPushType(Const.PushType.appEndSuccess).setAlert(alert);
         pushService.pushNotation(param);
     }
 

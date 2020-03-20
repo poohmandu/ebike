@@ -78,10 +78,10 @@ public class RentEndService {
 
         //(1) 获取消费详情
         ConsumeDetail consumeDetail = endDTO.getOut().getConsumeDetail();
-        if (consumeDetail != null) {
-            RideFreeActivityService.DetailParam param = RideFreeActivityService.DetailParam.builder()
-                    .accountDto(endDTO.getUserAccountDto()).agentCfg(endDTO.getAgentCfg()).rideDto(rideDto)
-                    .userDto(endDTO.getUserDto()).build();
+        if (consumeDetail == null) {
+            RideFreeActivityService.DetailParam param = new RideFreeActivityService.DetailParam()
+                    .setAccountDto(endDTO.getUserAccountDto()).setAgentCfg(endDTO.getAgentCfg()).setRideDto(rideDto)
+                    .setUserDto(endDTO.getUserDto());
             consumeDetail = freeActivityService.getConsumeDetail(param);
             endDTO.getOut().setConsumeDetail(consumeDetail);
         }
@@ -91,8 +91,8 @@ public class RentEndService {
         //(3) 完成消费
         accountConsumeService.finishConsume(endDTO);
         //（3）更新骑行订单:rideRecord、rideRoute、coupon、userAccount、journalAccount
-        val finishParam = RideBizService.FinishParam.builder().isGPSLoc(isGPS).lat(endDTO.getLatitude())
-                .lng(endDTO.getLongitude()).rideDto(rideDto).stationId(endDTO.getOut().getStationId()).build();
+        val finishParam = new RideBizService.FinishParam().setIsGPSLoc(isGPS).setLat(endDTO.getLatitude())
+                .setLng(endDTO.getLongitude()).setRideDto(rideDto).setStationId(endDTO.getOut().getStationId());
         RideDto finishRide = rideBizService.finishRide(finishParam);
         endDTO.setRideDto(finishRide);
         // (5) 更新车辆状态
@@ -128,7 +128,7 @@ public class RentEndService {
         AgentCfg agentCfg = null;
         BikeStatusDto bikeStatusDto = null;
         if (rideDto != null) {
-            agentCfg = agentConfigService.findByImei(rideDto.getImei());
+            agentCfg = agentConfigService.getAgentConfig(rideDto.getAgentId());
             bikeStatusDto = bikeStatusService.findByImei(rideDto.getImei());
         }
         return EndDTO.builder()

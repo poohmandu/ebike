@@ -57,10 +57,10 @@ public class InsuranceBizService {
     @Transactional
     public void createInsurance(Long rideId, AgentCfg config, AgentDto agentDto, UserDto userDto, BikeDto bikeDto) {
         String policyNo = null;
-        InsuranceParam param = InsuranceParam.builder()
-                .city(agentDto.getCity()).idNo(userDto.getIdNo()).mobileNo(userDto.getMobileNo())
-                .operationType(bikeDto.getOperationType()).province(agentDto.getAgentProvince())
-                .realName(userDto.getRealName()).rideRecordId(rideId).build();
+        InsuranceParam param = new InsuranceParam()
+                .setCity(agentDto.getCity()).setIdNo(userDto.getIdNo()).setMobileNo(userDto.getMobileNo())
+                .setOperationType(bikeDto.getOperationType()).setProvince(agentDto.getAgentProvince())
+                .setRealName(userDto.getRealName()).setRideRecordId(rideId);
 
         if (config.isLowInsurance()) {
             InsuranceRecordDto insuranceRecord = lowInsureService.insure(param);

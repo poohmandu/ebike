@@ -17,11 +17,13 @@
 package com.qdigo.ebike.controlcenter.listener.device;
 
 import com.qdigo.ebike.api.domain.dto.agent.AgentCfg;
+import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
 import com.qdigo.ebike.api.domain.dto.bike.BikeGpsStatusDto;
 import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.domain.dto.order.RideDto;
 import com.qdigo.ebike.api.service.agent.AgentConfigService;
 import com.qdigo.ebike.api.service.bike.BikeGpsStatusService;
+import com.qdigo.ebike.api.service.bike.BikeService;
 import com.qdigo.ebike.api.service.bike.BikeStatusService;
 import com.qdigo.ebike.api.service.order.ride.OrderRideService;
 import com.qdigo.ebike.common.core.constants.Const;
@@ -58,6 +60,7 @@ public class GPSHandler {
     private final AgentConfigService agentConfigService;
     private final OrderRideService rideService;
     private final BikeGpsStatusService bikeGpsStatusService;
+    private final BikeService bikeService;
 
     //@Async
     //@Transactional
@@ -91,9 +94,10 @@ public class GPSHandler {
                     rideDto = rideService.findRidingByImei(imei);
                 }
 
-                AgentCfg agentCfg = agentConfigService.findByImei(imei);
+                BikeDto bikeDto = bikeService.findByImei(imei);
+                AgentCfg agentCfg = agentConfigService.getAgentConfig(bikeDto.getAgentId());
                 BikeGpsStatusDto bikeGpsStatusDto = bikeGpsStatusService.findByImei(imei);
-                BikePgInfo bikePgInfo = BikePgInfo.builder().bikeStatusDto(bikeStatusDto)
+                BikePgInfo bikePgInfo = BikePgInfo.builder().bikeStatusDto(bikeStatusDto).bikeDto(bikeDto)
                         .rideDto(rideDto).agentCfg(agentCfg).bikeGpsStatusDto(bikeGpsStatusDto).build();
 
                 //biz 更新位置

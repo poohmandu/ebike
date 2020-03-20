@@ -31,7 +31,7 @@ import javax.persistence.*;
 public class UserWxOpenInfo {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false, name = "user_id")

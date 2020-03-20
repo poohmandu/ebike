@@ -86,18 +86,19 @@ public class GetUserInfo {
             return R.ok(200, "成功获取用户认证进度", step);
         }
         User user = userRepository.findOneByMobileNo(mobileNo).get();
+        UserAccount account = user.getAccount();
 
         Status.Step statusStep = userStatusInnerService.getStep(user, user.getAccount());
 
-        boolean wxscoreEnable = userStatusInnerService.getUserWxscoreEnableCache(user);
-        UserAccount account = user.getAccount();
+        boolean wxscoreEnable = userStatusInnerService.getUserWxscoreEnableCache(user, account);
+
         double totalBalance = account.getBalance() + account.getGiftBalance();
 
         step = Step.builder()
                 .name(statusStep.name())
                 .val(statusStep.getVal())
                 .wxscoreEnable(wxscoreEnable)
-                .zmScoreEnable(userStatusInnerService.getUserScoreEnable(user))
+                .zmScoreEnable(userStatusInnerService.getUserScoreEnable(account))
                 .studentEnable(userStatusInnerService.getUserStudentEnable(mobileNo))
                 .totalBalance(totalBalance)
                 .build();

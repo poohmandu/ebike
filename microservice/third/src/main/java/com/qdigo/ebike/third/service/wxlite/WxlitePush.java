@@ -62,15 +62,14 @@ public class WxlitePush {
         if (pushType == Const.PushType.autoReturn) {
             String deviceId = (String) ((Map) data).get("deviceId");
             Double consume = (Double) ((Map) data).get("consume");
-            ReturnNotice returnNotice = ReturnNotice.builder().content(title).deviceId(deviceId)
-                    .consume("¥ " + String.valueOf(consume)).build();
+            ReturnNotice returnNotice = new ReturnNotice().setContent(title).setDeviceId(deviceId)
+                    .setConsume("¥ " + String.valueOf(consume));
             this.send(mobileNo, returnNotice, "consume");
         } else if (pushType == Const.PushType.stuAuth) {
             Map<String, Object> map = (Map<String, Object>) data;
-            StudentAuthNotice authNotice = StudentAuthNotice.builder().schoolName((String) map.get("schoolName"))
-                    .studentNo((String) map.get("studentNo"))
-                    .time(FormatUtil.yMdHms.format((Date) map.get("time")))
-                    .build();
+            StudentAuthNotice authNotice = new StudentAuthNotice().setSchoolName((String) map.get("schoolName"))
+                    .setStudentNo((String) map.get("studentNo"))
+                    .setTime(FormatUtil.yMdHms.format((Date) map.get("time")));
             if ((boolean) map.get("success")) {
                 authNotice.setResult("认证通过");
                 authNotice.setFailMsg("无");

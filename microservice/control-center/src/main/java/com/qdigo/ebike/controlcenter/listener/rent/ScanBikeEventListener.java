@@ -78,8 +78,8 @@ public class ScanBikeEventListener {
             long rideRecordId = rideDto.getRideRecordId();
 
             //(3) 微信支付分订单逻辑,rideRecord提交后
-            val wxsocreStart = OrderWxscoreBizService.WxsocreStart.builder().rideDto(rideDto)
-                    .wxscoreEnable(accountDto.getWxscore()).agentCfg(config).userDto(user).build();
+            val wxsocreStart = new OrderWxscoreBizService.WxsocreStart().setRideDto(rideDto)
+                    .setWxscoreEnable(accountDto.getWxscore()).setAgentCfg(config).setUserDto(user);
             wxscoreBizService.startWxscoreOrder(wxsocreStart);
 
             // 1.用户记录扫码

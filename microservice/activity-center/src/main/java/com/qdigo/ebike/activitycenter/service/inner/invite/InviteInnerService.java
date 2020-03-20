@@ -68,16 +68,14 @@ public class InviteInnerService {
                     long inviterId = invite.getInviterId();
                     couponInnerService.createInviteCoupons(inviterId, agentId, Const.inviteReward);
                     UserDto inviter = userService.findById(inviterId);
-                    InviteResult inviteResult = InviteResult.builder().invitee(FormatUtil.formatMobileNo(user.getMobileNo()))
-                            .inviter(FormatUtil.formatMobileNo(inviter.getMobileNo()))
-                            .reward(Const.inviteReward + "张1元骑行券")
-                            .note("你邀请的新用户开始了骑行,你获得了骑行券。请在有效时间内使用")
-                            .validDate(FormatUtil.y_M_d.format(new Date(System.currentTimeMillis() + 604800000)) + "前")
-                            .build();
-                    PushService.Param param = PushService.Param.builder().mobileNo(inviter.getMobileNo())
-                            .pushType(Const.PushType.inviteFinished).alert("你邀请的新用户开始了骑行,你获得了骑行券")
-                            .data(inviteResult).deviceId(inviter.getDeviceId())
-                            .build();
+                    InviteResult inviteResult = new InviteResult().setInvitee(FormatUtil.formatMobileNo(user.getMobileNo()))
+                            .setInviter(FormatUtil.formatMobileNo(inviter.getMobileNo()))
+                            .setReward(Const.inviteReward + "张1元骑行券")
+                            .setNote("你邀请的新用户开始了骑行,你获得了骑行券。请在有效时间内使用")
+                            .setValidDate(FormatUtil.y_M_d.format(new Date(System.currentTimeMillis() + 604800000)) + "前");
+                    PushService.Param param = new PushService.Param().setMobileNo(inviter.getMobileNo())
+                            .setPushType(Const.PushType.inviteFinished).setAlert("你邀请的新用户开始了骑行,你获得了骑行券")
+                            .setData(inviteResult).setDeviceId(inviter.getDeviceId());
                     pushService.pushNotation(param);
                 })
                 .peek(invite -> invite.setFinished(true))

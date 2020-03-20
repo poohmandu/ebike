@@ -32,7 +32,7 @@ public class UserCreditRecord extends AbstractAuditingEntity {
     private static final long serialVersionUID = -4302558477433716740L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long userCreditRecordId;
 
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm")

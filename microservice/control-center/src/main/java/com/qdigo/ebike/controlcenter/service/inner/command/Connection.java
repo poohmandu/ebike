@@ -71,7 +71,7 @@ public class Connection {
     // TODO: 是否需要 synchronized 防重入
     static Connection getInstance(String imei) {
         String key = Keys.getKey(Keys.available_slave, imei.substring(ConfigConstants.imei.getConstant().length()));
-        RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean(RedisTemplate.class);
+        RedisTemplate<String, String> redisTemplate = SpringContextHolder.getBean("redisTemplate");
         HashOperations<String, String, String> hash = redisTemplate.opsForHash();
 
         Connection connection = maps.get(imei);
@@ -99,7 +99,7 @@ public class Connection {
 
     static Connection getChargerInstance(String imei) {
         String key = Keys.getKey(Keys.available_slave_charger, imei.substring(7));
-        RedisTemplate<String, String> redisTemplate =  SpringContextHolder.getBean(RedisTemplate.class);
+        RedisTemplate<String, String> redisTemplate =  SpringContextHolder.getBean("redisTemplate");
         HashOperations<String, String, String> hash = redisTemplate.opsForHash();
 
         Connection connection = maps.get(imei);

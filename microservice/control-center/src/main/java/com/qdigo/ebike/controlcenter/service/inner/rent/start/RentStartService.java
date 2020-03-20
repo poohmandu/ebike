@@ -128,9 +128,9 @@ public class RentStartService {
         try {
 
             //(1) 创建骑行记录
-            RideBizService.StartParam startParam = RideBizService.StartParam.builder().bikeDto(startDto.getBikeDto())
-                    .bikeStatusDto(startDto.getBikeStatusDto()).lat(startDto.getLat()).lng(startDto.getLng())
-                    .userDto(startDto.getUserDto()).build();
+            RideBizService.StartParam startParam = new RideBizService.StartParam().setBikeDto(startDto.getBikeDto())
+                    .setBikeStatusDto(startDto.getBikeStatusDto()).setLat(startDto.getLat()).setLng(startDto.getLng())
+                    .setUserDto(startDto.getUserDto());
             RideDto rideDto = rideBizService.createRide(startParam);
 
             //(2) 更新bike

@@ -26,7 +26,7 @@ import javax.persistence.*;
 public class RideForceEnd {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long forceEndId;
 
     @Column(nullable = false, unique = true, name = "ride_record_id")

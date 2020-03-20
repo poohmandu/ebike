@@ -23,7 +23,7 @@ import javax.persistence.*;
 public class AgentJoint {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "agent_joint_id")
     private Long agentJointId;
 

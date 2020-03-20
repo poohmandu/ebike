@@ -29,7 +29,7 @@ public class StationStatus extends AbstractAuditingEntity {
     private static final long serialVersionUID = -7032007903206018555L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long stationStatusId;
     @NotNull
     private int bikeCount = 0;

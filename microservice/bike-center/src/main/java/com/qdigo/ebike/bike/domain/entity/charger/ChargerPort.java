@@ -29,7 +29,7 @@ import javax.validation.constraints.NotNull;
 public class ChargerPort {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long chargerPortId;
 
     @NotNull

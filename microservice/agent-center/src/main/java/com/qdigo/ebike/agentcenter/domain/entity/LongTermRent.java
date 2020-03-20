@@ -27,7 +27,7 @@ import javax.persistence.*;
 public class LongTermRent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(unique = true, nullable = false, name = "agent_id")

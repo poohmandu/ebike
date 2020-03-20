@@ -18,8 +18,8 @@ package com.qdigo.ebike.api.service.order.journal;
 
 import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.order.JournalAccountDto;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -43,7 +43,7 @@ public interface OrderJournalAccountService {
     JournalAccountDto insert4LongRent(@RequestBody Param param);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class Param {
         private String mobileNo;
         private double startAccount;

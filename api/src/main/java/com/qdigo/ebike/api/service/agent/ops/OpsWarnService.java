@@ -18,8 +18,8 @@ package com.qdigo.ebike.api.service.agent.ops;
 
 import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.common.core.constants.Const;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -37,7 +37,7 @@ public interface OpsWarnService {
     void pushWarn(@RequestBody WarnParam warnParam);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class WarnParam {
         private boolean bln;
         private Const.MailType mailType;

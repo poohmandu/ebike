@@ -26,7 +26,7 @@ import javax.persistence.*;
 public class AgentTakeawayConfig {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(nullable = false, name = "agent_id")

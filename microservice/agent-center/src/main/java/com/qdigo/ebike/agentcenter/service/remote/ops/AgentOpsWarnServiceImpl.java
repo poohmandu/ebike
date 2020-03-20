@@ -60,7 +60,7 @@ public class AgentOpsWarnServiceImpl implements OpsWarnService {
         List<String> aliases = opsUserRepository.findByAgentId(warnParam.getAgentId()).stream()
                 .map(OpsUser::getUserName)
                 .collect(Collectors.toList());
-        PushService.WarnParam param = PushService.WarnParam.builder().alert(alert).data(map).mobiles(aliases).build();
+        PushService.WarnParam param = new PushService.WarnParam().setAlert(alert).setData(map).setMobiles(aliases);
 
         String msgId = pushService.pushWarn(param);
         if (msgId != null) {

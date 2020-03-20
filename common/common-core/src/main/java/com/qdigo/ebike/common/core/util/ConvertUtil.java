@@ -17,6 +17,7 @@
 package com.qdigo.ebike.common.core.util;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.BeanUtils;
 import org.springframework.cglib.beans.BeanCopier;
 
 import java.util.ArrayList;
@@ -75,6 +76,20 @@ public final class ConvertUtil {
         return beanCopier;
     }
 
+    public static <T> T to(Object source, Class<T> targetClass) {
+        if (source == null) {
+            return null;
+        }
+        try {
+            T target = targetClass.newInstance();
+            BeanUtils.copyProperties(source, target);
+            return target;
+        } catch (Exception e) {
+            log.error("对象拷贝失败,{}", e);
+            throw new RuntimeException("对象拷贝失败:" + source + "_" + targetClass);
+        }
+    }
+
     /**
      * @author niezhao
      * @description BeanCopier的copy（浅复制，字段名&类型相同则被复制）
@@ -84,7 +99,7 @@ public final class ConvertUtil {
      * @param targetClass
      * @return T
      **/
-    public static <T> T to(Object source, Class<T> targetClass) {
+    public static <T> T fastTo(Object source, Class<T> targetClass) {
         if (source == null) {
             return null;
         }

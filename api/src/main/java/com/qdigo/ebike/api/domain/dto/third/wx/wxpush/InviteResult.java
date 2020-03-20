@@ -16,8 +16,8 @@
 
 package com.qdigo.ebike.api.domain.dto.third.wx.wxpush;
 
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 /**
  * description: 邀请结果提醒
@@ -26,7 +26,7 @@ import lombok.Data;
  * @author niezhao
  */
 @Data
-@Builder
+@Accessors(chain = true)
 public class InviteResult implements PushTemp {
     private static final String tempId = "Tqx8DSgQKzfOwfebZbrqzb_V-BxkjIBcYKlELoPta7U";
     //奖励

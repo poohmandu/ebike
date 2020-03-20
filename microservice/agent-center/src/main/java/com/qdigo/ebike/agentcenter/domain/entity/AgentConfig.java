@@ -31,7 +31,7 @@ import javax.persistence.*;
 public class AgentConfig {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @JsonBackReference

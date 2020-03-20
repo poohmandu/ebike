@@ -24,8 +24,8 @@ import com.qdigo.ebike.api.domain.dto.order.wxscore.WxscoreDto;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.common.core.errors.exception.QdigoBizException;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -53,7 +53,7 @@ public interface OrderWxscoreBizService {
     void completeWxscoreOrder(@RequestBody WxscoreComplete wxscoreComplete) throws QdigoBizException;
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class WxsocreStart {
         private UserDto userDto;
         private String wxscoreEnable;
@@ -63,7 +63,7 @@ public interface OrderWxscoreBizService {
     }
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class WxscoreComplete {
         private UserDto userDto;
         private RideDto rideDto;

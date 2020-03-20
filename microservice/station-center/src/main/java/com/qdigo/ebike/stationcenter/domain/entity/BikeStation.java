@@ -31,7 +31,7 @@ public class BikeStation extends AbstractAuditingEntity {
     private static final long serialVersionUID = -6756278994264180674L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "station_id")
     private long stationId;
     @NotNull

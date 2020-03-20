@@ -18,12 +18,12 @@ package com.qdigo.ebike.api.service.third.wxlite;
 
 import com.alibaba.fastjson.JSONObject;
 import com.qdigo.ebike.api.ApiRoute;
-import com.qdigo.ebike.common.core.domain.ResponseDTO;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.CompleteOrderParam;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.StartOrderParam;
 import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;
-import lombok.Builder;
-import lombok.Getter;
+import com.qdigo.ebike.common.core.domain.ResponseDTO;
+import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -74,8 +74,8 @@ public interface WxscoreService {
     @PostMapping(ApiRoute.Third.Wxscore.wxscoreDetail)
     WxscoreDetailRes wxscoreDetail(@RequestParam("out_order_no") String out_order_no);
 
-    @Getter
-    @Builder
+    @Data
+    @Accessors(chain = true)
     class WxscoreEnableRes {
         private String mch_id;
         private String service_id;
@@ -86,8 +86,8 @@ public interface WxscoreService {
         private String sign;
     }
 
-    @Getter
-    @Builder
+    @Data
+    @Accessors(chain = true)
     class WxscoreUseRes {
         private String mch_id;
         private String packageStr;
@@ -97,8 +97,8 @@ public interface WxscoreService {
         private String sign;
     }
 
-    @Getter
-    @Builder
+    @Data
+    @Accessors(chain = true)
     class WxscoreDetailRes {
         private String mch_id;
         private String service_id;

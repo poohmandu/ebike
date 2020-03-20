@@ -82,8 +82,8 @@ public class GetControlInfo {
             return R.ok(400, mobileNo + "用户没有任何车辆控制权");
         }
         BikeStatusDto statusDto = statusService.findByImei(rideOrder.getImei());
-        RideForceEndService.Param param = RideForceEndService.Param.builder()
-                .statusDto(statusDto).agentId(rideOrder.getAgentId()).build();
+        RideForceEndService.Param param = new RideForceEndService.Param()
+                .setStatusDto(statusDto).setAgentId(rideOrder.getAgentId());
         ForceEndInfo forceEndInfo = this.forceEndService.getForceEndInfo(param);
         log.debug("获取强制还车信息:{}", forceEndInfo);
         return R.ok(200, "成功返回强制还车信息", forceEndInfo);
@@ -111,8 +111,8 @@ public class GetControlInfo {
         long time = System.currentTimeMillis() - rideDto.getStartTime().getTime();
         long min = FormatUtil.minutes(time / 1000);
 
-        RideFreeActivityService.DetailParam detailParam = RideFreeActivityService.DetailParam.builder()
-                .userDto(userDto).rideDto(rideDto).agentCfg(config).accountDto(accountDto).build();
+        RideFreeActivityService.DetailParam detailParam = new RideFreeActivityService.DetailParam()
+                .setUserDto(userDto).setRideDto(rideDto).setAgentCfg(config).setAccountDto(accountDto);
         ConsumeDetail consumeDetail = freeActivityService.getConsumeDetail(detailParam);
 
         Map<String, Object> res = new ImmutableMap.Builder<String, Object>()

@@ -18,8 +18,8 @@ package com.qdigo.ebike.api.service.third.push;
 
 import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.common.core.constants.Const;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,14 +47,14 @@ public interface PushService {
 
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class TimeParam {
         private long timeMinutes;
         private Param param;
     }
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class Param {
         private String mobileNo;
         private String deviceId;
@@ -64,10 +64,11 @@ public interface PushService {
     }
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class WarnParam {
         private String alert;
         private Object data;
         private List<String> mobiles;
     }
+
 }

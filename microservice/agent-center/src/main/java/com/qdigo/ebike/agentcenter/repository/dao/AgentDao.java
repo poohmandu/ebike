@@ -16,7 +16,6 @@
 
 package com.qdigo.ebike.agentcenter.repository.dao;
 
-import com.qdigo.ebike.agentcenter.domain.entity.Agent;
 import com.qdigo.ebike.agentcenter.domain.entity.AgentNotice;
 import org.springframework.stereotype.Repository;
 
@@ -38,15 +37,6 @@ public class AgentDao {
 
     @PersistenceContext
     private EntityManager entityManager;
-
-    //@CatAnnotation
-    public Agent findByImei(String imei) {
-        String sql = "select a.* from agent a left join bike b on a.agent_id = b.agent_id where b.imei_id =:imei limit 1";
-        Query query = entityManager.createNativeQuery(sql, Agent.class)
-                .setParameter("imei", imei);
-        List<Agent> list = query.getResultList();
-        return list.isEmpty() ? null : list.get(0);
-    }
 
     public List<AgentNotice> findValidNotice(Long agentId, int limit) {
         if (agentId == null) {

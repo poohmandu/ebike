@@ -18,8 +18,8 @@ package com.qdigo.ebike.api.service.station;
 
 import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.station.StationDto;
-import lombok.Builder;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -47,7 +47,7 @@ public interface StationService {
     StationDto getNearestStationByAgents(@RequestBody Param param);
 
     @Data
-    @Builder
+    @Accessors(chain = true)
     class Param {
         private Double lat;
         private Double lng;

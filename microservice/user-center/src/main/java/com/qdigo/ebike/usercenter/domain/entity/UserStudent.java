@@ -30,7 +30,7 @@ import java.util.Date;
 public class UserStudent {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
 
     @Column(name = "mobile_no", nullable = false, unique = true, length = 20)

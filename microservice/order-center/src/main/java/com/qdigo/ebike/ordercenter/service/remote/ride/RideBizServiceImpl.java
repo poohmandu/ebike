@@ -54,10 +54,10 @@ import java.util.Map;
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 public class RideBizServiceImpl implements RideBizService {
 
-    private RideRecordRepository rideRecordRepository;
-    private RideRouteInnerService rideRouteService;
-    private RideOrderRepository rideOrderRepository;
-    private TrackService trackService;
+    private final RideRecordRepository rideRecordRepository;
+    private final RideRouteInnerService rideRouteService;
+    private final RideOrderRepository rideOrderRepository;
+    private final TrackService trackService;
 
 
     @Override

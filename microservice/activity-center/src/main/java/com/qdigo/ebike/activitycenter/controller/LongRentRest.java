@@ -158,17 +158,15 @@ public class LongRentRest {
             if (rideService.findRidingByMobileNo(mobileNo) != null) {
                 return R.ok(402, "正在骑行中,请先还车再购买");
             }
-            OrderLongRentService.LongRentDto longRentDto = OrderLongRentService.LongRentDto.builder()
-                    .agentId(userDto.getAgentId()).consume(consume)
-                    .endTime(new Date(System.currentTimeMillis() + this.milliseconds(longRentType)))
-                    .longRentType(longRentType).price(price).startTime(new Date()).userId(userDto.getUserId())
-                    .build();
+            OrderLongRentService.LongRentDto longRentDto = new OrderLongRentService.LongRentDto()
+                    .setAgentId(userDto.getAgentId()).setConsume(consume)
+                    .setEndTime(new Date(System.currentTimeMillis() + this.milliseconds(longRentType)))
+                    .setLongRentType(longRentType).setPrice(price).setStartTime(new Date()).setUserId(userDto.getUserId());
             longRentDto = longRentService.create(longRentDto);
 
             val startBalance = accountDto.getBalance();
-            OrderJournalAccountService.Param param = OrderJournalAccountService.Param.builder().mobileNo(userDto.getMobileNo())
-                    .startAccount(startBalance).longRentId(longRentDto.getId()).amount(-consume)
-                    .build();
+            OrderJournalAccountService.Param param = new OrderJournalAccountService.Param().setMobileNo(userDto.getMobileNo())
+                    .setStartAccount(startBalance).setLongRentId(longRentDto.getId()).setAmount(-consume);
             journalAccountService.insert4LongRent(param);
 
             accountDto.setBalance(FormatUtil.getMoney(startBalance - consume));

@@ -35,7 +35,7 @@ import javax.persistence.*;
 public class Agent extends AbstractAuditingEntity {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "agent_id")
     private Long agentId;
 

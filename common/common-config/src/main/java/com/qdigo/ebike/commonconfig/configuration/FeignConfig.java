@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.api.domain.dto.third.wx.wxpush;
+package com.qdigo.ebike.commonconfig.configuration;
 
-import lombok.Data;
-import lombok.experimental.Accessors;
+import feign.Feign;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 
 /**
- * description: 认证结果通知
+ * description: 
  *
- * date: 2020/2/24 9:08 PM
+ * date: 2020/3/19 8:48 PM
  * @author niezhao
  */
-@Data
-@Accessors(chain = true)
-public class StudentAuthNotice implements PushTemp {
-    private static final String tempId = "zQftjE6n7T3oJF6jD3ukqefzA2t_qu3W-SnSQ3jay94";
-    //认证结果
-    private String result;
-    //学号
-    private String studentNo;
-    //认证时间
-    private String time;
-    //学校名称
-    private String schoolName;
-    //备注
-    private String failMsg;
+@ConditionalOnClass(Feign.class)
+public class FeignConfig {
 }

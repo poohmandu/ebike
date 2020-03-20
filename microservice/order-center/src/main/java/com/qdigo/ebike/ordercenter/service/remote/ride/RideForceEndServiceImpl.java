@@ -113,7 +113,7 @@ public class RideForceEndServiceImpl implements RideForceEndService {
 
             ArrayList<Long> agentIds = Lists.newArrayList(agentId);
             // 取出最近的还车点
-            StationService.Param stationParam = StationService.Param.builder().agentIds(agentIds).lat(lat).lng(lng).build();
+            StationService.Param stationParam = new StationService.Param().setAgentIds(agentIds).setLat(lat).setLng(lng);
             StationDto station = stationService.getNearestStationByAgents(stationParam);
             if (station == null) {
                 forceEndInfo.setValid(false);

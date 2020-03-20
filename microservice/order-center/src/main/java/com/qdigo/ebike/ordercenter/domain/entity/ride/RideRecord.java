@@ -30,7 +30,7 @@ import java.util.Date;
 public class RideRecord {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ride_record_id")
     private long rideRecordId;
 
