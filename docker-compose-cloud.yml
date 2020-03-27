@@ -1,26 +1,27 @@
 version: '3'
 
+networks:
+  qdigo_network:
+    driver: bridge
+
 services:
 
   gateway:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/gateway:0.0.1-SNAPSHOT
     ports:
-      - 8040:8040
+      - "8040:8040"
     container_name: gateway
-#    network_mode: 'host'
+    networks:
+      - qdigo_network
 
   monitor:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/monitor:0.0.1-SNAPSHOT
     ports:
-      - 8041:8041
+      - "8041:8041"
     container_name: monitor
-#    network_mode: 'host'
+    networks:
+      - qdigo_network
 
-  zipkin:
-    image: openzipkin/zipkin
-    ports:
-      - 9411:9411
-    container_name: zipkin
-#    network_mode: 'host'
+
 
 

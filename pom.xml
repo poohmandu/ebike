@@ -250,11 +250,16 @@
                     <version>${dockerfile-maven.version}</version>
                     <executions>
                         <execution>
-                            <id>default</id>
-                            <phase>deploy</phase>
+                            <id>build</id>
+                            <phase>${docker-build-phase}</phase>
                             <goals>
-                                <!--如果package时不想用docker打包,就注释掉这个goal-->
                                 <goal>build</goal>
+                            </goals>
+                        </execution>
+                        <execution>
+                            <id>push</id>
+                            <phase>${docker-push-phase}</phase>
+                            <goals>
                                 <goal>push</goal>
                             </goals>
                         </execution>
@@ -294,13 +299,18 @@
         <profile>
             <id>local</id>
             <properties>
+                <skipTests>true</skipTests>
                 <spring.active>local</spring.active>
-                <docker-maven-phase>package</docker-maven-phase>
-                <!--<docker.repository>niezhao</docker.repository>-->
+                <docker-build-phase>install</docker-build-phase>
+                <docker-push-phase>deploy</docker-push-phase>
                 <docker.repository>qdigo-docker.pkg.coding.net/diandichuxing/docker</docker.repository>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
+                <property>
+                    <name>env</name>
+                    <value>local</value>
+                </property>
             </activation>
             <dependencies>
                 <dependency>
@@ -315,19 +325,40 @@
             <properties>
                 <spring.active>dev</spring.active>
             </properties>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>dev</value>
+                </property>
+            </activation>
         </profile>
         <profile>
             <id>prod</id>
             <properties>
-                <docker-maven-phase>package</docker-maven-phase>
                 <spring.active>prod</spring.active>
+                <docker-maven-phase>package</docker-maven-phase>
             </properties>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>prod</value>
+                </property>
+            </activation>
         </profile>
         <profile>
             <id>test</id>
             <properties>
                 <spring.active>test</spring.active>
+                <docker-build-phase>install</docker-build-phase>
+                <docker-push-phase>deploy</docker-push-phase>
+                <docker.repository>qdigo-docker.pkg.coding.net/diandichuxing/docker</docker.repository>
             </properties>
+            <activation>
+                <property>
+                    <name>env</name>
+                    <value>test</value>
+                </property>
+            </activation>
         </profile>
     </profiles>
 

@@ -7,14 +7,17 @@ spring:
   cloud:
     nacos:
       config:
+        namespace: ${spring.cloud.nacos.discovery.namespace}
         prefix: ${spring.application.name}
         file-extension: yaml
         ext-config:
           - data-id: datasource-${spring.profiles.active}.yaml
+            refresh: true
           - data-id: cloud-${spring.profiles.active}.yaml
             refresh: true
           - data-id: common-${spring.profiles.active}.yaml
             refresh: true
+
 server:
   port: @server.port@
 
@@ -23,12 +26,20 @@ spring:
   profiles: local
   cloud:
     nacos:
-      config:
-        server-addr: dev.nacos.qdigo.com:8848
+      server-addr: dev.nacos.qdigo.com:8848
+      discovery:
+        namespace: 204484b5-a4e2-4aab-a1eb-9dd517ef707f
+---
+spring:
+  profiles: test
+  cloud:
+    nacos:
+      server-addr: dev.nacos.qdigo.com:8848
+      discovery:
+        namespace: 819623bb-ca79-4cc4-8a2a-d9f4620db770
 ---
 spring:
   profiles: prod
   cloud:
     nacos:
-     config:
-       server-addr: nacos.qdigo.com:8848
+      server-addr: nacos.qdigo.com:8848

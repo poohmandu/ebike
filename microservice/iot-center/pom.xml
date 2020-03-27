@@ -40,8 +40,8 @@
             <artifactId>commons-lang3</artifactId>
         </dependency>
         <!--<dependency>-->
-            <!--<groupId>redis.clients</groupId>-->
-            <!--<artifactId>jedis</artifactId>-->
+        <!--<groupId>redis.clients</groupId>-->
+        <!--<artifactId>jedis</artifactId>-->
         <!--</dependency>-->
         <dependency>
             <groupId>io.netty</groupId>

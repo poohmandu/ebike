@@ -3,5 +3,88 @@ version: '3'
 volumes:
   logs:
 
+networks:
+  ebike_qdigo_network:
+    external: true
+
 services:
 
+  user-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/user-center:0.0.1-SNAPSHOT
+    container_name: user-center
+    ports:
+      - 9100:9100
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
+
+  third:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/third:0.0.1-SNAPSHOT
+    container_name: third
+    ports:
+      - 9101:9101
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
+
+  bike-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/bike-center:0.0.1-SNAPSHOT
+    container_name: bike-center
+    ports:
+      - 9102:9102
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
+
+  agent-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/agent-center:0.0.1-SNAPSHOT
+    container_name: agent-center
+    ports:
+      - 9103:9103
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
+
+  control-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/control-center:0.0.1-SNAPSHOT
+    container_name: control-center
+    ports:
+      - 9104:9104
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
+
+  station-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/station-center:0.0.1-SNAPSHOT
+    container_name: station-center
+    ports:
+      - 9105:9105
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
+
+  order-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/order-center:0.0.1-SNAPSHOT
+    container_name: order-center
+    ports:
+      - 9106:9106
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
+
+  activity-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/activity-center:0.0.1-SNAPSHOT
+    container_name: activity-center
+    ports:
+      - 9107:9107
+    volumes:
+      - logs:/app/logs
+    networks:
+      - ebike_qdigo_network
