@@ -25,4 +25,7 @@ mvn deploy:deploy-file -Dfile=alipay-sdk-java-1.0.jar \
 + mybatis 3.5.4 版本后useActualParamName为true,出现 `Parameter '0' not found`
     
 ##### spring boot:
+
    
+##### docker: 
++ 较低版本jdk 无法感知容器,升级jdk后使用参数`-XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap`

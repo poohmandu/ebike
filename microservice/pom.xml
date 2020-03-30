@@ -24,6 +24,7 @@
         <module>station-center</module>
         <module>order-center</module>
         <module>activity-center</module>
+        <module>iot-center</module>
     </modules>
 
     <properties>

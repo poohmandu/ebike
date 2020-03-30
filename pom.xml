@@ -37,6 +37,8 @@
         <brave-mysql.version>5.9.1</brave-mysql.version>
         <spring-boot-admin.version>2.2.1</spring-boot-admin.version>
         <dockerfile-maven.version>1.4.13</dockerfile-maven.version>
+        <skipTests>true</skipTests>
+        <env>test</env>
     </properties>
 
     <modules>
@@ -299,7 +301,6 @@
         <profile>
             <id>local</id>
             <properties>
-                <skipTests>true</skipTests>
                 <spring.active>local</spring.active>
                 <docker-build-phase>install</docker-build-phase>
                 <docker-push-phase>deploy</docker-push-phase>
