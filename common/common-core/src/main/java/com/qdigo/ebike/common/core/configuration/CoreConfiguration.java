@@ -17,8 +17,14 @@
 package com.qdigo.ebike.common.core.configuration;
 
 import com.qdigo.ebike.common.core.util.SpringContextHolder;
+import com.qdigo.ebike.common.core.util.http.NetUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+
+import javax.annotation.Resource;
 
 /**
  * Description: 
@@ -27,12 +33,29 @@ import org.springframework.context.annotation.Configuration;
  * @version
  * @since JDK 1.8
  */
+@Slf4j
 @Configuration
-public class CoreConfiguration {
+public class CoreConfiguration implements CommandLineRunner {
+
+    @Resource
+    private Environment environment;
 
     @Bean
     public SpringContextHolder springContextHolder() {
         return new SpringContextHolder();
     }
 
+    @Override
+    public void run(String... args) {
+        log.info("\n----------------------------------------------------------\n\t" +
+                        "Application '{}' is running! Access URLs:\n\t" +
+                        "Local: \t\thttp://localhost:{}\n\t" +
+                        "External: \thttp://{}:{}\n\t" +
+                        "Environment: \t{}\n----------------------------------------------------------",
+                environment.getProperty("spring.application.name"),
+                environment.getProperty("server.port"),
+                NetUtil.getIp(),
+                environment.getProperty("server.port"),
+                environment.getActiveProfiles());
+    }
 }
