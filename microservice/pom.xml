@@ -113,7 +113,6 @@
         <dependency>
             <groupId>com.alibaba.csp</groupId>
             <artifactId>sentinel-datasource-nacos</artifactId>
-            <!--<version>1.6.2</version>-->
         </dependency>
         <!--增强zipkin-->
         <dependency>

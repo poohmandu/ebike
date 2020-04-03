@@ -17,6 +17,7 @@
     <properties>
         <java.version>1.8</java.version>
         <server.port>9102</server.port>
+        <group>QDIGO</group>
     </properties>
 
     <dependencies>

@@ -20,6 +20,7 @@
         <jpush.version>3.2.9</jpush.version>
         <wechatpay.version>0.1.5</wechatpay.version>
         <alipay-sdk.version>1.0</alipay-sdk.version>
+        <group>QDIGO</group>
     </properties>
 
     <dependencies>

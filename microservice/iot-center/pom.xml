@@ -20,6 +20,7 @@
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <server.port>9108</server.port>
         <netty.version>4.1.43.Final</netty.version>
+        <group>QDIGO</group>
     </properties>
 
     <dependencies>

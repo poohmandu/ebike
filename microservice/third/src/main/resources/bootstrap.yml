@@ -8,15 +8,21 @@ spring:
     nacos:
       config:
         namespace: ${spring.cloud.nacos.discovery.namespace}
+        group: @group@
         prefix: ${spring.application.name}
         file-extension: yaml
-        ext-config:
-          - data-id: datasource-${spring.profiles.active}.yaml
+        shared-configs:
+          - dataId: datasource-${spring.profiles.active}.yaml
+            group: ${spring.cloud.nacos.config.group}_SHARED
             refresh: true
-          - data-id: cloud-${spring.profiles.active}.yaml
+          - dataId: cloud-${spring.profiles.active}.yaml
+            group: ${spring.cloud.nacos.config.group}_SHARED
             refresh: true
-          - data-id: common-${spring.profiles.active}.yaml
+          - dataId: common-${spring.profiles.active}.yaml
+            group: ${spring.cloud.nacos.config.group}_SHARED
             refresh: true
+      discovery:
+        group: ${spring.cloud.nacos.config.group}
 
 server:
   port: @server.port@

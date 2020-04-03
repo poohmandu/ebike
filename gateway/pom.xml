@@ -45,6 +45,7 @@
     <properties>
         <java.version>1.8</java.version>
         <server.port>8040</server.port>
+        <group>QDIGO</group>
     </properties>
 
     <build>

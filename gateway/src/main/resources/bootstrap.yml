@@ -11,6 +11,9 @@ spring:
         file-extension: yaml
         server-addr: ${spring.cloud.nacos.discovery.server-addr}
         namespace: ${spring.cloud.nacos.discovery.namespace}
+        group: @group@
+      discovery:
+        group: ${spring.cloud.nacos.config.group}
 
 nacos:
   address: ${spring.cloud.nacos.config.server-addr}
