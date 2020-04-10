@@ -21,6 +21,7 @@ import com.qdigo.ebike.activitycenter.domain.entity.scenic.EntityCardUser;
 import com.qdigo.ebike.activitycenter.repository.EntityCardRepository;
 import com.qdigo.ebike.activitycenter.repository.EntityCardUserRepository;
 import com.qdigo.ebike.activitycenter.repository.dao.EntityCardDao;
+import com.qdigo.ebike.api.domain.dto.activity.scenic.BindStatus;
 import com.qdigo.ebike.common.core.util.Ctx;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -42,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 @Service
 @RequiredArgsConstructor(onConstructor_ = @Inject)
-public class EntityCardService {
+public class EntityCardInnerService {
     //180516100001   12位
     private final EntityCardRepository entityCardRepository;
     private final EntityCardDao entityCardDao;
@@ -119,12 +120,12 @@ public class EntityCardService {
         cardUser.setScanTime(new Date(Ctx.now()));
         cardUser.setUserId(userId);
         cardUser.setUserAmount(entityCard.getUserAmount());
-        cardUser.setStatus(EntityCardUser.Status.scan);
+        cardUser.setStatus(BindStatus.scan);
         entityCardUserRepository.save(cardUser);
     }
 
     @Transactional
-    public void updateEntityCardUserStatus(EntityCardUser entityCardUser, EntityCardUser.Status status) {
+    public void updateEntityCardUserStatus(EntityCardUser entityCardUser, BindStatus status) {
         entityCardUser.setStatus(status);
         entityCardUser.setPayTime(new Date(Ctx.now()));
         entityCardUserRepository.save(entityCardUser);

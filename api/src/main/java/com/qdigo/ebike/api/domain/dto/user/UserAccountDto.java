@@ -18,7 +18,7 @@ package com.qdigo.ebike.api.domain.dto.user;
 
 import com.qdigo.ebike.api.domain.Dto;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
+import lombok.experimental.Accessors;
 
 /**
  * Description: 
@@ -28,6 +28,7 @@ import lombok.EqualsAndHashCode;
  * @since JDK 1.8
  */
 @Data
+@Accessors(chain = true)
 public class UserAccountDto implements Dto {
     private long userAccountId;
     private double deposit;
@@ -36,4 +37,5 @@ public class UserAccountDto implements Dto {
     private String wxscore;
     private double balance;
     private double giftBalance;
+    private Long userId;
 }

@@ -23,6 +23,7 @@ import com.qdigo.ebike.common.core.util.ConvertUtil;
 import com.qdigo.ebike.usercenter.domain.entity.UserAccount;
 import com.qdigo.ebike.usercenter.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
@@ -40,20 +41,31 @@ public class UserAccountServiceImpl implements UserAccountService {
     private final UserAccountRepository userAccountRepository;
 
     @Override
+    public UserAccountDto findById(Long userAccountId) {
+        return userAccountRepository.findById(userAccountId)
+                .map(userAccount -> ConvertUtil.to(userAccount, UserAccountDto.class)
+                        .setUserId(userAccount.getUser().getUserId()))
+                .orElse(null);
+    }
+
+    @Override
     public UserAccountDto findByMobileNo(String mobileNo) {
         return userAccountRepository.findByUserMobileNo(mobileNo)
-                .map(userAccount -> ConvertUtil.to(userAccount, UserAccountDto.class))
+                .map(userAccount -> ConvertUtil.to(userAccount, UserAccountDto.class)
+                        .setUserId(userAccount.getUser().getUserId()))
                 .orElse(null);
     }
 
     @Override
     public UserAccountDto findByUserId(long userId) {
         return userAccountRepository.findByUserUserId(userId)
-                .map(userAccount -> ConvertUtil.to(userAccount, UserAccountDto.class))
+                .map(userAccount -> ConvertUtil.to(userAccount, UserAccountDto.class)
+                        .setUserId(userAccount.getUser().getUserId()))
                 .orElse(null);
     }
 
     @Override
+    @Transactional
     public void update(UserAccountDto userAccountDto) {
         UserAccount userAccount = userAccountRepository.findById(userAccountDto.getUserAccountId()).get();
         userAccountDto.updated(userAccount);

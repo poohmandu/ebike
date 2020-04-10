@@ -17,6 +17,7 @@
 package com.qdigo.ebike.api.service.user;
 
 import com.qdigo.ebike.api.ApiRoute;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import lombok.Data;
 import org.springframework.cloud.openfeign.FeignClient;
@@ -49,5 +50,11 @@ public interface UserService {
     class OpenInfo {
         private String appId;
         private String openId;
+    }
+
+    @Data
+    class UserAndAccount {
+        private UserDto userDto;
+        private UserAccountDto accountDto;
     }
 }

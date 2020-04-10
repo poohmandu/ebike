@@ -24,8 +24,8 @@ import com.qdigo.ebike.common.core.constants.Status;
 import com.qdigo.ebike.common.core.util.ConvertUtil;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideOrder;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideRecord;
-import com.qdigo.ebike.ordercenter.repository.RideOrderRepository;
-import com.qdigo.ebike.ordercenter.repository.RideRecordRepository;
+import com.qdigo.ebike.ordercenter.repository.ride.RideOrderRepository;
+import com.qdigo.ebike.ordercenter.repository.ride.RideRecordRepository;
 import com.qdigo.ebike.ordercenter.repository.dao.RideRecordDao;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -58,6 +58,12 @@ public class OrderRideServiceImpl implements OrderRideService {
     @Override
     public RideDto findRidingByMobileNo(String mobileNo) {
         RideOrder rideOrder = rideRecordDao.findByRidingUser(mobileNo);
+        return ConvertUtil.to(rideOrder, RideDto.class);
+    }
+
+    @Override
+    public RideDto findByImeiAndMobileNo(String imei, String mobileNo) {
+        RideOrder rideOrder = rideRecordDao.findRideOrder(mobileNo, imei);
         return ConvertUtil.to(rideOrder, RideDto.class);
     }
 

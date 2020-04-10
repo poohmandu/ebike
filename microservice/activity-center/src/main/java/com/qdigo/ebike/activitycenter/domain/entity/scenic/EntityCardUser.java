@@ -16,6 +16,7 @@
 
 package com.qdigo.ebike.activitycenter.domain.entity.scenic;
 
+import com.qdigo.ebike.api.domain.dto.activity.scenic.BindStatus;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -48,8 +49,6 @@ public class EntityCardUser {
     private Date scanTime;//确定关系的时间
 
     @Enumerated(EnumType.STRING)
-    private Status status;
-
-    public enum Status {scan, paid}
+    private BindStatus status;
 
 }

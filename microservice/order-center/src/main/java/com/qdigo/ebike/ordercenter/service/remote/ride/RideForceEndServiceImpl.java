@@ -31,7 +31,7 @@ import com.qdigo.ebike.common.core.constants.Status;
 import com.qdigo.ebike.common.core.util.FormatUtil;
 import com.qdigo.ebike.common.core.util.geo.GeoUtil;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideForceEnd;
-import com.qdigo.ebike.ordercenter.repository.RideForceEndRepository;
+import com.qdigo.ebike.ordercenter.repository.ride.RideForceEndRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;

@@ -36,4 +36,7 @@ public interface AgentTakeawayConfigService {
     @PostMapping(ApiRoute.AgentCenter.TakeawayConfig.findByAgentId)
     List<AgentTakeawayConfigDto> findByAgentId(@RequestParam("agentId") Long agentId);
 
+    @PostMapping(ApiRoute.AgentCenter.TakeawayConfig.findById)
+    AgentTakeawayConfigDto findById(@RequestParam("id") Long id);
+
 }

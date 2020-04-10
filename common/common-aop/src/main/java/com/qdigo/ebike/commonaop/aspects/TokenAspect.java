@@ -38,6 +38,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.data.redis.core.RedisOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.SessionCallback;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 
@@ -108,8 +109,11 @@ public class TokenAspect {
     private Object fastErr(String key, Token token, MethodSignature signature, String cause) {
         Class returnType = signature.getReturnType();
         log.debug("{}请求重复提交,ttl:{}s,快速失败原因:{}", key, this.getExpireSeconds(key, token), cause);
-        if (returnType == ResponseEntity.class) {
+        if (returnType == R.class) {
             return R.ok(501, "请求处理中,请耐心等待,勿重复提交");
+        } else if (returnType == ResponseEntity.class) {
+            return ResponseEntity.status(HttpStatus.CONFLICT)
+                    .body(R.ok(501, "请求处理中,请耐心等待,勿重复提交"));
         } else if (returnType == ResponseDTO.class) {
             return new ResponseDTO<>(501, "请求处理中,请耐心等待,勿重复提交");
         } else if ("void".equals(returnType.getName()) || Void.class == returnType) {

@@ -23,7 +23,6 @@ import com.qdigo.ebike.usercenter.domain.entity.UserRecord;
 import com.qdigo.ebike.usercenter.repository.UserRecordRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import lombok.val;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;

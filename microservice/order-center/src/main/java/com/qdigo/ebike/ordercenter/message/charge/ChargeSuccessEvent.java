@@ -14,17 +14,23 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.ordercenter.repository;
+package com.qdigo.ebike.ordercenter.message.charge;
 
-import com.qdigo.ebike.ordercenter.domain.entity.ride.RideFreeActivity;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
+import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import lombok.Getter;
+import org.springframework.context.ApplicationEvent;
 
-import java.util.List;
+@Getter
+public abstract class ChargeSuccessEvent extends ApplicationEvent {
 
-/**
- * Created by niezhao on 2018/3/31.
- */
-public interface RideFreeActivityRepository extends JpaRepository<RideFreeActivity, Long> {
+    private UserDto user;
+    private UserAccountDto account;
 
-    List<RideFreeActivity> findByRideRecordId(Long rideRecordId);
+    public ChargeSuccessEvent(Object source, UserDto user, UserAccountDto account) {
+        super(source);
+        this.user = user;
+        this.account = account;
+    }
+
 }

@@ -18,9 +18,8 @@ package com.qdigo.ebike.ordercenter.service.inner.ride;
 
 import com.qdigo.ebike.api.domain.dto.bike.BikeStatusDto;
 import com.qdigo.ebike.api.service.station.StationGeoService;
-import com.qdigo.ebike.ordercenter.domain.entity.ride.RideRecord;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideRoute;
-import com.qdigo.ebike.ordercenter.repository.RideRouteRepository;
+import com.qdigo.ebike.ordercenter.repository.ride.RideRouteRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import lombok.val;

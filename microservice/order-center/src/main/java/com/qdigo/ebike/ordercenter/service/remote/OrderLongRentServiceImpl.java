@@ -23,6 +23,7 @@ import com.qdigo.ebike.ordercenter.domain.entity.UserLongRent;
 import com.qdigo.ebike.ordercenter.repository.UserLongRentRepository;
 import com.qdigo.ebike.ordercenter.repository.dao.UserLongRentDao;
 import lombok.RequiredArgsConstructor;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 
@@ -58,11 +59,14 @@ public class OrderLongRentServiceImpl implements OrderLongRentService {
     }
 
     @Override
+    @Transactional
     public LongRentDto create(LongRentDto longRentDto) {
         UserLongRent userLongRent = ConvertUtil.to(longRentDto, UserLongRent.class);
         userLongRent.setId(null);
         userLongRent = userLongRentRepository.save(userLongRent);
         return ConvertUtil.to(userLongRent, LongRentDto.class);
     }
+
+
 
 }

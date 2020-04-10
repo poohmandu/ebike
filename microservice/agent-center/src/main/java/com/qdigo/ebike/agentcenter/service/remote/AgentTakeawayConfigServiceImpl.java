@@ -45,4 +45,11 @@ public class AgentTakeawayConfigServiceImpl implements AgentTakeawayConfigServic
         return ConvertUtil.to(takeawayConfigs, AgentTakeawayConfigDto.class);
     }
 
+    @Override
+    public AgentTakeawayConfigDto findById(Long id) {
+        return agentTakeawayConfigRepository.findById(id)
+                .map(agentTakeawayConfig -> ConvertUtil.to(agentTakeawayConfig, AgentTakeawayConfigDto.class))
+                .orElse(null);
+    }
+
 }

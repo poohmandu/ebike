@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.ordercenter.repository;
-
-import com.qdigo.ebike.ordercenter.domain.entity.ride.RideRoute;
-import org.springframework.data.jpa.repository.JpaRepository;
+package com.qdigo.ebike.api.domain.dto.activity.scenic;
 
 /**
- * Created by niezhao on 2018/1/26.
+ * description: 
+ *
+ * date: 2020/4/5 4:34 PM
+ * @author niezhao
  */
-public interface RideRouteRepository extends JpaRepository<RideRoute, Long> {
-
-    RideRoute findByRideRecordId(Long rideRecordId);
-
+public enum BindStatus {
+    scan,
+    paid
 }

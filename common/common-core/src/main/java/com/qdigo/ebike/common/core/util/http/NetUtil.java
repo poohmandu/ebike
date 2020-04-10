@@ -131,11 +131,6 @@ public class NetUtil {
                 Enumeration<InetAddress> address = ni.getInetAddresses();
                 while (address.hasMoreElements()) {
                     ip = address.nextElement();
-//                  System.out.println(ni.getName() + ";" + ip.getHostAddress()
-//                          + ";ip.isSiteLocalAddress()="
-//                          + ip.isSiteLocalAddress()
-//                          + ";ip.isLoopbackAddress()="
-//                          + ip.isLoopbackAddress());
                     if (!ip.isSiteLocalAddress() && !ip.isLoopbackAddress()
                             && !ip.getHostAddress().contains(":")) {// 外网IP
                         netip = ip.getHostAddress();

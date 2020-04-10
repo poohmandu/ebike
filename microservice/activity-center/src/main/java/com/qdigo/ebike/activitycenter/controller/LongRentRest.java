@@ -160,7 +160,7 @@ public class LongRentRest {
             }
             OrderLongRentService.LongRentDto longRentDto = new OrderLongRentService.LongRentDto()
                     .setAgentId(userDto.getAgentId()).setConsume(consume)
-                    .setEndTime(new Date(System.currentTimeMillis() + this.milliseconds(longRentType)))
+                    .setEndTime(new Date(System.currentTimeMillis() + OrderLongRentService.milliseconds(longRentType)))
                     .setLongRentType(longRentType).setPrice(price).setStartTime(new Date()).setUserId(userDto.getUserId());
             longRentDto = longRentService.create(longRentDto);
 
@@ -183,18 +183,6 @@ public class LongRentRest {
     @Data
     private static class Body {
         private Const.LongRentType longRentType;
-    }
-
-    private long milliseconds(Const.LongRentType longRentType) {
-        if (longRentType == Const.LongRentType.day) {
-            return 24 * 60 * 60 * 1000;
-        } else if (longRentType == Const.LongRentType.week) {
-            return 7 * 24 * 60 * 60 * 1000;
-        } else if (longRentType == Const.LongRentType.month) {
-            return 30 * 24 * 60 * 60 * 1000L;
-        } else {
-            throw new RuntimeException("未知长租卡" + longRentType);
-        }
     }
 
     private double getPrice(String mobileNo, Const.LongRentType longRentType) {

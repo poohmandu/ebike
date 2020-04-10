@@ -19,7 +19,7 @@ package com.qdigo.ebike.activitycenter.controller;
 
 import com.qdigo.ebike.activitycenter.domain.entity.scenic.EntityCard;
 import com.qdigo.ebike.activitycenter.domain.entity.scenic.EntityCardUser;
-import com.qdigo.ebike.activitycenter.service.inner.scenic.EntityCardService;
+import com.qdigo.ebike.activitycenter.service.inner.scenic.EntityCardInnerService;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.user.UserService;
 import com.qdigo.ebike.common.core.domain.R;
@@ -40,7 +40,7 @@ import java.util.Optional;
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 public class EntityCardRest {
 
-    private final EntityCardService entityCardService;
+    private final EntityCardInnerService entityCardInnerService;
     private final UserService userService;
 
     @AccessValidate
@@ -51,7 +51,7 @@ public class EntityCardRest {
             @RequestHeader("accessToken") String accessToken,
             @RequestParam String entityCardNo) {
 
-        Optional<EntityCard> optional = entityCardService.getEntityCard(entityCardNo);
+        Optional<EntityCard> optional = entityCardInnerService.getEntityCard(entityCardNo);
         if (!optional.isPresent()) {
             return R.ok(400, "该实体卡不存在");
         }
@@ -72,7 +72,7 @@ public class EntityCardRest {
             @RequestHeader("accessToken") String accessToken,
             @RequestParam String entityCardNo) {
 
-        Optional<EntityCard> optional = entityCardService.getEntityCard(entityCardNo);
+        Optional<EntityCard> optional = entityCardInnerService.getEntityCard(entityCardNo);
         if (!optional.isPresent()) {
             return R.ok("无效的卡号" + entityCardNo);
         } else if (optional.get().getHotelId() == null) {
@@ -83,7 +83,7 @@ public class EntityCardRest {
             return R.ok(400, "该实体骑行卡已过期");
         } else {
             UserDto userDto = userService.findByMobileNo(mobileNo);
-            Optional<EntityCardUser> cardUserOptional = entityCardService.getEntityCardUser(userDto.getUserId(), optional.get().getEntityCardId());
+            Optional<EntityCardUser> cardUserOptional = entityCardInnerService.getEntityCardUser(userDto.getUserId(), optional.get().getEntityCardId());
 
             if (cardUserOptional.isPresent() && cardUserOptional.get().getStatus() == EntityCardUser.Status.paid) {
                 return R.ok(400, "卡号为" + entityCardNo + "的实体骑行卡已使用过一次,勿重复充值");

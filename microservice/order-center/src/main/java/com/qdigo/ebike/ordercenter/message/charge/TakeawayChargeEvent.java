@@ -14,17 +14,21 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.ordercenter.repository;
+package com.qdigo.ebike.ordercenter.message.charge;
 
-import com.qdigo.ebike.ordercenter.domain.entity.ride.RideOrder;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
+import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import lombok.Getter;
 
-public interface RideOrderRepository extends JpaRepository<RideOrder, Long> {
+@Getter
+public class TakeawayChargeEvent extends ChargeSuccessEvent {
 
-    RideOrder findByMobileNo(String mobileNo);
+    private String id;
+    private String deviceId;
 
-    RideOrder findByImei(String imei);
-
-    RideOrder findByMobileNoAndImei(String mobileNo, String imei);
-
+    public TakeawayChargeEvent(Object source, UserDto user, UserAccountDto account, String id, String deviceId) {
+        super(source, user, account);
+        this.id = id;
+        this.deviceId = deviceId;
+    }
 }

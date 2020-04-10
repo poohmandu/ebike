@@ -43,6 +43,9 @@ public interface OrderRideService {
     @PostMapping(ApiRoute.OrderCenter.Ride.findRidingByMobileNo)
     RideDto findRidingByMobileNo(@RequestParam("mobileNo") String mobileNo);
 
+    @PostMapping(ApiRoute.OrderCenter.Ride.findByImeiAndMobileNo)
+    RideDto findByImeiAndMobileNo(@RequestParam("imei") String imei, @RequestParam("mobileNo") String mobileNo);
+
     @PostMapping(ApiRoute.OrderCenter.Ride.findById)
     RideDto findById(@RequestParam("rideRecordId") long rideRecordId);
 

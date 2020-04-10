@@ -34,7 +34,7 @@ import com.qdigo.ebike.common.core.util.ConvertUtil;
 import com.qdigo.ebike.common.core.util.FormatUtil;
 import com.qdigo.ebike.ordercenter.domain.entity.UserLongRent;
 import com.qdigo.ebike.ordercenter.domain.entity.ride.RideFreeActivity;
-import com.qdigo.ebike.ordercenter.repository.RideFreeActivityRepository;
+import com.qdigo.ebike.ordercenter.repository.ride.RideFreeActivityRepository;
 import com.qdigo.ebike.ordercenter.repository.dao.UserLongRentDao;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

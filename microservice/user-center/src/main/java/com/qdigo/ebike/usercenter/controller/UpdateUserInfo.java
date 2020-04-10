@@ -25,8 +25,6 @@ import com.qdigo.ebike.usercenter.service.inner.UserStatusInnerService;
 import lombok.Data;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
@@ -38,8 +36,6 @@ import javax.inject.Inject;
 @RequestMapping("/v1.0/userInfo")
 @RequiredArgsConstructor(onConstructor_ = @Inject)
 public class UpdateUserInfo {
-
-    private final Logger log = LoggerFactory.getLogger(this.getClass());
 
     private final UserRepository userRepository;
     private final UserInnerService userService;

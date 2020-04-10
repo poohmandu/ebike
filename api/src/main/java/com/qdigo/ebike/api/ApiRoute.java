@@ -58,6 +58,7 @@ public interface ApiRoute {
         interface UserAccount {
             String userAccount = userCenter + "/userAccount";
 
+            String findById = userAccount + "/findById";
             String findByMobileNo = userAccount + "/findByMobileNo";
             String findByUserId = userAccount + "/findByUserId";
             String update = userAccount + "/update";
@@ -333,6 +334,7 @@ public interface ApiRoute {
             String takeawayConfig = agentCenter + "/takeawayConfig";
 
             String findByAgentId = takeawayConfig + "/findByAgentId";
+            String findById = takeawayConfig + "/findById";
         }
 
         interface ForceEndConfig {
@@ -380,6 +382,7 @@ public interface ApiRoute {
 
             String findRidingByImei = ride + "/findRidingByImei";
             String findRidingByMobileNo = ride + "/findRidingByMobileNo";
+            String findByImeiAndMobileNo = ride + "/findByImeiAndMobileNo";
             String findById = ride + "/findById";
             String findAnyByMobileNo = ride + "/findAnyByMobileNo";
             String findEndByMobileNo = ride + "/findEndByMobileNo";
@@ -445,6 +448,15 @@ public interface ApiRoute {
             String getFreeConsume = coupon + "/getFreeConsume";
             String getConsumeCoupon = coupon + "/getConsumeCoupon";
             String consumeCashCoupon = coupon + "/consumeCashCoupon";
+        }
+
+        interface EntityCard {
+            String entityCard = activityCenter + "/entityCard";
+
+            String getEntityCard = entityCard + "/getEntityCard";
+            String bindEntityCardUser = entityCard + "/bindEntityCardUser";
+            String getEntityCardUser = entityCard + "/getEntityCardUser";
+            String updateEntityCardUserStatus = entityCard + "/updateEntityCardUserStatus";
         }
     }
 

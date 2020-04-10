@@ -14,10 +14,19 @@
  * limitations under the License.
  */
 
-package com.qdigo.ebike.ordercenter.repository;
+package com.qdigo.ebike.ordercenter.message.charge;
 
-import com.qdigo.ebike.ordercenter.domain.entity.ride.RideForceEnd;
-import org.springframework.data.jpa.repository.JpaRepository;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
+import com.qdigo.ebike.api.domain.dto.user.UserDto;
+import lombok.Getter;
 
-public interface RideForceEndRepository extends JpaRepository<RideForceEnd, Long> {
+@Getter
+public class EntityCardChargeEvent extends ChargeSuccessEvent {
+
+    private String entityCardNo;
+
+    public EntityCardChargeEvent(Object source, UserDto user, UserAccountDto account, String entityCardNo) {
+        super(source, user, account);
+        this.entityCardNo = entityCardNo;
+    }
 }

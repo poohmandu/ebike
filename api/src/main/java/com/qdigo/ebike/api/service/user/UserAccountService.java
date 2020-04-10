@@ -33,6 +33,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 @FeignClient(name = "user-center", contextId = "user-account")
 public interface UserAccountService {
 
+    @PostMapping(ApiRoute.UserCenter.UserAccount.findById)
+    UserAccountDto findById(@RequestParam("id") Long userAccountId);
+
     @PostMapping(ApiRoute.UserCenter.UserAccount.findByMobileNo)
     UserAccountDto findByMobileNo(@RequestParam("mobileNo") String mobileNo);
 
