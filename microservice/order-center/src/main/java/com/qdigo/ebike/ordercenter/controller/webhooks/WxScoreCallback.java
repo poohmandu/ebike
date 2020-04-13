@@ -18,30 +18,28 @@ package com.qdigo.ebike.ordercenter.controller.webhooks;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.qdigo.ebicycle.daoService.wxscore.WxscoreDaoService;
-import com.qdigo.ebicycle.domain.order.OrderWxscore;
-import com.qdigo.ebicycle.domain.user.User;
-import com.qdigo.ebicycle.domain.user.UserAccount;
-import com.qdigo.ebicycle.o.dto.payment.wxscore.EncryptResource;
-import com.qdigo.ebicycle.o.dto.payment.wxscore.WxCallbackResponse;
-import com.qdigo.ebicycle.o.dto.payment.wxscore.WxEvent;
-import com.qdigo.ebicycle.o.dto.payment.wxscore.WxscoreOrder;
-import com.qdigo.ebicycle.repository.orderRepo.OrderWxscoreRepository;
-import com.qdigo.ebicycle.repository.userRepo.UserAccountRepository;
-import com.qdigo.ebicycle.repository.userRepo.UserWxOpenInfoRepository;
-import com.qdigo.ebicycle.service.pay.webHooks.WxScoreBizCallbackService;
-import com.qdigo.ebicycle.service.third.WxScoreService;
+import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.EncryptResource;
+import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxCallbackResponse;
+import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxEvent;
+import com.qdigo.ebike.api.domain.dto.third.wx.wxscore.WxscoreOrder;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
+import com.qdigo.ebike.api.service.third.wxlite.WxscoreService;
+import com.qdigo.ebike.api.service.user.UserAccountService;
+import com.qdigo.ebike.api.service.user.UserWxService;
+import com.qdigo.ebike.common.core.errors.exception.runtime.NoneMatchException;
 import com.qdigo.ebike.commonaop.annotations.Token;
+import com.qdigo.ebike.ordercenter.domain.entity.wxscore.OrderWxscore;
+import com.qdigo.ebike.ordercenter.repository.OrderWxscoreRepository;
+import com.qdigo.ebike.ordercenter.service.inner.wxscore.WxscoreDaoService;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.slf4j.MDC;
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
@@ -49,21 +47,14 @@ import java.security.GeneralSecurityException;
 @Slf4j
 @Controller
 @RequestMapping("/v1.0/payment/wxPay")
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class WxScoreCallback {
 
-    @Inject
-    private WxScoreService wxScoreService;
-
-    @Inject
-    private WxScoreBizCallbackService wxScoreBizCallbackService;
-    @Inject
-    private WxscoreDaoService wxscoreDaoService;
-    @Inject
-    private OrderWxscoreRepository orderWxscoreRepository;
-    @Resource
-    private UserWxOpenInfoRepository wxOpenInfoRepository;
-    @Resource
-    private UserAccountRepository accountRepository;
+    private final WxscoreService wxscoreService;
+    private final UserWxService userWxService;
+    private final UserAccountService accountService;
+    private final OrderWxscoreRepository orderWxscoreRepository;
+    private final WxscoreDaoService wxscoreDaoService;
 
 
     /**
@@ -77,7 +68,7 @@ public class WxScoreCallback {
      */
     @Token(key = "id")
     @PostMapping("/openService")
-    public ResponseEntity<WxCallbackResponse> openService(@RequestBody WxEvent event) throws GeneralSecurityException, IOException {
+    public ResponseEntity<WxCallbackResponse> openService(@RequestBody WxEvent event) throws GeneralSecurityException, IOException, NoneMatchException {
         MDC.put("mobileNo", event.getId());
 
         String decryptToStr = decryptToStr(event.getResource());
@@ -86,22 +77,24 @@ public class WxScoreCallback {
         String openid = json.getString("openid");
         String appid = json.getString("appid");
         String serviceStatus = json.getString("user_service_status");// USER_OPEN_SERVICE  USER_CLOSE_SERVICE
-        return wxOpenInfoRepository.findFirstByAppIdAndOpenId(appid, openid).map(userWxOpenInfo -> {
 
-            User user = userWxOpenInfo.getUser();
-            UserAccount account = user.getAccount();
-            if ("USER_OPEN_SERVICE".equals(serviceStatus)) {
-                account.setWxscore("AVAILABLE");
-                accountRepository.save(account);
-            }
-            if ("USER_CLOSE_SERVICE".equals(serviceStatus)) {
-                account.setWxscore("UNAVAILABLE");
-                accountRepository.save(account);
-            }
+        UserWxService.WxOpenInfoDto userWxOpenInfo = userWxService.findByWxId(appid, openid, null);
+        if (userWxOpenInfo == null) {
+            return ResponseEntity.badRequest().body(new WxCallbackResponse("SYSTEM_ERR", "找不到对应用户"));
+        }
 
-            return ResponseEntity.ok(new WxCallbackResponse("1000", "成功处理通知"));
+        UserAccountDto account = accountService.findByUserId(userWxOpenInfo.getUserId());
+        if ("USER_OPEN_SERVICE".equals(serviceStatus)) {
+            account.setWxscore("AVAILABLE");
+            accountService.update(account);
+        }
+        if ("USER_CLOSE_SERVICE".equals(serviceStatus)) {
+            account.setWxscore("UNAVAILABLE");
+            accountService.update(account);
+        }
 
-        }).orElseGet(() -> ResponseEntity.badRequest().body(new WxCallbackResponse("SYSTEM_ERR", "找不到对应用户")));
+        return ResponseEntity.ok(new WxCallbackResponse("1000", "成功处理通知"));
+
     }
 
     @Token(key = "id")
@@ -113,11 +106,11 @@ public class WxScoreCallback {
         log.debug("先享后付确认订单解密后数据为:{}", decryptToStr);
         WxscoreOrder wxscoreOrder = JSON.parseObject(decryptToStr, WxscoreOrder.class);
         // 创建订单时一定要保存
-        OrderWxscore one = orderWxscoreRepository.findOne(wxscoreOrder.getOut_order_no());
+        OrderWxscore one = orderWxscoreRepository.findById(wxscoreOrder.getOut_order_no()).orElse(null);
         if (one == null) {
             try {
                 wxscoreDaoService.createOrder(wxscoreOrder);
-            } catch (DataIntegrityViolationException e) {
+            } catch (RuntimeException e) {
                 return ResponseEntity.badRequest().body(new WxCallbackResponse("DB_ERROR", "创建微信支付分订单失败"));
             }
         }
@@ -140,7 +133,7 @@ public class WxScoreCallback {
 
 
     private String decryptToStr(EncryptResource resource) throws GeneralSecurityException, IOException {
-        return wxScoreService.decryptAes256ToString(resource.getAssociated_data(), resource.getCiphertext(), resource.getNonce());
+        return wxscoreService.decryptAes256ToString(resource.getAssociated_data(), resource.getCiphertext(), resource.getNonce());
     }
 
 }

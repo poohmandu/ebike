@@ -40,7 +40,6 @@ import com.qdigo.ebike.ordercenter.repository.OrderWxscoreRepository;
 import com.qdigo.ebike.ordercenter.service.inner.wxscore.WxscoreDaoService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.inject.Inject;
 import java.text.MessageFormat;
@@ -76,51 +75,50 @@ public class OrderWxscoreBizServiceImpl implements OrderWxscoreBizService {
         return "AVAILABLE".equals(wxscoreState);
     }
 
-    @Transactional
+    //@Transactional
     @Override
     public void startWxscoreOrder(WxsocreStart wxsocreStart) {
+        UserDto userDto = wxsocreStart.getUserDto();
+        AgentCfg config = wxsocreStart.getAgentCfg();
+        RideDto rideDto = wxsocreStart.getRideDto();
+        Long agentId = config.getAgentId();
+        boolean wxscoreEnable = wxscoreEnable(userDto.getDeviceId(), wxsocreStart.getWxscoreEnable());
+        if (!wxscoreEnable) {
+            return;
+        }
+        String appId = wxliteService.getAppId(userDto.getDeviceId());
+        String openId = userService.getOpenInfo(userDto).stream()
+                .filter(openInfo -> openInfo.getAppId().equals(appId))
+                .map(UserService.OpenInfo::getOpenId)
+                .findAny().get();
+
+        String feeDesc = MessageFormat.format("每{0}分钟{1}元,每天{2}小时封顶",
+                rideDto.getUnitMinutes(), rideDto.getPrice(), config.getDayMaxHours());
+
+
+        StartOrderParam param = new StartOrderParam()
+                .setAgentId(agentId)
+                .setAppId(appId)
+                .setFeeDesc(feeDesc)
+                .setOpenId(openId)
+                .setRideRecordId(rideDto.getRideRecordId())
+                .setUserId(userDto.getUserId());
+        ResponseDTO<String> startOrder = wxscoreService.startOrder(param);
+        String errMessage;
+        if (startOrder.isNotSuccess()) {
+            return;
+        }
+        String outOrderNo = startOrder.getData();
+        ResponseDTO<WxscoreOrder> queryOrder = wxscoreService.queryByOrderNo(outOrderNo, appId);
+        if (queryOrder.isNotSuccess()) {
+            return;
+        }
+        //事务传播REQUIRES_NEW才能在这抛出异常否则在大事务抛出
+        WxscoreOrder wxscoreOrder = queryOrder.getData();
         try {
-            UserDto userDto = wxsocreStart.getUserDto();
-            AgentCfg config = wxsocreStart.getAgentCfg();
-            RideDto rideDto = wxsocreStart.getRideDto();
-            Long agentId = config.getAgentId();
-            boolean wxscoreEnable = wxscoreEnable(userDto.getDeviceId(), wxsocreStart.getWxscoreEnable());
-            if (!wxscoreEnable) {
-                return;
-            }
-            String appId = wxliteService.getAppId(userDto.getDeviceId());
-            String openId = userService.getOpenInfo(userDto).stream()
-                    .filter(openInfo -> openInfo.getAppId().equals(appId))
-                    .map(UserService.OpenInfo::getOpenId)
-                    .findAny().get();
-
-            String feeDesc = MessageFormat.format("每{0}分钟{1}元,每天{2}小时封顶",
-                    rideDto.getUnitMinutes(), rideDto.getPrice(), config.getDayMaxHours());
-
-
-            StartOrderParam param = new StartOrderParam()
-                    .setAgentId(agentId)
-                    .setAppId(appId)
-                    .setFeeDesc(feeDesc)
-                    .setOpenId(openId)
-                    .setRideRecordId(rideDto.getRideRecordId())
-                    .setUserId(userDto.getUserId());
-            ResponseDTO<String> startOrder = wxscoreService.startOrder(param);
-            String errMessage;
-            if (startOrder.isNotSuccess()) {
-                return;
-            }
-            String outOrderNo = startOrder.getData();
-            ResponseDTO<WxscoreOrder> queryOrder = wxscoreService.queryByOrderNo(outOrderNo, appId);
-            if (queryOrder.isNotSuccess()) {
-                return;
-            }
-            //事务传播REQUIRES_NEW才能在这抛出异常否则在大事务抛出
-            WxscoreOrder wxscoreOrder = queryOrder.getData();
             wxscoreDaoService.createOrder(wxscoreOrder);
-
-        } catch (Exception e) {
-            log.warn("微信支付分创单时发生错误并忽略:{}", e.getMessage());
+        } catch (RuntimeException e) {
+            log.warn("微信支付分创单时发生错误并忽略:", e);
         }
 
     }
