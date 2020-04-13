@@ -17,6 +17,7 @@
 package com.qdigo.ebike.usercenter.service.remote;
 
 import com.qdigo.ebike.api.RemoteService;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.user.UserService;
 import com.qdigo.ebike.common.core.util.ConvertUtil;
@@ -29,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import javax.inject.Inject;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * Description: 
@@ -64,6 +66,18 @@ public class UserRemoteServiceImpl implements UserService {
         User user = userDto.toEntity(User.class);
         List<UserResponse.OpenInfo> openInfo = userInnerService.getOpenInfo(user);
         return ConvertUtil.to(openInfo, OpenInfo.class);
+    }
+
+    @Override
+    public UserAndAccount findWithAccountByMobileNo(String mobileNo) {
+        Optional<User> optional = userRepository.findOneByMobileNo(mobileNo);
+        UserDto userDto = userRepository.findOneByMobileNo(mobileNo)
+                .map(user -> ConvertUtil.to(user, UserDto.class))
+                .orElse(null);
+        UserAccountDto accountDto = optional.map(User::getAccount)
+                .map(userAccount -> ConvertUtil.to(userAccount, UserAccountDto.class))
+                .orElse(null);
+        return new UserAndAccount().setUserDto(userDto).setAccountDto(accountDto);
     }
 
 

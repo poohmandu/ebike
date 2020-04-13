@@ -26,23 +26,18 @@ package com.qdigo.ebike.commonconfig.configuration;
  * @since JDK 1.8
  */
 
-import feign.Feign;
 import okhttp3.ConnectionPool;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.cloud.openfeign.FeignAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.TimeUnit;
 
-@Configuration
-@ConditionalOnClass(Feign.class)
-@AutoConfigureBefore(FeignAutoConfiguration.class) //SpringBoot自动配置
+//@Configuration
+//@ConditionalOnClass(Feign.class)
+//@AutoConfigureBefore(FeignAutoConfiguration.class) //SpringBoot自动配置
 public class OkHttpConfig {
 
-    @Bean
+    //已取消自定义 参见FeignAutoConfiguration OkHttpFeignConfiguration
+    //@Bean
     @ConditionalOnMissingBean
     public okhttp3.OkHttpClient okHttpClient() {
         return new okhttp3.OkHttpClient.Builder()

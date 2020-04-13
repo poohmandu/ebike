@@ -99,6 +99,7 @@ public interface WxliteService {
     @AllArgsConstructor
     enum WX { // key为deviceId
         weixin("wx8b40d25493fc47e0", "827d18f28eaac51868f68c46c72f0faa"),
+        weixin_fangxiangjia("wxbf5bed5e28495d93", "1cfb44587ea3cb53c1372fc749a5e071"),
         weixin_zhima("wx5da5daffa0b2ec3a", "95852e714407bbf14115be535a1f44d2"); //支码
         private String appId;
         private String appSecret;

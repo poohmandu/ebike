@@ -20,6 +20,7 @@ import com.qdigo.ebike.api.ApiRoute;
 import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import lombok.Data;
+import lombok.experimental.Accessors;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -46,6 +47,9 @@ public interface UserService {
     @PostMapping(ApiRoute.UserCenter.User.getOpenInfo)
     List<OpenInfo> getOpenInfo(@RequestBody UserDto userDto);
 
+    @PostMapping(ApiRoute.UserCenter.User.findWithAccountByMobileNo)
+    UserAndAccount findWithAccountByMobileNo(@RequestParam("mobileNo") String mobileNo);
+
     @Data
     class OpenInfo {
         private String appId;
@@ -53,6 +57,7 @@ public interface UserService {
     }
 
     @Data
+    @Accessors(chain = true)
     class UserAndAccount {
         private UserDto userDto;
         private UserAccountDto accountDto;

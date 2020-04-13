@@ -60,10 +60,10 @@ public class RefundService {
     private final OrderRefundRepository refundRepository;
     private final OrderChargeRepository chargeRepository;
     private final ChargeService chargeService;
-    private final RefundSucceed refundSucceed;
     private final UserAccountService accountService;
     private final OrderRideService rideService;
-
+    @Resource
+    private RefundSucceed refundSucceed;
     @Resource
     private RefundService self;
 

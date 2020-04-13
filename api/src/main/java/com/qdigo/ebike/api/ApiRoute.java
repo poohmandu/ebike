@@ -36,6 +36,7 @@ public interface ApiRoute {
             String findByMobileNo = user + "/findByMobileNo";
             String findById = user + "/findById";
             String getOpenInfo = user + "/getOpenInfo";
+            String findWithAccountByMobileNo = user + "/findWithAccountByMobileNo";
         }
 
         interface UserStatus {

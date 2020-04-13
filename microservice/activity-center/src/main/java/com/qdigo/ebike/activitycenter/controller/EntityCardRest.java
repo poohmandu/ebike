@@ -20,6 +20,7 @@ package com.qdigo.ebike.activitycenter.controller;
 import com.qdigo.ebike.activitycenter.domain.entity.scenic.EntityCard;
 import com.qdigo.ebike.activitycenter.domain.entity.scenic.EntityCardUser;
 import com.qdigo.ebike.activitycenter.service.inner.scenic.EntityCardInnerService;
+import com.qdigo.ebike.api.domain.dto.activity.scenic.BindStatus;
 import com.qdigo.ebike.api.domain.dto.user.UserDto;
 import com.qdigo.ebike.api.service.user.UserService;
 import com.qdigo.ebike.common.core.domain.R;
@@ -85,7 +86,7 @@ public class EntityCardRest {
             UserDto userDto = userService.findByMobileNo(mobileNo);
             Optional<EntityCardUser> cardUserOptional = entityCardInnerService.getEntityCardUser(userDto.getUserId(), optional.get().getEntityCardId());
 
-            if (cardUserOptional.isPresent() && cardUserOptional.get().getStatus() == EntityCardUser.Status.paid) {
+            if (cardUserOptional.isPresent() && cardUserOptional.get().getStatus() == BindStatus.paid) {
                 return R.ok(400, "卡号为" + entityCardNo + "的实体骑行卡已使用过一次,勿重复充值");
             }
         }

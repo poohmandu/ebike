@@ -18,64 +18,58 @@ package com.qdigo.ebike.ordercenter.controller.rideorder;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.google.common.collect.ImmutableMap;
-import com.qdigo.ebicycle.constants.Status;
-import com.qdigo.ebicycle.domain.order.OrderCharge;
-import com.qdigo.ebicycle.domain.order.OrderWxscore;
-import com.qdigo.ebicycle.domain.ride.RideRecord;
-import com.qdigo.ebicycle.domain.user.UserAccount;
-import com.qdigo.ebicycle.o.ro.BaseResponse;
-import com.qdigo.ebicycle.repository.bikeRepo.BikeRepository;
-import com.qdigo.ebicycle.repository.orderRepo.OrderChargeRepository;
-import com.qdigo.ebicycle.repository.ride.RideRecordRepository;
-import com.qdigo.ebicycle.repository.userRepo.UserAccountRepository;
-import com.qdigo.ebicycle.repository.userRepo.UserRepository;
-import com.qdigo.ebicycle.service.pay.ChargeService;
-import com.qdigo.ebicycle.service.ride.RideActivityService;
-import com.qdigo.ebicycle.service.ride.RideWxscoreService;
-import com.qdigo.ebicycle.service.util.FormatUtil;
+import com.qdigo.ebike.api.domain.dto.agent.AgentCfg;
+import com.qdigo.ebike.api.domain.dto.bike.BikeDto;
+import com.qdigo.ebike.api.domain.dto.order.RideDto;
+import com.qdigo.ebike.api.domain.dto.order.ridefreeactivity.ConsumeDetail;
+import com.qdigo.ebike.api.domain.dto.order.wxscore.WxscoreDto;
+import com.qdigo.ebike.api.domain.dto.user.UserAccountDto;
+import com.qdigo.ebike.api.service.agent.AgentConfigService;
+import com.qdigo.ebike.api.service.bike.BikeService;
+import com.qdigo.ebike.api.service.order.ride.OrderRideService;
+import com.qdigo.ebike.api.service.order.ride.RideFreeActivityService;
+import com.qdigo.ebike.api.service.user.UserAccountService;
+import com.qdigo.ebike.api.service.user.UserService;
+import com.qdigo.ebike.common.core.constants.Status;
+import com.qdigo.ebike.common.core.domain.R;
+import com.qdigo.ebike.common.core.util.FormatUtil;
 import com.qdigo.ebike.commonaop.annotations.AccessValidate;
+import com.qdigo.ebike.ordercenter.domain.entity.charge.OrderCharge;
+import com.qdigo.ebike.ordercenter.repository.charge.OrderChargeRepository;
+import com.qdigo.ebike.ordercenter.service.inner.payment.ChargeService;
+import com.qdigo.ebike.ordercenter.service.remote.wxscore.OrderWxscoreBizServiceImpl;
 import lombok.Builder;
 import lombok.Data;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import lombok.val;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import javax.annotation.Resource;
 import javax.inject.Inject;
 import java.time.Duration;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
  * Created by niezhao on 2016/11/28.
  */
+@Slf4j
 @RestController
 @RequestMapping("/v1.0/payment")
+@RequiredArgsConstructor(onConstructor_ = @Inject)
 public class OrderInfo {
 
-    private final Logger logger = LoggerFactory.getLogger(OrderInfo.class);
-    @Inject
-    private RideRecordRepository rideRecordRepository;
-    @Inject
-    private UserRepository userRepository;
-    @Inject
-    private BikeRepository bikeRepository;
-    @Inject
-    private UserAccountRepository userAccountRepository;
-    @Inject
-    private OrderChargeRepository chargeRepository;
-    @Inject
-    private ChargeService chargeService;
-    @Inject
-    private RideActivityService rideActivityService;
-    @Resource
-    private RideWxscoreService rideWxscoreService;
-
+    private final OrderRideService rideService;
+    private final RideFreeActivityService freeActivityService;
+    private final UserService userService;
+    private final AgentConfigService agentConfigService;
+    private final OrderWxscoreBizServiceImpl wxscoreBizService;
+    private final BikeService bikeService;
+    private final UserAccountService accountService;
+    private final OrderChargeRepository chargeRepository;
+    private final ChargeService chargeService;
 
     /**
      * 某个订单的详情
@@ -88,27 +82,34 @@ public class OrderInfo {
      */
     @AccessValidate
     @GetMapping(value = "/getOrderInfo/{orderId}", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getOrderInfo(
+    public R<?> getOrderInfo(
             @RequestHeader("mobileNo") String mobileNo,
             @RequestHeader("mobiledeviceId") String deviceId, // 手机设备号
             @RequestHeader("accessToken") String accessToken,
             @PathVariable Long orderId) {
 
-        RideRecord rideRecord = rideRecordRepository.findOne(orderId);
+        RideDto rideRecord = rideService.findById(orderId);
 
         if (rideRecord == null) {
-            return ResponseEntity.ok(new BaseResponse(400, "不存在该骑行记录", null));
+            return R.ok(400, "不存在该骑行记录");
         }
         String consumeNote = "无";
         if (rideRecord.getRideStatus() == Status.RideStatus.end.getVal()) {
-            RideActivityService.ConsumeDetail consumeDetail = rideActivityService.getConsumeDetail(rideRecord);
+            AgentCfg config = agentConfigService.getAgentConfig(rideRecord.getAgentId());
+            UserService.UserAndAccount userAndAccount = userService.findWithAccountByMobileNo(mobileNo);
+
+            val detailParam = new RideFreeActivityService.DetailParam().setAccountDto(userAndAccount.getAccountDto())
+                    .setAgentCfg(config).setRideDto(rideRecord).setUserDto(userAndAccount.getUserDto());
+            ConsumeDetail consumeDetail = freeActivityService.getConsumeDetail(detailParam);
             consumeNote = consumeDetail.getConsumeNote();
         }
-        String outOrderNo = rideWxscoreService.hasRideWxscoreOrder(rideRecord)
-            .map(OrderWxscore::getOutOrderNo)
-            .orElse("");
-
-        return ResponseEntity.ok(new BaseResponse(200, "成功获得已支付订单的详细信息", Res.build(rideRecord, consumeNote, outOrderNo)));
+        String outOrderNo = "";
+        WxscoreDto wxscoreDto = wxscoreBizService.hasRideWxscoreOrder(rideRecord.getRideRecordId());
+        if (wxscoreDto != null) {
+            outOrderNo = wxscoreDto.getOutOrderNo();
+        }
+        BikeDto bikeDto = bikeService.findByImei(rideRecord.getImei());
+        return R.ok(200, "成功获得已支付订单的详细信息", Res.build(rideRecord, bikeDto, consumeNote, outOrderNo));
     }
 
     /**
@@ -120,25 +121,27 @@ public class OrderInfo {
      * @return
      */
     @GetMapping(value = "/getCharges", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> getChargeList(
+    public R<?> getChargeList(
             @RequestHeader("mobileNo") String mobileNo,
             @RequestHeader("mobiledeviceId") String deviceId, // 手机设备号
             @RequestHeader("accessToken") String accessToken) {
-        logger.debug("getCharges获取用户{}的充值余额记录", mobileNo);
-        Optional<UserAccount> userAccount = userAccountRepository.findByUserMobileNo(mobileNo);
-        if (!userAccount.isPresent()) {
-            return ResponseEntity.ok(new BaseResponse(400, "不存在该用户", null));
-        }
-        val res = chargeRepository.findByUserAccountAndPayType(userAccount.get(), Status.PayType.rent.getVal())
-            .stream()
-            .sorted(Comparator.comparing(OrderCharge::getTimePaid))
-            .map(orderCharge -> ImmutableMap.of(
-                "amount", String.valueOf(FormatUtil.fenToYuan(orderCharge.getAmount())),
-                "time", FormatUtil.yMdHms.format(new Date(orderCharge.getTimePaid() * 1000)),
-                "channel", orderCharge.getChannel()))
-            .collect(Collectors.toList());
+        log.debug("getCharges获取用户{}的充值余额记录", mobileNo);
 
-        return ResponseEntity.ok(new BaseResponse(200, "成功获得支付明细", res));
+        UserAccountDto userAccount = accountService.findByMobileNo(mobileNo);
+        if (userAccount == null) {
+            return R.ok(400, "不存在该用户");
+        }
+
+        val res = chargeRepository.findByUserAccountIdAndPayType(userAccount.getUserAccountId(), Status.PayType.rent.getVal())
+                .stream()
+                .sorted(Comparator.comparing(OrderCharge::getTimePaid))
+                .map(orderCharge -> ImmutableMap.of(
+                        "amount", String.valueOf(FormatUtil.fenToYuan(orderCharge.getAmount())),
+                        "time", FormatUtil.yMdHms.format(new Date(orderCharge.getTimePaid() * 1000)),
+                        "channel", orderCharge.getChannel()))
+                .collect(Collectors.toList());
+
+        return R.ok(200, "成功获得支付明细", res);
     }
 
 
@@ -151,18 +154,21 @@ public class OrderInfo {
      * @return
      */
     @GetMapping(value = "/hasRentCharge", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<?> hasRentCharge(
+    public R<?> hasRentCharge(
             @RequestHeader("mobileNo") String mobileNo,
             @RequestHeader("mobiledeviceId") String deviceId, // 手机设备号
             @RequestHeader("accessToken") String accessToken) {
-        return userRepository.findOneByMobileNo(mobileNo).map(user -> {
-            boolean hasRentCharges = chargeService.hasRentCharges(user);
-            if (hasRentCharges) {
-                return ResponseEntity.ok(new BaseResponse(200, "有过租金支付"));
-            } else {
-                return ResponseEntity.ok(new BaseResponse(201, "没有支付过"));
-            }
-        }).orElse(ResponseEntity.ok(new BaseResponse(400, "无效用户")));
+
+        UserAccountDto userAccount = accountService.findByMobileNo(mobileNo);
+        if (userAccount == null) {
+            return R.ok(400, "无效用户");
+        }
+        boolean hasRentCharges = chargeService.hasRentCharges(userAccount.getUserAccountId());
+        if (hasRentCharges) {
+            return R.ok(200, "有过租金支付");
+        } else {
+            return R.ok(201, "没有支付过");
+        }
     }
 
     @Data
@@ -181,19 +187,19 @@ public class OrderInfo {
         private String consumeNote;
         private String outOrderNo;
 
-        public static Res build(RideRecord rideRecord, String consumeNote, String outOrderNo) {
+        public static Res build(RideDto rideRecord, BikeDto bikeDto, String consumeNote, String outOrderNo) {
             return Res.builder().consume(rideRecord.getConsume())
-                .deviceId(rideRecord.getBike().getDeviceId())
-                .endTime(rideRecord.getEndTime())
-                .minutes(FormatUtil.minutes(Duration.between(rideRecord.getStartTime().toInstant(),
-                    rideRecord.getEndTime().toInstant()).getSeconds()))
-                .orderNo("")
-                .price(rideRecord.getPrice() + "元/" + rideRecord.getUnitMinutes() + "分钟")
-                .startTime(rideRecord.getStartTime())
-                .type(rideRecord.getBike().getType())
-                .consumeNote(consumeNote)
-                .outOrderNo(outOrderNo)
-                .build();
+                    .deviceId(bikeDto.getDeviceId())
+                    .endTime(rideRecord.getEndTime())
+                    .minutes(FormatUtil.minutes(Duration.between(rideRecord.getStartTime().toInstant(),
+                            rideRecord.getEndTime().toInstant()).getSeconds()))
+                    .orderNo("")
+                    .price(rideRecord.getPrice() + "元/" + rideRecord.getUnitMinutes() + "分钟")
+                    .startTime(rideRecord.getStartTime())
+                    .type(bikeDto.getType())
+                    .consumeNote(consumeNote)
+                    .outOrderNo(outOrderNo)
+                    .build();
         }
 
     }

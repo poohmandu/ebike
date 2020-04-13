@@ -38,6 +38,9 @@ public interface OrderChargeRepository extends JpaRepository<OrderCharge, Serial
     @Query("select o from OrderCharge o where o.userAccountId = ?1 and o.payType = ?2 and o.paid = true and o.amountRefunded = 0")
     List<OrderCharge> findNoRefundByUserAccountIdAndPayType(Long userAccountId, int payType);
 
+    @Query("select o from OrderCharge o where o.userAccountId =?1 and o.payType=?2 and o.paid=true ")
+    List<OrderCharge> findByUserAccountIdAndPayType(Long userAccountId, int payType);
+
     @Query("select o from OrderCharge o where o.userAccountId=?1 and o.paid=true and o.amountRefunded=0 and o.payType=1")
     List<OrderCharge> findDepositNotRefund(Long userAccountId);
 

@@ -64,7 +64,7 @@ public class TransferCallback {
     private final OrderChargeRepository chargeRepository;
     private final JournalAccountInnerService journalAccountInnerService;
     @Resource
-    private final TransferCallback self;
+    private TransferCallback self;
 
     @Token(key = {"orderNo"}, expireSeconds = 60)
     public void transferCallback(Transfer transfer, boolean isSucceed) throws NoneMatchException {

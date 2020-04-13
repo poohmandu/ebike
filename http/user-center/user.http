@@ -11,7 +11,6 @@ mobiledeviceId: {{deviceId}}
 }
 > {% client.global.set("accessToken",response.body.data); %}
 
-
 ### 验证码登录
 POST {{host}}/v1.0/user/registerAndLogin
 Content-Type: application/json
@@ -41,11 +40,7 @@ code: xxxxxx
     "longitude":0.0
 }
 
-### 查询还车点(分页)
-GET http://{{host}}/v1.0/geo/getBikeStationPage?longitude=1&latitude=2
-mobileNo: {{mobileNo}}
-mobiledeviceId: weixin
-accessToken: xxx
+
 
 ### 查看订单轨迹
 POST http://{{host}}/v1.0/ebike/tracking
@@ -69,7 +64,5 @@ accessToken: xxx
     "longitude": 121,
     "latitude": 31
 }
-
-###
 
 
