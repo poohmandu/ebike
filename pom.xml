@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>2.2.5.RELEASE</version>
+        <version>2.2.6.RELEASE</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.qdigo</groupId>
@@ -17,8 +17,8 @@
 
     <properties>
         <spring-boot.version>${project.parent.version}</spring-boot.version>
-        <spring-cloud.version>Hoxton.SR1</spring-cloud.version>
-        <spring-cloud-alibaba.version>2.2.0.RELEASE</spring-cloud-alibaba.version>
+        <spring-cloud.version>Hoxton.SR3</spring-cloud.version>
+        <spring-cloud-alibaba.version>2.2.1.RELEASE</spring-cloud-alibaba.version>
         <spring-platform.version>Cairo-SR8</spring-platform.version>
         <java.version>1.8</java.version>
         <tk-mybatis.version>2.1.5</tk-mybatis.version>
@@ -26,7 +26,7 @@
         <pagehelper.version>1.2.13</pagehelper.version>
         <jjwt.version>0.10.7</jjwt.version>
         <mysql-connector.version>8.0.16</mysql-connector.version>
-        <hutool.version>5.0.7</hutool.version>
+        <hutool.version>5.2.5</hutool.version>
         <javax.inject.version>1</javax.inject.version>
         <bcprov.version>1.59</bcprov.version>
         <dahan.ezmorph.version>1.0.6</dahan.ezmorph.version>
@@ -117,11 +117,6 @@
                 <artifactId>bcprov-jdk15on</artifactId>
                 <version>${bcprov.version}</version>
             </dependency>
-
-            <!--<dependency>-->
-            <!--<groupId>io.github.openfeign</groupId>-->
-            <!--<artifactId>feign-httpclient</artifactId>-->
-            <!--</dependency>-->
 
             <dependency>
                 <groupId>mysql</groupId>
@@ -411,16 +406,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-        <!--wxscore-->
-        <!--<repository>-->
-        <!--<id>jitpack.io</id>-->
-        <!--<url>https://jitpack.io</url>-->
-        <!--</repository>-->
-        <!--cat-->
-        <!--<repository>-->
-        <!--<id>unidal.releases</id>-->
-        <!--<url>http://unidal.org/nexus/content/repositories/releases/</url>-->
-        <!--</repository>-->
 
     </repositories>
 

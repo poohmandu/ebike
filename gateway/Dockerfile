@@ -1,4 +1,4 @@
-FROM openjdk:8u181-jdk-alpine
+FROM qdigo-docker.pkg.coding.net/diandichuxing/docker/base:latest
 
 MAINTAINER niezhao nz@qdigo.com
 
@@ -14,7 +14,7 @@ ENV JAVA_OPTS="-Xmx256m -Xms256m -Xss256k -server -XX:+TieredCompilation \
 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 
 #java8u131 以后支持感知容器
-ENTRYPOINT java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar
+ENTRYPOINT sh /script/wait-for.sh&&java $JAVA_OPTS -Djava.security.egd=file:/dev/./urandom -jar app.jar
 
 EXPOSE ${PORT}
 

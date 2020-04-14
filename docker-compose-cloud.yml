@@ -1,5 +1,10 @@
 version: '3'
 
+volumes:
+  logs:
+    external:
+      name: microservice_logs
+
 networks:
   qdigo_network:
     external: true
@@ -15,6 +20,7 @@ services:
       - qdigo_network
     environment:
       - spring.profiles.active
+      - LOCALHOST
 
   monitor:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/monitor:0.0.1-SNAPSHOT
@@ -25,6 +31,7 @@ services:
       - qdigo_network
     environment:
       - spring.profiles.active
+      - LOCALHOST
 
 
 
