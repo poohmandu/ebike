@@ -7,6 +7,7 @@ import org.springframework.cloud.client.SpringCloudApplication;
 /**
  * @author niezhao
  */
+//@EnableAutoDataSourceProxy
 @EnableQdigoFeignClients
 @SpringCloudApplication
 public class UserCenterApplication {

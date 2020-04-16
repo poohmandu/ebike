@@ -5,6 +5,7 @@ import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.cloud.client.SpringCloudApplication;
 
+//@EnableAutoDataSourceProxy
 @EnableQdigoFeignClients
 @SpringCloudApplication
 @MapperScan("com.qdigo.ebike.bike.mapper")

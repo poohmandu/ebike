@@ -36,7 +36,7 @@ services:
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9100
+      - WAIT_FOR=user-center:9100
 
   bike-center:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/bike-center:0.0.1-SNAPSHOT
@@ -50,7 +50,7 @@ services:
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9101
+      - WAIT_FOR=third:9101
 
   agent-center:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/agent-center:0.0.1-SNAPSHOT
@@ -64,7 +64,7 @@ services:
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9102
+      - WAIT_FOR=bike-center:9102
 
   control-center:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/control-center:0.0.1-SNAPSHOT
@@ -78,7 +78,7 @@ services:
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9103
+      - WAIT_FOR=agent-center:9103
 
   station-center:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/station-center:0.0.1-SNAPSHOT
@@ -92,7 +92,7 @@ services:
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9104
+      - WAIT_FOR=control-center:9104
 
   order-center:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/order-center:0.0.1-SNAPSHOT
@@ -106,7 +106,7 @@ services:
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9105
+      - WAIT_FOR=station-center:9105
 
   activity-center:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/activity-center:0.0.1-SNAPSHOT
@@ -114,13 +114,13 @@ services:
     ports:
       - 9107:9107
     volumes:
-      - logs:/app/logs
+      - logs:/app/logsBikeCenterApplication
     networks:
       - qdigo_network
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9106
+      - WAIT_FOR=order-center:9106
 
   iot-center:
     image: qdigo-docker.pkg.coding.net/diandichuxing/docker/iot-center:0.0.1-SNAPSHOT
@@ -134,4 +134,4 @@ services:
     environment:
       - spring.profiles.active
       - LOCALHOST
-      - WAIT_FOR=localhost:9107
+      - WAIT_FOR=activity-center:9107

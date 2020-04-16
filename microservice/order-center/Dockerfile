@@ -10,7 +10,7 @@ WORKDIR /app
 
 ARG PORT
 ARG JAR_FILE
-ENV JAVA_OPTS="-Xmx256m -Xms256m -Xss256k -server -XX:+TieredCompilation \
+ENV JAVA_OPTS="-Xmx1g -Xms1g -Xss256k -server -XX:+TieredCompilation \
 -XX:+UnlockExperimentalVMOptions -XX:+UseCGroupMemoryLimitForHeap"
 
 #java8u131 以后支持感知容器

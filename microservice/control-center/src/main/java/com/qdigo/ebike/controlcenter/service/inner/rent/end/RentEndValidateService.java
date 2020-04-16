@@ -78,8 +78,8 @@ public class RentEndValidateService {
         EndDTO endDTO = forceEndValidateResult.endDTO;
         if (endDTO.isForceEnd()) {
 
-            val forceEndParam = new RideForceEndService.Param().setAgentId(endDTO.getRideDto().getAgentId())
-                    .setStatusDto(endDTO.getBikeStatusDto());
+            RideForceEndService.Param forceEndParam = new RideForceEndService.Param()
+                    .setAgentId(endDTO.getRideDto().getAgentId()).setStatusDto(endDTO.getBikeStatusDto());
             ForceEndInfo forceEndInfo = forceEndService.getForceEndInfo(forceEndParam);
             log.debug("还车点外强制还车时信息:{}", forceEndInfo);
             if (!forceEndInfo.isValid()) {
@@ -127,7 +127,7 @@ public class RentEndValidateService {
         double consume = consumeDetail.getConsume();
         double finalConsume = consume;
         if (endDTO.isForceEnd()) {
-            val forceEndParam = new RideForceEndService.Param().setAgentId(config.getAgentId())
+            RideForceEndService.Param forceEndParam = new RideForceEndService.Param().setAgentId(config.getAgentId())
                     .setStatusDto(endDTO.getBikeStatusDto());
             ForceEndInfo forceEndInfo = forceEndService.getForceEndInfo(forceEndParam);
             if (forceEndInfo.isValid())

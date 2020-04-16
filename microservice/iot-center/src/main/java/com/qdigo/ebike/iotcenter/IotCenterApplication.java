@@ -11,6 +11,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import javax.annotation.Resource;
 
 @Slf4j
+//@EnableAutoDataSourceProxy
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class IotCenterApplication implements CommandLineRunner {

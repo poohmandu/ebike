@@ -57,12 +57,13 @@ public class TransferCallback {
 
     private final OrderTransferRepository transferRepository;
     private final UserAccountService accountService;
-    private final TransferService transferService;
     private final UserRecordService userRecordService;
     private final PushService pushService;
     private final UserService userService;
     private final OrderChargeRepository chargeRepository;
     private final JournalAccountInnerService journalAccountInnerService;
+    @Resource
+    private TransferService transferService;
     @Resource
     private TransferCallback self;
 

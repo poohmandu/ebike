@@ -59,14 +59,14 @@ public class RefundSucceed {
 
     private final OrderRefundRepository refundRepository;
     private final OrderChargeRepository chargeRepository;
-    private final RefundService refundService;
     private final ChargeService chargeService;
     private final UserAccountService accountService;
     private final UserService userService;
     private final UserRecordService userRecordService;
     private final PushService pushService;
     private final JournalAccountInnerService journalAccountInnerService;
-
+    @Resource
+    private RefundService refundService;
     @Resource
     private RefundSucceed self;
 

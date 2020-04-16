@@ -20,6 +20,7 @@ import com.qdigo.ebike.api.EnableQdigoFeignClients;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+//@EnableAutoDataSourceProxy
 @EnableQdigoFeignClients
 @SpringBootApplication
 public class ControlCenterApplication {

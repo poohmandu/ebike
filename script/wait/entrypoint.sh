@@ -13,7 +13,7 @@
 
 wait_for() {
     echo Waiting for $1 to listen on $2...
-    while ! nc -z $1 $2; do echo waiting...; sleep $SLEEP_SECOND; done
+    while ! nc -z $1 $2; do echo "waiting for $1:$2 ..."; sleep $SLEEP_SECOND; done
 }
 
 #declare DEPENDS
