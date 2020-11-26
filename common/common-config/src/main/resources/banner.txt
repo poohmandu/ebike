@@ -1,0 +1,27 @@
+
+
+  ${AnsiColor.GREEN}                               dddddddd
+  ${AnsiColor.GREEN}     QQQQQQQQQ                 d██████d  iiii
+  ${AnsiColor.GREEN}   QQ█████████QQ               d██████d i████i
+  ${AnsiColor.GREEN} QQ█████████████QQ             d██████d  iiii
+  ${AnsiColor.GREEN}Q███████QQQ███████Q            d█████d
+  ${AnsiColor.GREEN}Q██████O   Q██████Q    ddddddddd█████d iiiiiii ${AnsiColor.RED}   ggggggggg   ggggg   ooooooooooo
+  ${AnsiColor.GREEN}Q█████O     Q█████Q  dd██████████████d i█████i ${AnsiColor.RED}  g█████████ggg████g oo███████████oo
+  ${AnsiColor.GREEN}Q█████O     Q█████Q d████████████████d  i████i ${AnsiColor.RED} g█████████████████go███████████████o
+  ${AnsiColor.GREEN}Q█████O     Q█████Qd███████ddddd█████d  i████i ${AnsiColor.RED}g██████ggggg██████ggo█████ooooo█████o
+  ${AnsiColor.GREEN}Q█████O     Q█████Qd██████d    d█████d  i████i ${AnsiColor.RED}g█████g     g█████g o████o     o████o
+  ${AnsiColor.GREEN}Q█████O     Q█████Qd█████d     d█████d  i████i ${AnsiColor.RED}g█████g     g█████g o████o     o████o
+  ${AnsiColor.GREEN}Q█████O  QQQQ█████Qd█████d     d█████d  i████i ${AnsiColor.RED}g█████g     g█████g o████o     o████o
+  ${AnsiColor.GREEN}Q██████O Q████████Qd█████d     d█████d  i████i ${AnsiColor.RED}g██████g    g█████g o████o     o████o
+  ${AnsiColor.GREEN}Q███████QQ████████Qd██████ddddd██████ddi██████i${AnsiColor.RED}g███████ggggg█████g o█████ooooo█████o
+  ${AnsiColor.GREEN} QQ██████████████Q  d█████████████████di██████i${AnsiColor.RED} g████████████████g o███████████████o
+  ${AnsiColor.GREEN}   QQ███████████Q    d█████████ddd████di██████i${AnsiColor.RED}  gg██████████████g  oo███████████oo
+  ${AnsiColor.GREEN}     QQQQQQQQ████QQ   ddddddddd   dddddiiiiiiii${AnsiColor.RED}    gggggggg██████g    ooooooooooo
+  ${AnsiColor.GREEN}             Q█████Q                           ${AnsiColor.RED}            g█████g
+  ${AnsiColor.GREEN}              QQQQQQ                           ${AnsiColor.RED}gggggg      g█████g
+  ${AnsiColor.GREEN}                                               ${AnsiColor.RED}g█████gg   gg█████g
+  ${AnsiColor.GREEN}                                               ${AnsiColor.RED} g██████ggg███████g
+  ${AnsiColor.GREEN}                                               ${AnsiColor.RED}  gg█████████████g
+  ${AnsiColor.GREEN}                                               ${AnsiColor.RED}    ggg██████ggg
+  ${AnsiColor.GREEN}                                               ${AnsiColor.RED}       gggggg
+

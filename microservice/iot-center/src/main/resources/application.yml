@@ -1,0 +1,23 @@
+
+spring:
+  profiles: local
+#  rabbitmq:
+#    addresses: 118.31.164.32:5672
+#    username: niezhao
+#    password: niezhao
+#    virtual-host: /qdigo
+#    publisher-confirm-type: correlated
+#    listener:
+#      ## spring boot2 后有simple与direct两种
+#      type: simple
+#      simple:
+#        acknowledge-mode: auto
+#        #达到重试次数上限,是否还放回队列,false将进入死信队列
+#        default-requeue-rejected: true
+#        concurrency: 4
+#        #consumer先投递10个，如果都unacked会停止投递
+#        #prefetch: 10
+qdigo:
+  netty:
+    port: 13078
+    readerIdle: 300

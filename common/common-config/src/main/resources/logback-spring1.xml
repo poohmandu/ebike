@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <!-- The FILE and ASYNC appenders are here as examples for a production configuration -->
+    <!-- 测试可用
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logback/logFile.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>90</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <charset>utf-8</charset>
+            <Pattern>%d %-5level [%thread] %logger{0}: %msg%n</Pattern>
+        </encoder>
+    </appender>
+    -->
+    <!--
+        <appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>512</queueSize>
+            <appender-ref ref="FILE"/>
+        </appender>
+    -->
+
+    <!-- http://www.codes51.com/itwd/4436086.html 重新自定义pattern -->
+    <!-- https://blog.csdn.net/kmtong/article/details/38920327 LogstashEncoder已经支持MDC -->
+    <appender name="LOGSTASH" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder">
+            <includeMdc>true</includeMdc>
+            <enableContextMap>true</enableContextMap>
+            <!--<includeCallerData>true</includeCallerData>-->
+            <!--<IncludeCallerInfo>true</IncludeCallerInfo>-->
+            <!--<IncludeContext>true</IncludeContext>-->
+        </encoder>
+        <!-- 自己实现的MDC %X{var}
+        <encoder>
+            <pattern>%-5level - [%thread] %logger{25} - [%X{keyword}] : %msg %rootException%n</pattern>
+        </encoder>
+        -->
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logstash/logstash-%d{yyyy-MM-dd}.log</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <appender name="CatAppender" class="com.dianping.cat.logback.CatLogbackAppender">
+    </appender>
+
+
+    <!-- logstash通过socket的方式，经测试可行
+    <appender name="logs" class="net.logstash.logback.appender.LogstashTcpSocketAppender">
+        <remoteHost>127.0.0.1</remoteHost>
+        <port>5000</port>
+        <encoder class="net.logstash.logback.encoder.LogstashEncoder"/>
+    </appender>
+    -->
+
+
+    <logger name="com.qdigo.ebicycle" level="#logback.loglevel#"/>
+    <logger name="javax.activation" level="WARN"/>
+    <logger name="javax.mail" level="WARN"/>
+    <logger name="javax.xml.bind" level="WARN"/>
+    <logger name="ch.qos.logback" level="WARN"/>
+    <logger name="com.codahale.metrics" level="WARN"/>
+    <logger name="com.netflix" level="WARN"/>
+    <logger name="com.netflix.discovery" level="INFO"/>
+    <logger name="com.ryantenney" level="WARN"/>
+    <logger name="com.sun" level="WARN"/>
+    <logger name="com.zaxxer" level="WARN"/>
+    <logger name="io.undertow" level="WARN"/>
+    <logger name="org.apache" level="WARN"/>
+    <logger name="org.apache.catalina.startup.DigesterFactory" level="OFF"/>
+    <logger name="org.bson" level="WARN"/>
+    <logger name="org.hibernate.validator" level="WARN"/>
+    <logger name="org.hibernate" level="WARN"/>
+    <logger name="org.hibernate.ejb.HibernatePersistence" level="OFF"/>
+    <logger name="org.springframework" level="WARN"/>
+    <logger name="org.springframework.web" level="WARN"/>
+    <logger name="org.springframework.security" level="WARN"/>
+    <logger name="org.springframework.cache" level="WARN"/>
+    <logger name="org.thymeleaf" level="WARN"/>
+    <logger name="org.xnio" level="WARN"/>
+    <logger name="springfox" level="WARN"/>
+    <logger name="sun.rmi" level="WARN"/>
+    <logger name="liquibase" level="WARN"/>
+    <logger name="sun.rmi.transport" level="WARN"/>
+    <logger name="org.mongodb.driver" level="WARN"/>
+    <logger name="com.mchange.v2.c3p0.stmt.GooGooStatementCache" level="WARN"/>
+    <logger name="com.mchange.v2.resourcepool.BasicResourcePool" level="WARN"/>
+    <logger name="sun.net.www.protocol.http.HttpURLConnection" level="INFO"/>
+    <logger name="org.quartz.impl.jdbcjobstore.StdRowLockSemaphore" level="INFO"/>
+    <logger name="org.mybatis.spring" level="INFO"/>
+    <logger name="com.qdigo.ebicycle.mapper" level="INFO"/>
+
+    <!-- 经测试有效 -->
+    <springProfile name="dev">
+        <!--<logger name="org.mybatis.spring" level="DEBUG"/>-->
+        <logger name="org.mybatis.spring" level="INFO"/>
+        <!--<logger name="com.qdigo.ebicycle.mapper" level="DEBUG"/>-->
+        <logger name="com.qdigo.ebicycle.mapper" level="INFO"/>
+
+        <logger name="com.qdigo.ebicycle.service.device" level="INFO"/>
+        <logger name="com.qdigo.ebicycle.message.device" level="INFO"/>
+    </springProfile>
+
+
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator">
+        <resetJUL>true</resetJUL>
+    </contextListener>
+
+    <root level="#logback.loglevel#">
+        <appender-ref ref="LOGSTASH"/>
+        <appender-ref ref="CONSOLE"/>
+        <!--<appender-ref ref="CatAppender"/>-->
+    </root>
+</configuration>

@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  ~ Copyright 2020 聂钊 nz@qdigo.com
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a to of the License at
+  ~
+  ~     http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.qdigo.ebike.stationcenter.mapper.BikeStationMapper">
+
+
+    <resultMap id="bikeStationWithPoints" type="com.qdigo.ebike.stationcenter.domain.entity.BikeStation"
+               autoMapping="true">
+        <id property="stationId" column="s_station_id"/>
+        <result property="longitude" column="s_longitude"/>
+        <result property="latitude" column="s_latitude"/>
+        <association property="stationFence" column="f_station_id"
+                     javaType="com.qdigo.ebike.stationcenter.domain.entity.StationFence" autoMapping="true">
+            <id property="fenceId" column="f_fence_id"/>
+            <collection property="points" column="p_fence_id" javaType="java.util.ArrayList"
+                        ofType="com.qdigo.ebike.stationcenter.domain.entity.StationPoint" autoMapping="true">
+                <result property="longitude" column="p_longitude"/>
+                <result property="latitude" column="p_latitude"/>
+            </collection>
+        </association>
+        <association property="stationStatus" column="ss_station_id"
+                     javaType="com.qdigo.ebike.stationcenter.domain.entity.StationStatus" autoMapping="true"/>
+    </resultMap>
+
+    <!-- st_distance 为平面距离,不要求精准 -->
+    <select id="findByLocationOrdered" resultMap="bikeStationWithPoints">
+        select s.station_id as s_station_id,
+        s.longitude as s_longitude,
+        s.latitude as s_latitude,
+        s.agent_id,s.radius,s.station_name,s.compensate,
+        f.station_stationId as f_station_id,
+        f.fence_id as f_fence_id,
+        p.fence_id as p_fence_id,
+        p.longitude as p_longitude,
+        p.latitude as p_latitude
+        from (select ss.* from bike_station ss
+        where ss.online=true and
+        ss.latitude between #{minLat} and #{maxLat} and
+        ss.longitude between #{minLng} and #{maxLng}
+        <if test="agentIds!=null and agentIds.size>0">
+            and ss.agent_id in
+            <foreach collection="agentIds" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+        order by st_distance(point(ss.longitude,ss.latitude),point(#{lng},#{lat})) limit #{lim}
+        ) as s
+        left join station_fence f on s.station_id = f.station_stationId
+        left join station_point p on f.fence_id = p.fence_id
+    </select>
+
+    <select id="findOrderByLocation" resultType="com.qdigo.ebike.stationcenter.domain.entity.BikeStation">
+        select s.station_id, s.longitude,s.latitude,s.station_name,s.pic_url,s.address,s.compensate
+        from bike_station s
+        <where>
+            s.online=true
+            <if test="agentIds!=null and agentIds.size>0">
+                and s.agent_id in
+                <foreach collection="agentIds" open="(" close=")" separator="," item="item">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by st_distance(point(s.longitude,s.latitude),point(#{lng},#{lat}))
+    </select>
+
+
+    <select id="findByLocation" resultMap="bikeStationWithPoints">
+        select s.station_id as s_station_id,
+        s.longitude as s_longitude,
+        s.latitude as s_latitude,
+        s.radius,s.station_name,s.compensate,
+        f.fence_id as f_fence_id,
+        f.station_stationId as f_station_id,
+        p.fence_id as p_fence_id,
+        p.longitude as p_longitude,
+        p.latitude as p_latitude,
+        ss.bike_station_id as ss_station_id,
+        ss.bike_count
+        from bike_station s left join station_fence f on s.station_id = f.station_stationId
+        left join station_point p on f.fence_id = p.fence_id
+        left join station_status ss on s.station_id = ss.bike_station_id
+        where s.online =true and
+        s.latitude between #{minLat} and #{maxLat} and
+        s.longitude between #{minLng} and #{maxLng}
+        <if test="agentIds!=null and agentIds.size>0">
+            and s.agent_id in
+            <foreach collection="agentIds" open="(" close=")" separator="," item="item">
+                #{item}
+            </foreach>
+        </if>
+    </select>
+
+</mapper>

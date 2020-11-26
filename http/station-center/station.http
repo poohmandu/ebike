@@ -1,0 +1,14 @@
+# For a quick start check out our HTTP Requests collection (Tools|HTTP Client|Open HTTP Requests Collection).
+#
+# Following HTTP Request Live Templates are available:
+# * 'gtrp' and 'gtr' create a GET request with or without query parameters;
+# * 'ptr' and 'ptrp' create a POST request with a simple or parameter-like body;
+# * 'mptr' and 'fptr' create a POST request to submit a form with a text or file field (multipart/form-data);
+
+### 查询还车点(分页)
+GET http://{{host}}/v1.0/geo/getBikeStationPage?longitude=1&latitude=2
+mobileNo: {{mobileNo}}
+mobiledeviceId: weixin
+accessToken: xxx
+
+###

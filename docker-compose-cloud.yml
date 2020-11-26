@@ -1,0 +1,39 @@
+version: '3'
+
+volumes:
+  logs:
+    external:
+      name: microservice_logs
+
+networks:
+  qdigo_network:
+    external: true
+
+services:
+
+  gateway:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/gateway:0.0.1-SNAPSHOT
+    ports:
+      - "8040:8040"
+    container_name: gateway
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+
+  monitor:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/monitor:0.0.1-SNAPSHOT
+    ports:
+      - "8041:8041"
+    container_name: monitor
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+
+
+
+
+

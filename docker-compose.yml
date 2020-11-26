@@ -1,0 +1,137 @@
+version: '3'
+
+volumes:
+  logs:
+    external:
+      name: microservice_logs
+
+networks:
+  qdigo_network:
+    external: true
+
+services:
+
+  user-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/user-center:0.0.1-SNAPSHOT
+    container_name: user-center
+    ports:
+      - 9100:9100
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+
+  third:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/third:0.0.1-SNAPSHOT
+    container_name: third
+    ports:
+      - 9101:9101
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=user-center:9100
+
+  bike-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/bike-center:0.0.1-SNAPSHOT
+    container_name: bike-center
+    ports:
+      - 9102:9102
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=third:9101
+
+  agent-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/agent-center:0.0.1-SNAPSHOT
+    container_name: agent-center
+    ports:
+      - 9103:9103
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=bike-center:9102
+
+  control-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/control-center:0.0.1-SNAPSHOT
+    container_name: control-center
+    ports:
+      - 9104:9104
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=agent-center:9103
+
+  station-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/station-center:0.0.1-SNAPSHOT
+    container_name: station-center
+    ports:
+      - 9105:9105
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=control-center:9104
+
+  order-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/order-center:0.0.1-SNAPSHOT
+    container_name: order-center
+    ports:
+      - 9106:9106
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=station-center:9105
+
+  activity-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/activity-center:0.0.1-SNAPSHOT
+    container_name: activity-center
+    ports:
+      - 9107:9107
+    volumes:
+      - logs:/app/logsBikeCenterApplication
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=order-center:9106
+
+  iot-center:
+    image: qdigo-docker.pkg.coding.net/diandichuxing/docker/iot-center:0.0.1-SNAPSHOT
+    container_name: iot-center
+    ports:
+      - 9108:9108
+    volumes:
+      - logs:/app/logs
+    networks:
+      - qdigo_network
+    environment:
+      - spring.profiles.active
+      - LOCALHOST
+      - WAIT_FOR=activity-center:9107
